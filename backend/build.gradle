@@ -1,0 +1,131 @@
+import com.github.gradle.node.npm.task.NpmTask
+
+plugins {
+  id 'com.github.node-gradle.node' version '7.0.2'
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.dosion.noisense'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.kafka:spring-kafka'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+
+  implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
+
+
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile) {
+  options.encoding = 'UTF-8'
+}
+
+// ===================================================================
+//               FRONTEND CONFIGURATION (NODE/NPM)
+// ===================================================================
+
+// Check for a project property 'useLocalNode'. If it's not set, default to 'false'.
+// This makes downloading Node the default, which is safer for CI/CD.
+def useLocalNode = false//project.hasProperty('useLocalNode') ? project.property('useLocalNode').toBoolean() : false
+
+def nodeExecutableDir = file("E:/nodejs") // 로컬 Node 위치
+
+def frontendDir = file("$rootDir/frontend") // 작업할 프론트엔드 root 경로
+def backendStaticDir = file("$projectDir/src/main/resources/static") // 프론트 빌드 결과물 복사할 경로($projectDir ==> /backend)
+
+node {
+  version = '20.19.1' // 설치할 Node 버전
+
+  download = !useLocalNode // 로컬 노드 사용할지 다운로드하여 사용할지 여부
+
+  workDir = useLocalNode ? nodeExecutableDir : file("$project.buildDir/nodejs") // 노드 설치 경로
+  npmWorkDir = file("$workDir/npm") // npm 위치
+}
+
+/*npm install*/
+tasks.register('frontendNpmInstall', NpmTask) {
+  description = "Install the frontend application using NPM"
+  workingDir = file(frontendDir)
+  args = ['install']
+}
+
+/*npm run build*/
+tasks.register('frontendNpmBuild', NpmTask) {
+  description = "Builds the frontend application using NPM"
+  dependsOn tasks.named('frontendNpmInstall')
+
+  workingDir = file(frontendDir)
+  args = ['run', 'build']
+}
+
+/*copy frontend/dist/ to backend/.../static/*/
+tasks.register('copyFrontendBuild', Copy) {
+  description = "Copies the built frontend into the Spring Boot static resources directory"
+  dependsOn tasks.named('frontendNpmBuild')
+
+  from "$frontendDir/dist"
+  into "$backendStaticDir"
+}
+
+processResources.dependsOn 'copyFrontendBuild'
+
+// prepareKotlinBuildScriptModel라는 이름의 empty task 등록
+tasks.register("prepareKotlinBuildScriptModel"){}
+// ===================================================================
+//               FRONTEND CONFIGURATION END
+// ===================================================================
+
+
+bootJar {
+  dependsOn processResources
+  // 프론트 빌드 결과 포함
+  from("$projectDir/src/main/resources/static")
+
+  // Node.js 다운로드 경로 제외
+  exclude('nodejs/**')
+  exclude { it.file.toString().contains('/build/nodejs') || it.file.toString().contains('\\build\\nodejs') }
+}
+
+bootRun {
+  dependsOn processResources
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

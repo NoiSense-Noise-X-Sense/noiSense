@@ -1,0 +1,313 @@
+openapi: 3.0.3
+info:
+  title: Noise Map REST API
+  version: 1.0.0
+  description: |
+    🧭 Location-based noise report API using Spring Boot
+    - PostgreSQL: user, map, data, board
+    - Elasticsearch: map, data, board indexing
+    - Redis: user session sync
+
+servers:
+  - url: /api
+
+tags:
+  - name: User
+  - name: Map
+  - name: Noise Data
+  - name: Board
+
+paths:
+
+  /user/signup:
+    post:
+      tags: [User]
+      summary: 사용자 회원가입
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, favoriteRegion]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+                favoriteRegion: { type: string }
+      responses:
+        '201':
+          description: 회원가입 성공
+        '400':
+          description: 유효성 실패
+
+  /user/login:
+    post:
+      tags: [User]
+      summary: 로그인 및 토큰 발급
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string, format: password }
+      responses:
+        '200':
+          description: 로그인 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken: { type: string }
+                  refreshToken: { type: string }
+
+  /user/me:
+    get:
+      tags: [User]
+      summary: 사용자 정보 조회
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 사용자 정보 반환
+    put:
+      tags: [User]
+      summary: 사용자 정보 수정
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                favoriteRegion: { type: string }
+      responses:
+        '200':
+          description: 수정 완료
+  /user:
+    delete:
+      tags: [User]
+      summary: 회원 탈퇴
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: 탈퇴 완료
+
+  /map:
+    get:
+      tags: [Map]
+      summary: 맵 정보 전체 조회
+      responses:
+        '200':
+          description: 목록 반환
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Map'
+
+  /map/{id}:
+    get:
+      tags: [Map]
+      summary: 특정 맵 정보 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: 맵 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Map'
+
+  /data:
+    get:
+      tags: [Noise Data]
+      summary: 소음 데이터 전체 조회
+      parameters:
+        - name: mapId
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: 소음 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NoiseData'
+
+  /data/{id}:
+    get:
+      tags: [Noise Data]
+      summary: 특정 소음 데이터 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: 소음 정보
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NoiseData'
+
+  /board:
+    post:
+      tags: [Board]
+      summary: 게시글 작성
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BoardCreate'
+      responses:
+        '201':
+          description: 게시글 생성
+
+    get:
+      tags: [Board]
+      summary: 게시글 목록 조회
+      parameters:
+        - name: sigungu
+          in: query
+          schema: { type: string }
+        - name: mood
+          in: query
+          schema:
+            type: string
+            enum: [good, not good, bad, terrible]
+      responses:
+        '200':
+          description: 게시글 목록
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Board'
+
+  /board/{id}:
+    get:
+      tags: [Board]
+      summary: 게시글 상세 조회
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: 게시글 반환
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Board'
+    put:
+      tags: [Board]
+      summary: 게시글 수정
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BoardUpdate'
+      responses:
+        '200':
+          description: 수정 완료
+    delete:
+      tags: [Board]
+      summary: 게시글 삭제
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '204':
+          description: 삭제 완료
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+
+    Map:
+      type: object
+      properties:
+        id: { type: string }
+        latitude: { type: number, format: float }
+        longitude: { type: number, format: float }
+
+    NoiseData:
+      type: object
+      properties:
+        id: { type: string }
+        mapId: { type: string }
+        hour: { type: string, example: "14:00" }
+        noiseLevel: { type: number, format: float }
+
+    Board:
+      type: object
+      properties:
+        boardId: { type: string }
+        reg_userid: { type: string }
+        title: { type: string }
+        content: { type: string }
+        sigungu: { type: string }
+        eupmyeondong: { type: string }
+        mood:
+          type: string
+          enum: [good, not good, bad, terrible]
+
+    BoardCreate:
+      type: object
+      required: [title, content, sigungu, eupmyeondong, mood]
+      properties:
+        title: { type: string }
+        content: { type: string }
+        sigungu: { type: string }
+        eupmyeondong: { type: string }
+        mood:
+          type: string
+          enum: [good, not good, bad, terrible]
+
+    BoardUpdate:
+      type: object
+      properties:
+        title: { type: string }
+        content: { type: string }
+        mood:
+          type: string
+          enum: [good, not good, bad, terrible]
