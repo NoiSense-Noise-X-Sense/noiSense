@@ -2,7 +2,7 @@
 
 ## 최종 JAR 내부
 ```
-backend-x.x.x-SNAPSHOT.ja
+backend-x.x.x-SNAPSHOT.jar
 ├── BOOT-INF/
 │   ├── classes/              ← build/classes/java/main/ 의 내용
 │   │   └── com/example/...
@@ -30,5 +30,5 @@ jar tf build/libs/backend-0.0.1-SNAPSHOT.jar
 
 - static swagger api
 ```plain
-http://localhost:8080/swagger.yaml
+http://localhost:8080/swagger-ui/index.html
 ```

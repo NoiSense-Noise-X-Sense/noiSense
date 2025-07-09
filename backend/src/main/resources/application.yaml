@@ -7,6 +7,13 @@ spring:
 spring:
   application:
     name:  backend
+  output:
+    ansi:
+      enabled: always
+
+  docker:
+    compose:
+      file: ../Data/docker-compose.data.yml
 
   # Jackson Lib
   jackson:
@@ -14,115 +21,4 @@ spring:
     date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
-# Redis
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
 
-# JPA
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-
-# 로깅
-logging:
-  level:
-    root: INFO
-    org.springframework.web: DEBUG
-
-#  모니터링
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-
----
-
-# local 환경 설정
-spring:
-  config:
-    activate:
-      on-profile: local
-
-  datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL:localhost}:${SPRING_DATASOURCE_PORT:5432}/noisense
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:qwer}
-    driver-class-name: org.postgresql.Driver
-
-#  kafka:
-#    bootstrap-servers: localhost:9092
-
----
-
-# dev 환경 설정
-spring:
-  config:
-    activate:
-      on-profile: dev
-
-  datasource:
-    url: jdbc:postgresql://dev-db.example.com:5432/noisense
-    username: noisense_dev
-    password: dev_pw
-
-  kafka:
-    bootstrap-servers: dev-kafka.example.com:9092
-
----
-
-# prod 환경 설정
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  datasource:
-    url: jdbc:postgresql://prod-db.example.com:5432/noisense
-    username: noisense_prod
-    password: prod_pw
-
-  kafka:
-    bootstrap-servers: prod-kafka.example.com:9092
-
----
-
-# OAuth2 설정 예시 (공통 또는 프로파일별로 나눠도 됨)
-# 우선 미사용 처리
-spring:
-  security:
-    oauth2:
-      client:
-        registration: {}
-#          google:
-#            client-id: ${GOOGLE_CLIENT_ID}
-#            client-secret: ${GOOGLE_CLIENT_SECRET}
-#            redirect-uri: "{baseUrl}/login/oauth2/code/google"
-#            scope:
-#              - profile
-#              - email
-#        provider:
-#          google:
-#            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
-#            token-uri: https://oauth2.googleapis.com/token
-#            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
-#            user-name-attribute: sub
-
-
-
-springdoc:
-  api-docs:
-    enabled: false      # 자동 생성 비활성화
-  swagger-ui:
-    url: /api-doc/swagger.yaml  # 스펙 파일 경로 지정

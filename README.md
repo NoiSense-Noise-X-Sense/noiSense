@@ -12,6 +12,7 @@
 ## 프로젝트 구조
 ```
 project-root/
+├── Data/               # DB
 ├── backend/            # Spring Boot 프로젝트
 │   ├──.gitignore
 │   ├── build.gradle
@@ -61,7 +62,7 @@ cd backend
 ```bash
 cd frontend
 npm install        # 또는 pnpm install
-npm start
+npm start          # 또는 npm run dev
 ```
 > 프론트 개발 중엔 API 요청은 프록시로 /api → localhost:8080으로 연결됨
 
@@ -70,11 +71,11 @@ npm start
 ```bash
 cd backend
 ./gradlew bootJar
+자동으로 ../Data/docker-compose.data.yml 도커 컴포즈를 실행하여 DB 서버를 실행시킨 뒤 
 자동으로 frontend 프로젝트를 빌드하고,
 결과물은 backend/src/main/resources/static/에 복사됨
 생성된 JAR 파일 하나로 프론트 + API 모두 제공됨
 ```
-
 
 
 🌐 배포 후 접근

@@ -1,4 +1,4 @@
-package com.dosion.noisense.backend.config;
+package com.dosion.noisense.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +12,15 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
       .authorizeHttpRequests(auth -> auth
+        //인증 필요없음
+        .requestMatchers("/","/index.html", "/*.html", "/favicon.ico",
+          "/css/**", "/fetchWithAuth.js","/js/**", "/images/**",
+          "/.well-known/**", "/error"
+          , "/v3/api-docs/**", "/configuration/**"
+          ,"/exception",
+          "/swagger-ui/**",
+          "/swagger-ui.html").permitAll() // 정적 리소스 누구나 접근
+
         .anyRequest().permitAll()
       )
       .csrf(csrf -> csrf.disable())// csrf disable
