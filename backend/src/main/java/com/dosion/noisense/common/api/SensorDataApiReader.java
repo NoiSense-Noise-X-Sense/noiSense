@@ -21,48 +21,6 @@ public class SensorDataApiReader {
   private static final String SERVICE_NAME = "IotVdata017";
   private static final int MAX_RESULTS_PER_PAGE = 1000; // API 최대 요청 건수
 
-  // 전체 데이터 순환 JSON으로 반환
-//  public String fetchAllData() throws Exception {
-//
-//    // 데이터 건수 확인
-//    int totalCount = getTotalCount();
-//
-//    if (totalCount == 0) {
-//
-//      System.out.println("API에서 가져올 데이터가 없습니다.");
-//      return "[]"; // 비어있는 JSON 배열 반환
-//
-//    }
-//
-//    System.out.println("총 " + totalCount + "건의 데이터 조회를 시작합니다.");
-//
-//    // 원시 데이터 저장
-//    List<String> allRows = new ArrayList<>();
-//
-//    // 데이터 불러오기
-//    for (int i = 1; i <= totalCount; i += MAX_RESULTS_PER_PAGE) {
-//
-//      int startIndex = i;
-//      int endIndex = Math.min(i + MAX_RESULTS_PER_PAGE - 1, totalCount);
-//
-//      System.out.printf("데이터 조회 중... (%d ~ %d / %d)%n", startIndex, endIndex, totalCount);
-//
-//      String pageResponse = callApi(startIndex, endIndex);
-//
-//      if (pageResponse != null && !pageResponse.isEmpty()) {
-//
-//        JSONObject pageJson = new JSONObject(pageResponse);
-//        // 배열의 각 객체를 문자열로 변환하여 리스트에 추가
-//        pageJson.getJSONObject(SERVICE_NAME).getJSONArray("row")
-//          .forEach(item -> allRows.add(item.toString()));
-//
-//      }
-//    }
-//
-//    // 모든 데이터 하나의 JSON 배열로 반환
-//    return "[" + String.join(",", allRows) + "]";
-//  }
-
   // 전체 데이터 건수 가져오기
   public int getTotalCount() throws Exception {
 
@@ -88,8 +46,8 @@ public class SensorDataApiReader {
     conn.setRequestMethod("GET");
 
     // 타임아웃 5초 두기
-    conn.setConnectTimeout(5000);
-    conn.setReadTimeout(5000);
+    conn.setConnectTimeout(30000);
+    conn.setReadTimeout(30000);
 
     StringBuilder response = new StringBuilder();
     int responseCode = conn.getResponseCode();

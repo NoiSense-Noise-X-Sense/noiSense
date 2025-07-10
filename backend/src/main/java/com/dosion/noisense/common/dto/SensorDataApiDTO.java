@@ -1,5 +1,6 @@
 package com.dosion.noisense.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class SensorDataApiDTO {
 
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd_HH:mm:ss")
   @JsonProperty("SENSING_TIME")
   private LocalDateTime sensingTime;
 

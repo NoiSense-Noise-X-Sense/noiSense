@@ -6,16 +6,23 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "sensor_data")
-public class SensorDataApiEntity extends BaseEntity {
+public class SensorDataApiEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SENSOR_DATA_SEQ_GENERATOR")
+  @SequenceGenerator(
+    name = "sensor_data_seq",
+    sequenceName = "sensor_data_seq",
+    initialValue = 1,
+    allocationSize = 200
+  )
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sensor_data_seq")
   @Column(name = "sensor_data_id")
   private Long id;
 

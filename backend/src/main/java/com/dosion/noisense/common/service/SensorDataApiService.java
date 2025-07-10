@@ -10,7 +10,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,10 +53,25 @@ public class SensorDataApiService {
         if (dtoList.isEmpty()) {
           // 해당 페이지에 데이터가 없으면 다음 루프로
           continue;
-
         }
 
-        List<SensorDataApiEntity> entitiesToSave = dtoList.stream()
+
+
+        if (dtoList.isEmpty()) {
+          continue;
+        }
+
+        // 청크 데이터 시작 시간, 끝 시간 확인
+        LocalDateTime minTime = dtoList.stream().map(SensorDataApiDTO::getSensingTime).min(LocalDateTime::compareTo).orElseThrow();
+        LocalDateTime maxTime = dtoList.stream().map(SensorDataApiDTO::getSensingTime).max(LocalDateTime::compareTo).orElseThrow();
+
+        // 해당 시간 범위의 기존 데이터 키들을 DB에서 조회하여 Set에 저장
+        Set<String> existingKeys = sensorDataRepository.findExistingKeys(minTime, maxTime);
+
+        // DTO 리스트를 필터링하여 DB에 없는 새로운 데이터만 엔티티로 변환
+        List<SensorDataApiEntity> newEntitiesToSave = dtoList.stream()
+          .filter(dto -> !existingKeys.contains(
+            dto.getAdministrativeDistrict() + ":" + dto.getSensingTime()))
           .map(dto -> SensorDataApiEntity.builder()
             .sensingTime(dto.getSensingTime())
             .region(dto.getRegion())
@@ -72,10 +89,21 @@ public class SensorDataApiService {
             .build())
           .collect(Collectors.toList());
 
+        // 새로운 데이터가 있을 경우에만 저장
+        if (!newEntitiesToSave.isEmpty()) {
 
-        sensorDataRepository.saveAll(entitiesToSave);
+          sensorDataRepository.saveAll(newEntitiesToSave);
+          System.out.printf("%d건의 새로운 데이터를 저장했습니다. (중복 %d건 제외)%n",
+            newEntitiesToSave.size(), dtoList.size() - newEntitiesToSave.size());
+
+        } else {
+
+          System.out.println("새롭게 추가할 데이터가 없습니다.");
+
+        }
 
       }
+
       System.out.println("모든 데이터 처리가 성공적으로 완료되었습니다.");
 
     } catch (Exception e) {
@@ -83,7 +111,7 @@ public class SensorDataApiService {
     }
   }
 
-  @Scheduled(cron = "0 0 */3 * * *")
+  @Scheduled(cron = "0 */1 * * * *")
   public void scheduledBatchExecution() {
     System.out.println("정기적인 S-DoT 데이터 배치 작업을 시작합니다...");
     fetchAndSaveSensorData(); // 내부의 protected 메서드 호출
