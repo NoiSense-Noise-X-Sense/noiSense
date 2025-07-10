@@ -21,4 +21,17 @@ spring:
 #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
-
+  # JPA Batch 설정
+  jpa:
+    properties:
+      hibernate:
+        # Batch Insert를 위한 사이즈 설정
+        jdbc:
+          batch_size: 200
+        # insert 쿼리를 정렬하여 성능 최적화
+        order_inserts: true
+  datasource:
+    # DB URL 설정 시 rewriteBatchedStatements=true 파라미터가 Batch Insert가 활성화되게 해줌
+    url: jdbc:postgresql://localhost:5432/noisense?reWriteBatchedInserts=true
+    username: root
+    password: 1234
