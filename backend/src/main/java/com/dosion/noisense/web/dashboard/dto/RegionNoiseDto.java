@@ -1,4 +1,4 @@
-package com.dosion.noisense.dashboard.dto;
+package com.dosion.noisense.web.dashboard.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

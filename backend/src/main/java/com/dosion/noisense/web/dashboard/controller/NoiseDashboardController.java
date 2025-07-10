@@ -1,6 +1,6 @@
-package com.dosion.noisense.dashboard.controller;
+package com.dosion.noisense.web.dashboard.controller;
 
-import com.dosion.noisense.dashboard.dto.RegionNoiseDto;
+import com.dosion.noisense.web.dashboard.dto.RegionNoiseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
