@@ -159,3 +159,4 @@ ALTER TABLE "auth" ADD CONSTRAINT "FK_users_TO_auth_1" FOREIGN KEY (
 
 CREATE SEQUENCE sensor_data_seq START WITH 1 INCREMENT BY 200;
 
+select * from sensor_data;
