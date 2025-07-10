@@ -17,6 +17,9 @@ public class UserService {
 
   @Transactional
   public void add(UserDto userDto) {
+    log.info("회원가입 UserNm : {}", userDto.getUserNm());
+    log.info("회원가입 Nickname : {}", userDto.getNickname());
+
     if (userRepository.findByUserNm(userDto.getUserNm()).isPresent()){
       throw new RuntimeException("User already exists");
     }
@@ -24,10 +27,9 @@ public class UserService {
     user.setUserNm(userDto.getUserNm());
     user.setNickname(userDto.getNickname());
     user.setEmail(userDto.getEmail());
-    user.setAutonomous_district(userDto.getAutonomousDistrict());
-    user.setAdministrative_district(userDto.getAdministrativeDistrict());
+    user.setAutonomousDistrict(userDto.getAutonomousDistrict());
+    user.setAdministrativeDistrict(userDto.getAdministrativeDistrict());
 
-    /** 저장 */
      userRepository.save(user);
   }
 }
