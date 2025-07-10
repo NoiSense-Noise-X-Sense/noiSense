@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -35,7 +37,12 @@ public class ReportService {
 
   public String getReport(String startDate, String endDate, String autonomousDistrict){
     log.info("getReport");
+    getChartData(startDate, endDate, autonomousDistrict, null);
     return startDate + endDate + autonomousDistrict;
+  }
+
+  private void getChartData(String startDate, String endDate, String autonomousDistrict, List<String> administrativeDistrictList){
+    log.info("getChartData");
   }
 
 
