@@ -38,12 +38,21 @@ public class BoardService {
     return toDTO(savedBoard);
   }
 
-  /** 게시글 단건 조회 **/
-  @Transactional(readOnly = true)
+  /** 게시글 상세 조회 및 조회수 증가 **/
+  @Transactional
   public BoardDto getBoardById(Long id) {
     Board board = boardRepository.findById(id)
-      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
-    return toDTO(board);
+      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. ID: " + id));
+
+    // DB 조회수 증가
+    board.setViewCount(board.getViewCount() + 1);
+    board.setModifiedDate(LocalDateTime.now());
+
+    Board updatedBoard = boardRepository.save(board);
+
+    // ES 조회수 동기화는 추후 Elasticsearch 연동 시 별도로 처리
+
+    return toDTO(updatedBoard);
   }
 
   /** 게시글 수정 **/
