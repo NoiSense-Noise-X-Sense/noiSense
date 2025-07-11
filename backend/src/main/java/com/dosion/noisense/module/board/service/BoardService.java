@@ -1,5 +1,7 @@
 package com.dosion.noisense.module.board.service;
 
+import com.dosion.noisense.module.board.entity.BoardEmpathy;
+import com.dosion.noisense.module.board.repository.BoardEmpathyRepository;
 import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.module.board.entity.Board;
 import com.dosion.noisense.module.board.repository.BoardRepository;
@@ -10,12 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BoardService {
 
   private final BoardRepository boardRepository;
+  private final BoardEmpathyRepository boardEmpathyRepository;
+
 
   /** 게시글 작성 **/
   @Transactional
@@ -95,6 +100,30 @@ public class BoardService {
   @Transactional(readOnly = true)
   public Page<BoardDto> getBoards(int page, int size) {
     return boardRepository.findAllPaging(PageRequest.of(page, size));
+  }
+
+  @Transactional
+  public void toggleEmpathyCount(Long boardId, Long userId) {
+    Board board = boardRepository.findById(boardId)
+      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. ID: " + boardId));
+
+    Optional<BoardEmpathy> empathyOptional =
+      boardEmpathyRepository.findByBoardIdAndUserId(boardId, userId);
+
+    if (empathyOptional.isPresent()) {
+      // 이미 공감한 상태 → 삭제 및 empathy_count -1
+      boardEmpathyRepository.delete(empathyOptional.get());
+      board.setEmpathyCount(board.getEmpathyCount() - 1);
+    } else {
+      // 공감하지 않은 상태 → 추가 및 empathy_count +1
+      BoardEmpathy boardEmpathy = BoardEmpathy.builder()
+        .boardId(boardId)
+        .userId(userId)
+        .createdDate(LocalDateTime.now())
+        .build();
+      boardEmpathyRepository.save(boardEmpathy);
+      board.setEmpathyCount(board.getEmpathyCount() + 1);
+    }
   }
 
   /** Entity → DTO 변환 **/

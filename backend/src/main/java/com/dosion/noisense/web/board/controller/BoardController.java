@@ -62,4 +62,14 @@ public class BoardController {
     Page<BoardDto> boardPage = boardService.getBoards(page, size);
     return ResponseEntity.ok(boardPage);
   }
+
+  @PostMapping("/{id}/empathy")
+  public ResponseEntity<String> toggleEmpathyCount(
+    @PathVariable("id") Long boardId,
+    @RequestParam("userId") Long userId
+  ) {
+    boardService.toggleEmpathyCount(boardId, userId);
+    return ResponseEntity.ok("공감 상태가 변경되었습니다.");
+  }
+
 }
