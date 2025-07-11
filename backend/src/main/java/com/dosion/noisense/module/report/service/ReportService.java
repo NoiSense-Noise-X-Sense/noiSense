@@ -1,16 +1,19 @@
 package com.dosion.noisense.module.report.service;
 
 import com.dosion.noisense.module.report.repository.ReportRepository;
+import com.dosion.noisense.web.report.dto.ComparisonChartDto;
 import com.dosion.noisense.web.report.dto.OverallChartDto;
+import com.dosion.noisense.web.report.dto.TotalChartDto;
 import com.dosion.noisense.web.report.dto.TrendPointChartDto;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -18,7 +21,6 @@ import java.util.List;
 public class ReportService {
 
   private final ReportRepository reportRepository;
-
 
       /*
       응답 데이터 목록
@@ -37,62 +39,78 @@ public class ReportService {
         요일 별 Top 3/Bottom 3 소음 지역 그래프 ->  x축 스트링(요일)
     */
 
-
-  public String getReport(String startDate, String endDate, String autonomousDistrict){
+  // test 과정에서 TotalChartDto로 설정함. 수정 필요
+  public TotalChartDto getReport(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict){
     log.info("getReport");
-/*
+
     // 데이터 목록들 요청
 
     // 시끄러운, 조용한 지역 top3 데이터 요청
     // 결과값에 따라서 구 또는 동 add
-    List<String> autonomousDistrictList = new ArrayList<>(); // 필터할 구
-    List<String> administrativeDistrictList = new ArrayList<>(); // 필터할 동
-    // 시끄러운, 조용한 지역 top3 차트 데이터 요청
-    // 검색값이 전체면 administrativeDistrictList은 null
-    getChartData(startDate, endDate, autonomousDistrictList, administrativeDistrictList);
+    // 메서드가 없어서 임의로 넣음
+    List<String> trendPointRegionList = new ArrayList<>(); // 필터할 구
+    trendPointRegionList.add("강남구");
+    trendPointRegionList.add("강동구");
 
-    // 기간 내 평균 소음 그래프 요청
-    getChartData(startDate, endDate, new ArrayList<>(List.of(autonomousDistrict)), null);
+    // 차트 데이터 요청
+    TotalChartDto totalChartDto = getChartData(startDate, endDate, trendPointRegionList, autonomousDistrict);
 
-
-
-*/
-
-    return startDate + endDate + autonomousDistrict;
+    return totalChartDto;
   }
+
 
   // 차트 데이터 가져오기
-  private void getChartData(String startDate, String endDate, String autonomousDistrict){
-    // type : hourly, daily, dayOfWeek
-    // between startDate and endDate
-/*
+  private TotalChartDto getChartData(LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomousDistrict){
+
     String autonomous = autonomousDistrict.equals("all") ? null : autonomousDistrict;
 
-
     // 1. 시간대 별 평균 소음
-    List<OverallChartDto> overallHourlyAvgNoiseData = reportRepository.getOverallAvgData("hourly", startDate, endDate, autonomous);
+    List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomous);
     // 2. 일 별 평균 소음
-    List<OverallChartDto> overallDailyAvgNoiseData = reportRepository.getOverallAvgData("daily", startDate, endDate, autonomous);
+    List<OverallChartDto> overallDayAvgNoiseData = reportRepository.getOverallAvgData("dayOfMonth", startDate, endDate, autonomous);
     // autonomous 가 null 이면 행정구 조건 없이 데이터를 가져온다
 
-    List<String> TrendPointRegion = null; // 시끄러운곳 행정구 또는 행정동 리스트 -> 메서드 변수값으로 받던지, 메서드로 가져옴
+    // 시끄럽고 조용한 지역 비교
     // 3. 시간대별
-    List<TrendPointChartDto> TrendPointHourlyAvgNoiseData = reportRepository.getTrendPointAvgData("hourly", startDate, endDate, TrendPointRegion, autonomous);
+    List<ComparisonChartDto> TrendPointHourAvgNoiseData = reportRepository.getTrendPointAvgData("hour", startDate, endDate, trendPointRegionList, autonomous);
     // 4. 요일별
-    List<TrendPointChartDto> TrendPointDayOfWeekAvgNoiseData = reportRepository.getTrendPointAvgData("DayOfWeek", startDate, endDate, TrendPointRegion, autonomous);
-    // autonomous 가 null 이면 TrendPointRegion은 행정구로 조건을 걸고
-    // null이 아니면 autonomous를 행정구 조건, TrendPointRegion 은 행정동 조건
-*/
-    // 데이터 가공 작업
-    log.info("getChartData");
+    List<ComparisonChartDto> TrendPointDayOfWeekAvgNoiseData = reportRepository.getTrendPointAvgData("dayOfWeek", startDate, endDate, trendPointRegionList, autonomous);
 
+    return TotalChartDto.builder()
+      .overallHourAvgNoiseData(overallHourAvgNoiseData)
+      .overallDayAvgNoiseData(overallDayAvgNoiseData)
+      .TrendPointHourAvgNoiseData(transformToTrendPoint(TrendPointHourAvgNoiseData))
+      .TrendPointDayOfWeekAvgNoiseData(transformToTrendPoint(TrendPointDayOfWeekAvgNoiseData))
+      .build();
   }
 
 
+  // DTO 변환해주는 작업
+  private List<TrendPointChartDto> transformToTrendPoint(List<ComparisonChartDto> comparisonChartDtoList){
 
+    List<TrendPointChartDto> result = new ArrayList<>();
 
+    // X축 기준으로 그룹화
+    Map<String, List<ComparisonChartDto>> groupByXAxis = new HashMap<>();
 
+    for (ComparisonChartDto dto : comparisonChartDtoList) {
+      String xAxis = dto.getXAxis();
+      List<ComparisonChartDto> list = groupByXAxis.getOrDefault(xAxis, new ArrayList<>());
+      list.add(dto);
+      groupByXAxis.put(xAxis, list);
+    }
 
+    for (Map.Entry<String, List<ComparisonChartDto>> entry : groupByXAxis.entrySet()) {
 
+      Map<String, Double> avgNoiseByRegion = new HashMap<>();
+      for (ComparisonChartDto dto : entry.getValue()) {
+        avgNoiseByRegion.put(dto.getName(), dto.getAvgNoise());
+      }
+
+      result.add(new TrendPointChartDto(entry.getKey(), avgNoiseByRegion));
+    }
+
+    return result;
+  }
 
 }
