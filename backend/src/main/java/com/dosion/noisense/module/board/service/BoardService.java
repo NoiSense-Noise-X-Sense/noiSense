@@ -1,0 +1,108 @@
+package com.dosion.noisense.module.board.service;
+
+import com.dosion.noisense.web.board.dto.BoardDto;
+import com.dosion.noisense.module.board.entity.Board;
+import com.dosion.noisense.module.board.repository.BoardRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+
+@Service
+@RequiredArgsConstructor
+public class BoardService {
+
+  private final BoardRepository boardRepository;
+
+  /** 게시글 작성 **/
+  @Transactional
+  public BoardDto createBoard(BoardDto boardDto) {
+    Board board = Board.builder()
+      .userId(boardDto.getUserId())
+      .nickname(boardDto.getNickname())
+      .title(boardDto.getTitle())
+      .content(boardDto.getContent())
+      .emotionalScore(boardDto.getEmotionalScore())
+      .empathyCount(boardDto.getEmpathyCount())
+      .viewCount(boardDto.getViewCount() != null ? boardDto.getViewCount() : 0L)
+      .autonomousDistrict(boardDto.getAutonomousDistrict())
+      .administrativeDistrict(boardDto.getAdministrativeDistrict())
+      .createdDate(LocalDateTime.now())
+      .modifiedDate(LocalDateTime.now())
+      .build();
+
+    Board savedBoard = boardRepository.save(board);
+    return toDTO(savedBoard);
+  }
+
+  /** 게시글 단건 조회 **/
+  @Transactional(readOnly = true)
+  public BoardDto getBoardById(Long id) {
+    Board board = boardRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+    return toDTO(board);
+  }
+
+  /** 게시글 수정 **/
+  @Transactional
+  public BoardDto updateBoard(Long id, Long userId, BoardDto boardDto) {
+    Board board = boardRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+    if (!board.getUserId().equals(userId)) {
+      throw new IllegalArgumentException("수정 권한이 없습니다.");
+    }
+
+    board.setTitle(boardDto.getTitle());
+    board.setContent(boardDto.getContent());
+    board.setEmotionalScore(boardDto.getEmotionalScore());
+    board.setEmpathyCount(boardDto.getEmpathyCount());
+    board.setViewCount(boardDto.getViewCount());
+    board.setAutonomousDistrict(boardDto.getAutonomousDistrict());
+    board.setAdministrativeDistrict(boardDto.getAdministrativeDistrict());
+    board.setModifiedDate(LocalDateTime.now());
+
+    Board updatedBoard = boardRepository.save(board);
+    return toDTO(updatedBoard);
+  }
+
+  /** 게시글 삭제 **/
+  @Transactional
+  public void deleteBoard(Long id, Long userId) {
+    Board board = boardRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다."));
+
+    if (!board.getUserId().equals(userId)) {
+      throw new IllegalArgumentException("삭제 권한이 없습니다.");
+    }
+
+    boardRepository.delete(board);
+  }
+
+  /** 게시글 페이징 목록 조회 **/
+  @Transactional(readOnly = true)
+  public Page<BoardDto> getBoards(int page, int size) {
+    return boardRepository.findAllPaging(PageRequest.of(page, size));
+  }
+
+  /** Entity → DTO 변환 **/
+  private BoardDto toDTO(Board board) {
+    return BoardDto.builder()
+      .boardId(board.getId()) // 수정된 부분
+      .userId(board.getUserId())
+      .nickname(board.getNickname())
+      .title(board.getTitle())
+      .content(board.getContent())
+      .emotionalScore(board.getEmotionalScore())
+      .empathyCount(board.getEmpathyCount())
+      .viewCount(board.getViewCount())
+      .autonomousDistrict(board.getAutonomousDistrict())
+      .administrativeDistrict(board.getAdministrativeDistrict())
+      .createdDate(board.getCreatedDate())
+      .modifiedDate(board.getModifiedDate())
+      .build();
+  }
+}
