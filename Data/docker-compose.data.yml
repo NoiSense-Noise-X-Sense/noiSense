@@ -11,6 +11,7 @@ services:
       POSTGRES_PASSWORD: 1234
     volumes:
       - ./volumes/postgresql-data:/var/lib/postgresql/data #내가 지정한 경로
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
 #      interval: 10s
@@ -20,6 +21,18 @@ services:
       - prod_server
     restart: unless-stopped
 
+#  Flyway는 "작업 실행 후 종료되는 일회성 컨테이너"라서 바로 꺼지는 게 정상
+  flyway:
+    image: flyway/flyway:10
+    container_name: flyway_noise
+    depends_on:
+      - database
+    command: migrate
+    volumes:
+      - ./flyway/sql:/flyway/sql
+      - ./flyway/conf:/flyway/conf
+    networks:
+      - prod_server
 
   redis:
     container_name: redis_noise
