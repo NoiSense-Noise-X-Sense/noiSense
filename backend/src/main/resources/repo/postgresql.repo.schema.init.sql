@@ -157,3 +157,9 @@ ALTER TABLE "auth" ADD CONSTRAINT "FK_users_TO_auth_1" FOREIGN KEY (
                       "user_id"
     );
 
+select count(*) from Sensor_data;
+
+delete from Sensor_data;
+
+commit;
+

@@ -1,4 +1,4 @@
-package com.dosion.noisense.common.dto;
+package com.dosion.noisense.web.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SensorDataApiDTO {
-
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd_HH:mm:ss")
   @JsonProperty("SENSING_TIME")
@@ -57,6 +56,9 @@ public class SensorDataApiDTO {
 
   @JsonProperty("MIN_HUMI")
   private Double minHumi;
+
+
+
 
 
 }

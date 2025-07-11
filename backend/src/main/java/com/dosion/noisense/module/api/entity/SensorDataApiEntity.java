@@ -1,8 +1,9 @@
-package com.dosion.noisense.common.entity;
+package com.dosion.noisense.module.api.entity;
 
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.time.LocalDateTime;
 
@@ -20,9 +21,9 @@ public class SensorDataApiEntity {
     name = "sensor_data_seq",
     sequenceName = "sensor_data_seq",
     initialValue = 1,
-    allocationSize = 200
+    allocationSize = 500
   )
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sensor_data_seq")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "sensor_data_id")
   private Long id;
 
