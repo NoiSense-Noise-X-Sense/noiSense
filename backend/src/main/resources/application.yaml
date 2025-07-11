@@ -21,4 +21,6 @@ spring:
 #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
-
+api:
+  seoul:
+    key: "777050586b776b64353266596d5643"
