@@ -20,6 +20,15 @@ services:
       - prod_server
     restart: unless-stopped
 
+  flyway:
+    image: flyway/flyway:10
+    container_name: flyway
+    depends_on:
+      - postgresDB_noise
+    command: migrate
+    volumes:
+      - ./flyway/sql:/flyway/sql
+      - ./flyway/conf:/flyway/conf
 
   redis:
     container_name: redis_noise
