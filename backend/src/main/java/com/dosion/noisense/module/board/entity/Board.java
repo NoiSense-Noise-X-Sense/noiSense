@@ -59,4 +59,8 @@ public class Board {
 
   @Column(name = "modified_date")
   private LocalDateTime modifiedDate;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<com.dosion.noisense.module.comment.entity.Comment> comments = new ArrayList<>();
 }
