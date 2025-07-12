@@ -1,6 +1,9 @@
 package com.dosion.noisense.module.api.config;
 
 
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -8,6 +11,8 @@ import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+
 import reactor.netty.http.client.HttpClient;
 
 @Configuration
@@ -25,8 +30,16 @@ public class WebClientConfig {
 
     // 타임아웃 설정을 위한 HttpClient
     HttpClient httpClient = HttpClient.create()
-      .responseTimeout(Duration.ofSeconds(10)) // 응답 타임아웃
-      .responseTimeout(Duration.ofSeconds(10)); // 연결 타임아웃
+      // 연결에 소요되는 최대 시간 (5초)
+      .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+
+      // 전체 응답을 받는 데까지 걸리는 최대 시간 (60초)
+      .responseTimeout(Duration.ofSeconds(60))
+      .doOnConnected(conn -> conn
+        // 각 데이터 조각을 읽는 사이의 최대 시간 (60초)
+        .addHandlerLast(new ReadTimeoutHandler(60, TimeUnit.SECONDS))
+        // 쓰기 작업의 최대 시간 (60초)
+        .addHandlerLast(new WriteTimeoutHandler(60, TimeUnit.SECONDS)));
 
     return WebClient.builder()
       .exchangeStrategies(exchangeStrategies)

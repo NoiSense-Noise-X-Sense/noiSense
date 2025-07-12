@@ -28,3 +28,11 @@
 commit;
 
 select * from autonomous_district;
+
+select * from sensor_data;
+
+select count(*) from sensor_data;
+
+delete from sensor_data;
+
+commit;
