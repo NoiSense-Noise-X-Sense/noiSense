@@ -11,79 +11,88 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class SensorDataApiService {
 
   private final SensorDataApiReader sensorDataApiReader;
   private final AutonomousDistrictRepository autonomousDistrictRepository;
   private final SensorDataRepository sensorDataRepository;
+  private final Executor batchTaskExecutor;
   private final ObjectMapper objectMapper;
   private static final int CHUNK_SIZE = 1000;
 
   // 최초 실행 작업이 진행 중인지 여부를 나타내는 플래그
   private final AtomicBoolean isInitialLoadRunning = new AtomicBoolean(false);
 
+  public SensorDataApiService(
+    SensorDataApiReader sensorDataApiReader,
+    AutonomousDistrictRepository autonomousDistrictRepository,
+    SensorDataRepository sensorDataRepository,
+    ObjectMapper objectMapper,
+    @Qualifier("batchTaskExecutor") Executor batchTaskExecutor // "batchTaskExecutor" 이름을 가진 Bean을 주입
+  ) {
+    this.sensorDataApiReader = sensorDataApiReader;
+    this.autonomousDistrictRepository = autonomousDistrictRepository;
+    this.sensorDataRepository = sensorDataRepository;
+    this.objectMapper = objectMapper;
+    this.batchTaskExecutor = batchTaskExecutor;
+  }
+
+
   // API 호출로 직접 최초 실행 -> 최초에만 모든 데이터 가져올 수 있게
-  // 비동기 사용으로 더 빠르게
+  // 비동기 사용으로 더 빠르게 + 병렬 처리 -> api 호출 더 빠르게
   @Async
-  @Transactional
   public void fetchAllHistoricalData() {
-
-    log.info("S-DoT 전체 데이터 일괄 수집 작업을 시작합니다 (자치구 구분 없음).");
-
     if (isInitialLoadRunning.getAndSet(true)) {
-      log.warn("이미 최초 데이터 수집 작업이 진행 중입니다. 새로운 요청을 무시합니다.");
+      log.warn("이미 최초 데이터 수집 작업이 진행 중입니다.");
       return;
     }
 
-    int totalCount;
     try {
-      totalCount = sensorDataApiReader.getTotalCount();
-      if (totalCount == 0) {
-        log.warn("API에서 가져올 데이터가 없습니다. 작업을 종료합니다.");
+      log.info("S-DoT 전체 데이터 병렬 수집 작업을 시작합니다.");
+      int totalCount = sensorDataApiReader.getTotalCount();
+      if (totalCount <= 0) {
+        log.warn("API에서 가져올 데이터가 없습니다.");
         return;
       }
-      log.info("API로부터 총 {}건의 데이터를 수집합니다.", totalCount);
-    } catch (Exception e) {
-      log.error("API에서 전체 데이터 건수를 가져오는 데 실패했습니다. 작업을 중단합니다.", e);
-      return;
-    }
 
-    // 전체 건수를 기준으로 CHUNK_SIZE 만큼 페이지네이션 수행
-    for (int startIndex = 1; startIndex <= totalCount; startIndex += CHUNK_SIZE) {
-      int endIndex = startIndex + CHUNK_SIZE - 1;
-      log.info("데이터 수집 중... ({} ~ {})", startIndex, endIndex);
-      try {
-        // 자치구 이름(null)으로 API를 호출하여 전체 데이터를 가져옵니다.
-        String jsonResponse = sensorDataApiReader.callApiForDistrict(null, startIndex, endIndex).block();
-        List<SensorDataApiDTO> dtoList = parseResponse(jsonResponse);
+      List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        if (dtoList.isEmpty()) {
-          log.warn("해당 페이지({} ~ {})에 데이터가 없습니다. 다음 페이지로 넘어갑니다.", startIndex, endIndex);
-          continue;
-        }
+      for (int startIndex = 1; startIndex <= totalCount; startIndex += CHUNK_SIZE) {
+        final int start = startIndex;
+        final int end = startIndex + CHUNK_SIZE - 1;
 
-        // saveNewData의 로그 출력을 위해 "전체 일괄"이라는 가상 이름을 전달
-        saveNewData(dtoList, "전체 일괄");
+        // 주입받은 batchTaskExecutor 필드를 사용
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+          processPage(start, end);
+        }, this.batchTaskExecutor);
 
-      } catch (Exception e) {
-        log.error("데이터 페이지({} ~ {}) 처리 중 오류 발생. 해당 페이지를 건너뛰고 계속합니다.", startIndex, endIndex, e);
+        futures.add(future);
       }
+
+      CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+      log.info("S-DoT 전체 데이터 병렬 수집 작업이 성공적으로 완료되었습니다.");
+
+    } finally {
+      isInitialLoadRunning.set(false);
+      log.info("최초 데이터 수집 작업 절차가 모두 종료되었습니다.");
     }
-    log.info("S-DoT 전체 데이터 일괄 수집 작업이 성공적으로 완료되었습니다.");
   }
 
   // 주기적으로 가져올 자치구 별 데이터
@@ -109,6 +118,21 @@ public class SensorDataApiService {
       }
     }
     log.info("정기적인 S-DoT 최신 데이터 수집이 완료되었습니다.");
+  }
+
+  @Transactional
+  public void processPage(int startIndex, int endIndex) {
+    try {
+      log.info("데이터 수집 중... ({} ~ {}) [Thread: {}]", startIndex, endIndex, Thread.currentThread().getName());
+      String jsonResponse = sensorDataApiReader.callApiForDistrict(null, startIndex, endIndex).block();
+      List<SensorDataApiDTO> dtoList = parseResponse(jsonResponse);
+
+      if (!dtoList.isEmpty()) {
+        saveNewData(dtoList, "전체 일괄");
+      }
+    } catch (Exception e) {
+      log.error("데이터 페이지({} ~ {}) 처리 중 오류 발생. 해당 페이지를 건너뜁니다.", startIndex, endIndex, e);
+    }
   }
 
 
