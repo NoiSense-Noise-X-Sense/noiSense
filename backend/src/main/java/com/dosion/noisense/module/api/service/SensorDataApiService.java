@@ -153,9 +153,15 @@ public class SensorDataApiService {
     }
   }
 
-  private void saveNewData(List<SensorDataApiDTO> dtoList, String districtNameKo) {
+  private void saveNewData(List<SensorDataApiDTO> dtoList, String sourceName) {
+    if (dtoList == null || dtoList.isEmpty()) {
+      return;
+    }
+
     LocalDateTime minTime = dtoList.stream().map(SensorDataApiDTO::getSensingTime).min(LocalDateTime::compareTo).orElseThrow();
     LocalDateTime maxTime = dtoList.stream().map(SensorDataApiDTO::getSensingTime).max(LocalDateTime::compareTo).orElseThrow();
+
+    // 중복 데이터 확인
     Set<String> existingKeys = sensorDataRepository.findExistingKeys(minTime, maxTime);
 
     List<SensorDataApiEntity> newEntitiesToSave = dtoList.stream()
@@ -164,11 +170,14 @@ public class SensorDataApiService {
       .collect(Collectors.toList());
 
     if (!newEntitiesToSave.isEmpty()) {
-      sensorDataRepository.saveAll(newEntitiesToSave);
-      log.info("[{}] 새로운 데이터 {}건을 저장했습니다. (중복 {}건 제외)",
-        districtNameKo, newEntitiesToSave.size(), dtoList.size() - newEntitiesToSave.size());
+
+      // bulkInsert 사용
+      sensorDataRepository.bulkInsert(newEntitiesToSave);
+
+      log.info("[{}] 새로운 데이터 {}건을 Bulk Insert로 저장했습니다. (중복 {}건 제외)",
+        sourceName, newEntitiesToSave.size(), dtoList.size() - newEntitiesToSave.size());
     } else {
-      log.info("[{}] 새롭게 추가할 데이터가 없습니다. (중복 {}건 처리됨)", districtNameKo, dtoList.size());
+      log.info("[{}] 새롭게 추가할 데이터가 없습니다. (중복 {}건 처리됨)", sourceName, dtoList.size());
     }
   }
 
@@ -191,10 +200,13 @@ public class SensorDataApiService {
   }
 
   private List<SensorDataApiDTO> parseResponse(String jsonResponse) throws Exception {
+
     if (jsonResponse == null || jsonResponse.isEmpty()) return List.of();
     JsonNode rootNode = objectMapper.readTree(jsonResponse);
     JsonNode rowNode = rootNode.path("IotVdata017").path("row");
     if (rowNode.isMissingNode() || !rowNode.isArray()) return List.of();
     return objectMapper.convertValue(rowNode, new TypeReference<>() {});
+
   }
+
 }
