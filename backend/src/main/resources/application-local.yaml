@@ -25,6 +25,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
+  # batch
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: true
+
 # 로깅
 logging:
   level:
