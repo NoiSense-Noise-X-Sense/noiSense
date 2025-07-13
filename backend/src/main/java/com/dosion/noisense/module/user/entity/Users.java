@@ -44,11 +44,11 @@ public class Users  extends BaseEntity {
 
   @Comment("자치구")
   @Column
-  private String autonomous_district;
+  private String autonomousDistrict;
 
   @Comment("행정동")
   @Column
-  private String administrative_district;
+  private String administrativeDistrict;
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Auth auth;

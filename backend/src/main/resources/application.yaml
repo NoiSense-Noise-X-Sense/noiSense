@@ -17,8 +17,8 @@ spring:
 
   # Jackson Lib
   jackson:
-    property-naming-strategy: SNAKE_CASE
-    date-format: yyyy-MM-dd'T'HH:mm:ss
+#    property-naming-strategy: SNAKE_CASE
+#    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
 
