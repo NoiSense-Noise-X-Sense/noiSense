@@ -6,7 +6,6 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -19,9 +18,6 @@ public class HourlyNoiseJobScheduler {
   private final Job hourlyNoiseJob; // 실행할 Job 정의 (NoiSenseJobConfig 에서 등록됨)
   private final JobLauncher jobLauncher;
 
-  // 매시간 정각마다 실행됨 (ex: 00:00, 01:00, 02:00..)
-  @Scheduled(cron = "0 0 * * * *")
-  //@Scheduled(cron = "0 * * * * *") // 매 1분마다 실행 (테스트용)
 
   public void run() {
     try{

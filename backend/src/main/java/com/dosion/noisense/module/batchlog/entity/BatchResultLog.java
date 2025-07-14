@@ -15,6 +15,7 @@ public class BatchResultLog {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "batch_result_log_id")
   private Long id;
 
   @Column(name = "job_name", nullable = false)
