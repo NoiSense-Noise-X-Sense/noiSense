@@ -271,7 +271,7 @@ CREATE TABLE batch_result_log (
                                 id BIGSERIAL PRIMARY KEY,
                                 job_name VARCHAR(100) NOT NULL,
                                 message TEXT,
-                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                                created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 🎯 8. 시퀀스

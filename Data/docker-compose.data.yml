@@ -11,25 +11,15 @@ services:
       POSTGRES_PASSWORD: 1234
     volumes:
       - ./volumes/postgresql-data:/var/lib/postgresql/data #내가 지정한 경로
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
+    #    healthcheck:
+    #      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+    #      interval: 10s
+    #      timeout: 5s
+    #      retries: 5
     networks:
       - prod_server
     restart: unless-stopped
 
-  flyway:
-    image: flyway/flyway:10
-    container_name: flyway
-    depends_on:
-      - postgresDB_noise
-    command: migrate
-    volumes:
-      - ./flyway/sql:/flyway/sql
-      - ./flyway/conf:/flyway/conf
 
   redis:
     container_name: redis_noise
