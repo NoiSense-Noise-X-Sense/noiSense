@@ -5,7 +5,8 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL:localhost}:${SPRING_DATASOURCE_PORT:5432}/noisense
+    # batch하려면 reWriteBatchedInserts=true 필요하다고 함
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL:localhost}:${SPRING_DATASOURCE_PORT:5432}/noisense?reWriteBatchedInserts=true
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
@@ -21,9 +22,16 @@ spring:
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         format_sql: true
-        show_sql: true
+#        show_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+        # batch size
+        jdbc:
+          batch_size: 500
+        # insert 쿼리를 정렬하여 성능 최적화
+        order_inserts: true
+        order_updates: true
+
+
 
 # 로깅
 logging:
