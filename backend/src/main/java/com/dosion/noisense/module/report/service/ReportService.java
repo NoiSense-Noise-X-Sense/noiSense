@@ -1,19 +1,17 @@
 package com.dosion.noisense.module.report.service;
 
 import com.dosion.noisense.module.report.repository.ReportRepository;
-import com.dosion.noisense.web.report.dto.ComparisonChartDto;
-import com.dosion.noisense.web.report.dto.OverallChartDto;
-import com.dosion.noisense.web.report.dto.TotalChartDto;
-import com.dosion.noisense.web.report.dto.TrendPointChartDto;
+import com.dosion.noisense.web.report.dto.*;
+import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.StringPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
 
 @Service
 @Slf4j
@@ -39,42 +37,75 @@ public class ReportService {
         요일 별 Top 3/Bottom 3 소음 지역 그래프 ->  x축 스트링(요일)
     */
 
-  // test 과정에서 TotalChartDto로 설정함. 수정 필요
-  public TotalChartDto getReport(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict){
+  public ReportDto getReport(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict) {
     log.info("getReport");
 
     // 데이터 목록들 요청
 
-    // 시끄러운, 조용한 지역 top3 데이터 요청
-    // 결과값에 따라서 구 또는 동 add
-    // 메서드가 없어서 임의로 넣음
-    List<String> trendPointRegionList = new ArrayList<>(); // 필터할 구
-    trendPointRegionList.add("강남구");
-    trendPointRegionList.add("강동구");
+    // 지역 평균 소음
+    Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, autonomousDistrict);
+
+    // 최다 소음 행정동
+    // 최다 소음 발생 시간대
+    Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, autonomousDistrict);
+    String maxNoiseRegion = null;
+    String maxNoiseTime = null;
+    if(maxDataByAutonomousDistrict != null){
+      StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
+      maxNoiseRegion = maxDataByAutonomousDistrict.get(region);
+      maxNoiseTime = getMaxTimeSlot(maxDataByAutonomousDistrict.get(sensorData.sensingTime.hour()));
+    }
+
+    /*
+    시끄러운 지역(Top 3) -> String, Double
+    조용한 지역(Top3) -> String, Double
+    소음 편차가 큰 지역(Top3) -> String, Double
+    */
+    List<RankDto> topRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrict, "top", 3);
+    List<RankDto> bottomRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrict, "bottom", 3);
+    List<DeviationDto> deviationRankDtoList = reportRepository.getDeviationRankByRegion(startDate, endDate, autonomousDistrict, "top", 3);
+
 
     // 차트 데이터 요청
-    TotalChartDto totalChartDto = getChartData(startDate, endDate, trendPointRegionList, autonomousDistrict);
+    Set<String> trendPointRegionList = new HashSet<>();
+    for (RankDto rankDto : topRankDtoList) {
+      trendPointRegionList.add(rankDto.getRegion());
+    }
+    for (RankDto rankDto : bottomRankDtoList) {
+      trendPointRegionList.add(rankDto.getRegion());
+    }
 
-    return totalChartDto;
+    TotalChartDto totalChartDto = getChartData(startDate, endDate, new ArrayList<>(trendPointRegionList), autonomousDistrict);
+
+    return ReportDto.builder()
+      .avgNoise(avgNoise)
+      .maxNoiseRegion(maxNoiseRegion)
+      .maxNoiseTime(maxNoiseTime)
+      .topRankDtoList(topRankDtoList)
+      .bottomRankDtoList(bottomRankDtoList)
+      .deviationRankDtoList(deviationRankDtoList)
+      .totalChartDto(totalChartDto)
+      .build();
   }
 
 
   // 차트 데이터 가져오기
-  private TotalChartDto getChartData(LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomousDistrict){
+  private TotalChartDto getChartData(LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomousDistrict) {
 
-    String autonomous = autonomousDistrict.equals("all") ? null : autonomousDistrict;
+    //레포지토리 넘기기 전에 행정구 및 행정동 영어로 변환 필요
+   // String autonomous = autonomousDistrict.equals("all") ? null : autonomousDistrict;
 
     // 1. 시간대 별 평균 소음
-    List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomous);
+    List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomousDistrict);
     // 2. 일 별 평균 소음
-    List<OverallChartDto> overallDayAvgNoiseData = reportRepository.getOverallAvgData("dayOfMonth", startDate, endDate, autonomous);
+    List<OverallChartDto> overallDayAvgNoiseData = reportRepository.getOverallAvgData("dayOfMonth", startDate, endDate, autonomousDistrict);
     // autonomous 가 null 이면 행정구 조건 없이 데이터를 가져온다
 
     // 시끄럽고 조용한 지역 비교
     // 3. 시간대별
-    List<ComparisonChartDto> TrendPointHourAvgNoiseData = reportRepository.getTrendPointAvgData("hour", startDate, endDate, trendPointRegionList, autonomous);
+    List<ComparisonChartDto> TrendPointHourAvgNoiseData = reportRepository.getTrendPointAvgData("hour", startDate, endDate, trendPointRegionList, autonomousDistrict);
     // 4. 요일별
-    List<ComparisonChartDto> TrendPointDayOfWeekAvgNoiseData = reportRepository.getTrendPointAvgData("dayOfWeek", startDate, endDate, trendPointRegionList, autonomous);
+    List<ComparisonChartDto> TrendPointDayOfWeekAvgNoiseData = reportRepository.getTrendPointAvgData("dayOfWeek", startDate, endDate, trendPointRegionList, autonomousDistrict);
 
     return TotalChartDto.builder()
       .overallHourAvgNoiseData(overallHourAvgNoiseData)
@@ -85,8 +116,8 @@ public class ReportService {
   }
 
 
-  // DTO 변환해주는 작업
-  private List<TrendPointChartDto> transformToTrendPoint(List<ComparisonChartDto> comparisonChartDtoList){
+  // ComparsionChartDto로 가져온 데이터를 X축 기준으로 묶어서 변환
+  private List<TrendPointChartDto> transformToTrendPoint(List<ComparisonChartDto> comparisonChartDtoList) {
 
     List<TrendPointChartDto> result = new ArrayList<>();
 
@@ -111,6 +142,21 @@ public class ReportService {
     }
 
     return result;
+  }
+
+  // 최대 소음 발생 시간대
+  private String getMaxTimeSlot(Integer hour) {
+    if (hour < 0 || hour > 23) {
+      throw new IllegalArgumentException("Hour must be between 0 and 23");
+    }
+    // 3시간 단위로 시간대의 시작 시간을 계산
+    // 예: hour가 7, 8이면 -> (7 or 8 / 3) * 3 = 2 * 3 = 6
+    //     hour가 14이면 -> (14 / 3) * 3 = 4 * 3 = 12
+    int startHour = (hour / 3) * 3;
+    int endHour = startHour + 3;
+
+    // String.format을 사용해 "06:00 ~ 09:00" 같은 형식으로 만듦
+    return String.format("%02d:00 ~ %02d:00", startHour, endHour);
   }
 
 }

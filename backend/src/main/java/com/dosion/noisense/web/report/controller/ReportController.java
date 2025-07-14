@@ -2,9 +2,13 @@ package com.dosion.noisense.web.report.controller;
 
 
 import com.dosion.noisense.module.report.service.ReportService;
+import com.dosion.noisense.web.dashboard.dto.RegionNoiseDto;
+import com.dosion.noisense.web.report.dto.ReportDto;
 import com.dosion.noisense.web.report.dto.TotalChartDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -28,10 +32,10 @@ public class ReportController {
   @ApiResponse(
     responseCode = "200",
     description = "성공"
-//    content = @Content(schema = @Schema(implementation = RegionNoiseDto.class))
+    //content = @Content(schema = @Schema(implementation = ReportDto.class))
   )
-  @GetMapping("/test")
-  public ResponseEntity<TotalChartDto> getReport( // @Parameter example : swagger 기본값 설정
+  @GetMapping("/getReport")
+  public ResponseEntity<ReportDto> getReport( // @Parameter example : swagger 기본값 설정
     @Parameter(example = "2025-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate
     , @Parameter(example = "2025-06-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate
     , @Parameter(example = "all") String autonomousDistrict){

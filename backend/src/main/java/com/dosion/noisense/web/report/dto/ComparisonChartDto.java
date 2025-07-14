@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@Schema(description = "전체 평균 소음 데이터 DTO / 꺽은선그래프용")
+@Schema(description = "소음 차트 데이터 DTO / 지역 데이터 있는 꺽은선 그래프")
 public class ComparisonChartDto {
 
   @Schema(description = "x축 / 시간, 일자, 요일 등")
