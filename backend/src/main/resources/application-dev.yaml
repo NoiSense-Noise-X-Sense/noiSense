@@ -10,6 +10,12 @@ spring:
     password: dev_pw
 
 
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+
   # JPA
   jpa:
     open-in-view: false
