@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -40,6 +41,9 @@ public class SensorDataApiService {
   // 최초 실행 작업이 진행 중인지 여부를 나타내는 플래그
   private final AtomicBoolean isInitialLoadRunning = new AtomicBoolean(false);
 
+  // API에서 불러오는 날짜와 포맷 맞춰주기
+  static final DateTimeFormatter KEY_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss");
+  
   public SensorDataApiService(
     SensorDataApiReader sensorDataApiReader,
     AutonomousDistrictRepository autonomousDistrictRepository,
