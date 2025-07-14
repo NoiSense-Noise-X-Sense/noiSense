@@ -27,7 +27,6 @@ public interface ReportRepositoryCustom {
   Tuple getMaxDataByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict);
 
 
-
   /*
     해당 지역의 평균 소음 랭크 조회
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
@@ -55,7 +54,6 @@ public interface ReportRepositoryCustom {
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
   List<OverallChartDto> getOverallAvgData(String type, LocalDateTime startDate, LocalDateTime endDate, String autonomous);
-
 
 
   /*

@@ -50,7 +50,7 @@ public class ReportService {
     Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, autonomousDistrict);
     String maxNoiseRegion = null;
     String maxNoiseTime = null;
-    if(maxDataByAutonomousDistrict != null){
+    if (maxDataByAutonomousDistrict != null) {
       StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
       maxNoiseRegion = maxDataByAutonomousDistrict.get(region);
       maxNoiseTime = getMaxTimeSlot(maxDataByAutonomousDistrict.get(sensorData.sensingTime.hour()));
@@ -93,7 +93,7 @@ public class ReportService {
   private TotalChartDto getChartData(LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomousDistrict) {
 
     //레포지토리 넘기기 전에 행정구 및 행정동 영어로 변환 필요
-   // String autonomous = autonomousDistrict.equals("all") ? null : autonomousDistrict;
+    // String autonomous = autonomousDistrict.equals("all") ? null : autonomousDistrict;
 
     // 1. 시간대 별 평균 소음
     List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomousDistrict);

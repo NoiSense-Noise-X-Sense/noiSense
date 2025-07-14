@@ -39,19 +39,18 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   public Tuple getMaxDataByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict) {
     StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
     return jpaQueryFactory
-            .select(
-                    region
-                    ,sensorData.sensingTime.hour()
-            )
-            .from(sensorData)
-            .where(
-                    betweenDate(startDate, endDate)
-                    , eqAutonomous(autonomousDistrict))
-            .orderBy(sensorData.maxNoise.desc())
-            .limit(1)
-            .fetchOne();
+      .select(
+        region
+        , sensorData.sensingTime.hour()
+      )
+      .from(sensorData)
+      .where(
+        betweenDate(startDate, endDate)
+        , eqAutonomous(autonomousDistrict))
+      .orderBy(sensorData.maxNoise.desc())
+      .limit(1)
+      .fetchOne();
   }
-
 
 
   @Override
