@@ -14,9 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Comment;
 
-@AllArgsConstructor // 모든 생성자
-@NoArgsConstructor // 기본생성자 자동생성
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -24,6 +25,8 @@ public class Auth extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "Auth_ID")
+  @Comment("회원 아이디")
   private Long id;
 
   @Column(nullable = false)
@@ -38,6 +41,24 @@ public class Auth extends BaseEntity {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name="user_id", nullable = false)
   private Users user;
+
+  public Auth(Users user, String refreshToken, String accessToken, String tokenType) {
+    this.user = user;
+    this.refreshToken = refreshToken;
+    this.accessToken = accessToken;
+    this.tokenType = tokenType;
+  }
+
+  // updateAccessToken 메서드 추가
+  //토큰값을 업데이트 해주는 메서드
+  public void updateAccessToken(String newAccessToken) {
+    this.accessToken = newAccessToken;
+  }
+
+  // updateRefreshToken 메서드 추가
+  public void updateRefreshToken(String newRefreshToken) {
+    this.refreshToken = newRefreshToken;
+  }
 
 
 }

@@ -16,7 +16,7 @@ public class UserService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void add(UserDto userDto) {
+  public UserDto add(UserDto userDto) {
     log.info("회원가입 UserNm : {}", userDto.getUserNm());
     log.info("회원가입 Nickname : {}", userDto.getNickname());
 
@@ -31,5 +31,25 @@ public class UserService {
     user.setAdministrativeDistrict(userDto.getAdministrativeDistrict());
 
      userRepository.save(user);
+     userDto.setId(user.getId());
+     return userDto;
   }
+
+
+
+  @Transactional
+  public UserDto getUserInfo(Long id){
+    Users user = userRepository.findById(id)
+      .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다. "));
+
+    UserDto dto = new UserDto();
+    dto.setId(user.getId());
+    dto.setUserNm(user.getUserNm());
+    dto.setNickname(user.getNickname());
+    dto.setEmail(user.getEmail());
+
+    return dto;
+  }
+
+
 }
