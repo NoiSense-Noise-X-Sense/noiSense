@@ -1,5 +1,7 @@
 package com.dosion.noisense.module.board.service;
 
+import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
+import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.entity.BoardEmpathy;
 import com.dosion.noisense.module.board.repository.BoardEmpathyRepository;
 import com.dosion.noisense.web.board.dto.BoardDto;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
@@ -20,7 +23,7 @@ public class BoardService {
 
   private final BoardRepository boardRepository;
   private final BoardEmpathyRepository boardEmpathyRepository;
-
+  private final BoardEsService boardEsService;
 
   /** 게시글 작성 **/
   @Transactional
@@ -40,7 +43,22 @@ public class BoardService {
       .build();
 
     Board savedBoard = boardRepository.save(board);
-    return toDTO(savedBoard);
+    BoardDto resultDto = toDTO(savedBoard);
+
+    //Elasticsearch 저장
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    boardEsService.save(BoardEsDocument.builder()
+      .id(String.valueOf(savedBoard.getId()))
+      .title(savedBoard.getTitle())
+      .content(savedBoard.getContent())
+      .username(savedBoard.getNickname())
+      .userId(savedBoard.getUserId())
+      .created_date(savedBoard.getCreatedDate().format(formatter))
+      .updated_date(savedBoard.getModifiedDate().format(formatter))
+      .view_count(savedBoard.getViewCount())
+      .build());
+
+    return resultDto;
   }
 
   /** 게시글 상세 조회 및 조회수 증가 **/
@@ -54,10 +72,22 @@ public class BoardService {
     board.setModifiedDate(LocalDateTime.now());
 
     Board updatedBoard = boardRepository.save(board);
+    BoardDto resultDto = toDTO(updatedBoard);
 
-    // ES 조회수 동기화는 추후 Elasticsearch 연동 시 별도로 처리
+    // ElasticSearch 조회수 증가
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    boardEsService.save(BoardEsDocument.builder()
+      .id(String.valueOf(updatedBoard.getId()))
+      .title(updatedBoard.getTitle())
+      .content(updatedBoard.getContent())
+      .username(updatedBoard.getNickname())
+      .userId(updatedBoard.getUserId())
+      .created_date(updatedBoard.getCreatedDate().format(formatter))
+      .updated_date(updatedBoard.getModifiedDate().format(formatter))
+      .view_count(updatedBoard.getViewCount())
+      .build());
 
-    return toDTO(updatedBoard);
+    return resultDto;
   }
 
   /** 게시글 수정 **/
@@ -129,7 +159,7 @@ public class BoardService {
   /** Entity → DTO 변환 **/
   private BoardDto toDTO(Board board) {
     return BoardDto.builder()
-      .boardId(board.getId()) // 수정된 부분
+      .boardId(board.getId())
       .userId(board.getUserId())
       .nickname(board.getNickname())
       .title(board.getTitle())

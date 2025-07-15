@@ -13,7 +13,9 @@ spring:
 
   docker:
     compose:
-      file: ../Data/docker-compose.data.yml
+      file:
+      - ../Data/docker-compose.data.yml
+      - ../monitoring/docker-compose.monitoring.yml
 
   # Jackson Lib
   jackson:
@@ -21,4 +23,6 @@ spring:
 #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
+  elasticsearch:
+    uris: http://localhost:9200
 

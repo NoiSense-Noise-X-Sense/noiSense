@@ -1,7 +1,9 @@
 package com.dosion.noisense.web.board.controller;
 
 import com.dosion.noisense.web.board.dto.BoardDto;
+import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.service.BoardService;
+import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
   private final BoardService boardService;
+  private final BoardEsService boardEsService;
 
   /** 게시글 작성 **/
   @PostMapping
@@ -23,6 +26,17 @@ public class BoardController {
     // Security 미구현 상태: userId, nickname을 프론트에서 받아 사용
     BoardDto createdBoard = boardService.createBoard(boardDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
+  }
+
+  /** 통합 검색 **/
+  @GetMapping("/search")
+  public ResponseEntity<Page<BoardEsDocument>> searchBoards(
+    @RequestParam String keyword,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size
+  ) {
+    Page<BoardEsDocument> results = boardEsService.search(keyword, page, size);
+    return ResponseEntity.ok(results);
   }
 
   /** 게시글 상세 조회 **/
@@ -42,7 +56,6 @@ public class BoardController {
     BoardDto updatedBoard = boardService.updateBoard(id, userId, boardDto);
     return ResponseEntity.ok(updatedBoard);
   }
-
 
   /** 게시글 삭제 **/
   @DeleteMapping("/{id}")

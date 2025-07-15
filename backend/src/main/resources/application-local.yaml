@@ -10,6 +10,8 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
 
+  elasticsearch:
+    uris: http://localhost:9200
 
   # JPA
   jpa:

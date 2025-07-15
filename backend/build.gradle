@@ -44,6 +44,9 @@ dependencies {
   implementation 'org.postgresql:postgresql'
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0" //swagger
 
+  implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
+  implementation 'co.elastic.clients:elasticsearch-java:8.11.0' //elasticsearch
+
 
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
