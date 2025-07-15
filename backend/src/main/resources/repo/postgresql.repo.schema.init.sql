@@ -157,9 +157,8 @@ ALTER TABLE "auth" ADD CONSTRAINT "FK_users_TO_auth_1" FOREIGN KEY (
                       "user_id"
     );
 
-select count(*) from Sensor_data;
+ALTER TABLE "sensor_data" ALTER COLUMN "sensing_time" TYPE TIMESTAMP(0);
 
-delete from Sensor_data;
+ALTER TABLE "sensor_data" ALTER COLUMN "batch_time" TYPE TIMESTAMP(0);
 
-commit;
-
+create

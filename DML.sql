@@ -29,10 +29,15 @@ commit;
 
 select * from autonomous_district;
 
+select * from sensor_data where sensing_time between '2025-07-14 00:00:00' and '2025-07-14 23:59:59' ;
+
 select * from sensor_data;
 
 select count(*) from sensor_data;
 
+TRUNCATE TABLE sensor_data RESTART IDENTITY;
+
 delete from sensor_data;
+
 
 commit;

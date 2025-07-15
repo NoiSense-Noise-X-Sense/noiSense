@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 @Getter
 @Setter
@@ -58,7 +60,54 @@ public class SensorDataApiDTO {
   private Double minHumi;
 
 
+  // 중복 데이터 계산을 위한 카운트
+  private int count = 1;
 
+  // 중복 데이터 평균 계산을 위한 메서드
+  private void updateFieldAverage(Function<SensorDataApiDTO, Double> getter,
+                                  BiConsumer<SensorDataApiDTO, Double> setter,
+                                  SensorDataApiDTO other) {
+
+    // 현재 DTO랑 새 DTO
+    Double currentAverageObj = getter.apply(this);
+    Double newValueObj = getter.apply(other);
+
+
+    double currentAverage = (currentAverageObj != null) ? currentAverageObj : 0.0;
+
+    double newValue = (newValueObj != null) ? newValueObj : currentAverage;
+
+
+    // 현재까지의 총합을 계산
+    double currentSum = currentAverage * this.count;
+
+    // 새로운 평균을 계산
+    double newAverage = (currentSum + newValue) / (this.count + 1);
+
+    // 계산된 새로운 평균 저장
+    setter.accept(this, newAverage);
+
+
+  }
+
+  // 중복 데이터 계산 후 저장
+  public void updateAverages(SensorDataApiDTO other) {
+    // updateFieldAverage 메서드 사용해 계산
+    updateFieldAverage(SensorDataApiDTO::getMaxNoise, SensorDataApiDTO::setMaxNoise, other);
+    updateFieldAverage(SensorDataApiDTO::getAvgNoise, SensorDataApiDTO::setAvgNoise, other);
+    updateFieldAverage(SensorDataApiDTO::getMinNoise, SensorDataApiDTO::setMinNoise, other);
+
+    updateFieldAverage(SensorDataApiDTO::getMaxTemp, SensorDataApiDTO::setMaxTemp, other);
+    updateFieldAverage(SensorDataApiDTO::getAvgTemp, SensorDataApiDTO::setAvgTemp, other);
+    updateFieldAverage(SensorDataApiDTO::getMinTemp, SensorDataApiDTO::setMinTemp, other);
+
+    updateFieldAverage(SensorDataApiDTO::getMaxHumi, SensorDataApiDTO::setMaxHumi, other);
+    updateFieldAverage(SensorDataApiDTO::getAvgHumi, SensorDataApiDTO::setAvgHumi, other);
+    updateFieldAverage(SensorDataApiDTO::getMinHumi, SensorDataApiDTO::setMinHumi, other);
+
+    // 계산 끝나면 카운트
+    this.count++;
+  }
 
 
 }
