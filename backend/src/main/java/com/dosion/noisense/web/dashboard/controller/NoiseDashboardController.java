@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
+@Slf4j
 @Tag(name = "Noise-Dashboard-Controller", description = "지역별 소음 대시보드")
 @RestController
 @RequestMapping("/api/dashboard")
@@ -28,6 +30,7 @@ public class NoiseDashboardController {
   @GetMapping("/region")
   public ResponseEntity<List<RegionNoiseDto>> getNoiseByRegion(@RequestParam String region) {
 //    return ResponseEntity.ok(noiseService.getNoiseByRegion());
+    log.info("region : " + region);
     return null;
   }
 }

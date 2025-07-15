@@ -5,10 +5,12 @@ services:
     container_name: postgresDB_noise
     ports:
       - "5432:5432"
+    env_file:
+      - ./.env
     environment:
       POSTGRES_DB: noisense
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     volumes:
       - ./volumes/postgresql-data:/var/lib/postgresql/data #내가 지정한 경로
     #    healthcheck:

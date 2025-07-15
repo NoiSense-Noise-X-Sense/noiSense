@@ -1,10 +1,13 @@
 package com.dosion.noisense.module.user.entity;
 
+import com.dosion.noisense.common.security.core.Role;
 import com.dosion.noisense.module.auth.entity.Auth;
 import com.dosion.noisense.common.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,6 +52,9 @@ public class Users  extends BaseEntity {
   @Comment("행정동")
   @Column
   private String administrativeDistrict;
+
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private Auth auth;
