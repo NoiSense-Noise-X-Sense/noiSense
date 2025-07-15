@@ -251,9 +251,8 @@ ALTER TABLE board_empathy ADD CONSTRAINT fk_users_to_board_empathy_1
     REFERENCES users (user_id)
     ON DELETE CASCADE;
 
-select count(*) from Sensor_data;
+ALTER TABLE "sensor_data" ALTER COLUMN "sensing_time" TYPE TIMESTAMP(0);
 
-delete from Sensor_data;
+ALTER TABLE "sensor_data" ALTER COLUMN "batch_time" TYPE TIMESTAMP(0);
 
-commit;
-
+create

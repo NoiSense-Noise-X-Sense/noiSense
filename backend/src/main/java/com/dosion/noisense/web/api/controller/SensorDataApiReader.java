@@ -33,7 +33,6 @@ public class SensorDataApiReader {
     return 0;
   }
 
-
   // WebClient.Builder와 apiKey를 생성자로 주입
   public SensorDataApiReader(WebClient.Builder webClientBuilder, @Value("${api.seoul.key}") String apiKey) {
     this.webClient = webClientBuilder.baseUrl("http://openapi.seoul.go.kr:8088").build();
@@ -72,9 +71,5 @@ public class SensorDataApiReader {
         })
         .bodyToMono(String.class);
     }
-
-
-
   }
-
 }
