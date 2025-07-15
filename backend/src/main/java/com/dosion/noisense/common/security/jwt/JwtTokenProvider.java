@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-  private final SecretKey secretKey;
+  private final SecretKey jwtSecretKey;
 
   public String generateToken(Authentication authentication, Long expirationMillis) {
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
@@ -36,13 +36,13 @@ public class JwtTokenProvider {
       .setClaims(claims)
       .setIssuedAt(now)
       .setExpiration(expiryDate)
-      .signWith(secretKey, SignatureAlgorithm.HS512)
+      .signWith(jwtSecretKey, SignatureAlgorithm.HS512)
       .compact();
   }
 
   public Long getUserIdFromToken(String token) {
     return Jwts.parserBuilder()
-      .setSigningKey(secretKey)
+      .setSigningKey(jwtSecretKey)
       .build()
       .parseClaimsJws(token)
       .getBody()
@@ -52,7 +52,7 @@ public class JwtTokenProvider {
   public Boolean validateToken(String token) {
     try {
       Jwts.parserBuilder()
-        .setSigningKey(secretKey)
+        .setSigningKey(jwtSecretKey)
         .build()
         .parseClaimsJws(token);
       return true;

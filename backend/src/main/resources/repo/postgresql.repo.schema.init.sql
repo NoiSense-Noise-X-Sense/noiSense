@@ -29,6 +29,7 @@ CREATE TABLE users (
                      user_nm VARCHAR(100),
                      nickname VARCHAR(100),
                      email VARCHAR(100),
+                     role VARCHAR(10),
                      autonomous_district VARCHAR(50),
                      administrative_district VARCHAR(50),
                      created_date TIMESTAMP,
