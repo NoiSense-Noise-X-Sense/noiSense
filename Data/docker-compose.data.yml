@@ -11,7 +11,11 @@ services:
       POSTGRES_PASSWORD: 1234
     volumes:
       - ./volumes/postgresql-data:/var/lib/postgresql/data #내가 지정한 경로
-#    healthcheck:
+      - ./init/00-init.sh:/docker-entrypoint-initdb.d/00-init.sh
+      - ./init/postgresql.repo.schema.init.sql:/tmp/table.sql :ro # 자동 실행 방지 목적으로 /tmp로 복사, 읽기 전용
+      - ./init/autonomous_district.sql:/tmp/autonomous_district.sql:ro
+      - ./init/administrative_district.sql:/tmp/administrative_district.sql:ro
+    #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
 #      interval: 10s
 #      timeout: 5s
