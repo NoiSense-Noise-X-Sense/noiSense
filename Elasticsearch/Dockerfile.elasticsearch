@@ -1,0 +1,7 @@
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+
+# 플러그인 zip 복사 및 설치
+COPY hanhinsam-0.1.zip /usr/share/elasticsearch/plugins/
+RUN cd /usr/share/elasticsearch/plugins && \
+    unzip hanhinsam-0.1.zip -d hanhinsam && \
+    rm hanhinsam-0.1.zip
