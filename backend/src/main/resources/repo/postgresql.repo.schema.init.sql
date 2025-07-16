@@ -160,5 +160,3 @@ ALTER TABLE "auth" ADD CONSTRAINT "FK_users_TO_auth_1" FOREIGN KEY (
 ALTER TABLE "sensor_data" ALTER COLUMN "sensing_time" TYPE TIMESTAMP(0);
 
 ALTER TABLE "sensor_data" ALTER COLUMN "batch_time" TYPE TIMESTAMP(0);
-
-create

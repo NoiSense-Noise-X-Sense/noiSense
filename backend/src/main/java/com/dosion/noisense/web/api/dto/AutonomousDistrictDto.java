@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class AutonomousDistrictDTO {
+public class AutonomousDistrictDto {
 
 
   private String Code;

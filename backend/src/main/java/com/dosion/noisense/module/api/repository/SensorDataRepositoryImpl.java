@@ -55,20 +55,6 @@ public class SensorDataRepositoryImpl implements SensorDataRepositoryCustom {
   }
 
 
-  // 중복데이터 비교 할 떄 사용
-  @Override
-  public Set<String> findExistingKeys(LocalDateTime minTime, LocalDateTime maxTime) {
-    String sql = "SELECT administrative_district || ':' || TO_CHAR(sensing_time, 'YYYY-MM-DD_HH24:MI:SS')" +
-      "FROM sensor_data " +
-      "WHERE sensing_time BETWEEN ? AND ?";
-
-    List<String> keys = jdbcTemplate.queryForList(sql, String.class, minTime, maxTime);
-    return new HashSet<>(keys);
-  }
-
-
-
-
 
 
 

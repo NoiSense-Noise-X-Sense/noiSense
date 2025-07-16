@@ -17,12 +17,6 @@ import java.time.LocalDateTime;
 public class SensorDataApiEntity {
 
   @Id
-//  @SequenceGenerator(
-//    name = "sensor_data_seq",
-//    sequenceName = "sensor_data_seq",
-//    initialValue = 1,
-//    allocationSize = 500
-//  )
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "sensor_data_id")
   private Long id;

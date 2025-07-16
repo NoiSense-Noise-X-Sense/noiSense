@@ -14,7 +14,7 @@ public class SensorDataApiReader {
 
   private final WebClient webClient;
   private final String apiKey;
-  private static final String SERVICE_NAME = "IotVdata017";
+  private @Value("${api.seoul.service-name}")String serviceName;
 
   // 전체 데이터 건수 가져오기
   public int getTotalCount() {
@@ -25,7 +25,7 @@ public class SensorDataApiReader {
       if (responseString != null && !responseString.isEmpty()) {
         JSONObject jsonObject = new JSONObject(responseString);
         // 키가 없는 경우를 대비해 optInt 사용
-        return jsonObject.getJSONObject(SERVICE_NAME).optInt("list_total_count", 0);
+        return jsonObject.getJSONObject(serviceName).optInt("list_total_count", 0);
       }
     } catch (Exception e) {
       log.error("전체 데이터 건수 조회 중 오류 발생", e);
@@ -34,42 +34,37 @@ public class SensorDataApiReader {
   }
 
   // WebClient.Builder와 apiKey를 생성자로 주입
-  public SensorDataApiReader(WebClient.Builder webClientBuilder, @Value("${api.seoul.key}") String apiKey) {
-    this.webClient = webClientBuilder.baseUrl("http://openapi.seoul.go.kr:8088").build();
+  public SensorDataApiReader(WebClient.Builder webClientBuilder, @Value("${api.seoul.key}") String apiKey, @Value("${api.seoul.uri}") String apiUri) {
+    this.webClient = webClientBuilder.baseUrl(apiUri).build();
     this.apiKey = apiKey;
   }
 
   public Mono<String> callApiForDistrict(String districtNameEn, int startIndex, int endIndex) {
 
-    if(districtNameEn == null || districtNameEn.isEmpty()){
-      String path = String.format("/%s/json/%s/%d/%d/", apiKey, SERVICE_NAME, startIndex, endIndex);
+    String path;
+    // SENSING_TIME을 기준으로 내림차순(최신순) 정렬 파라미터를 추가합니다.
+    String sortOrder = "?$order=SENSING_TIME DESC";
 
-      return webClient.get()
-        .uri(path)
-        .retrieve()
-        // API 에러 처리 (4xx, 5xx 등)
-        .onStatus(HttpStatusCode::isError, clientResponse -> {
-          log.error("API 요청 실패: status={}, startIndex={}, endIndex={}",
-            clientResponse.statusCode(), startIndex, endIndex);
-          return clientResponse.bodyToMono(String.class)
-            .flatMap(errorBody -> Mono.error(new RuntimeException("API Call Failed: " + errorBody)));
-        })
-        .bodyToMono(String.class);
-
+    if (districtNameEn == null || districtNameEn.isEmpty()) {
+      // sortOrder -> 내장 정렬 파라미터
+      // 최초 데이터 넣을 때
+      path = String.format("/%s/json/%s/%d/%d", apiKey, serviceName, startIndex, endIndex);
     } else {
-      String path = String.format("/%s/json/%s/%d/%d/%s", apiKey, SERVICE_NAME, startIndex, endIndex, districtNameEn);
-
-      return webClient.get()
-        .uri(path)
-        .retrieve()
-        // API 에러 처리 (4xx, 5xx 등)
-        .onStatus(HttpStatusCode::isError, clientResponse -> {
-          log.error("API 요청 실패: status={}, districtNameEn={}, startIndex={}, endIndex={}",
-            clientResponse.statusCode(), districtNameEn, startIndex, endIndex);
-          return clientResponse.bodyToMono(String.class)
-            .flatMap(errorBody -> Mono.error(new RuntimeException("API Call Failed: " + errorBody)));
-        })
-        .bodyToMono(String.class);
+      // 자치구 필터 뒤에 정렬 파라미터
+      path = String.format("/%s/json/%s/%d/%d/%s%s", apiKey, serviceName, startIndex, endIndex, districtNameEn, sortOrder);
     }
+
+    return webClient.get()
+      .uri(path)
+      .retrieve()
+      // API 에러 처리 (4xx, 5xx 등)
+      .onStatus(HttpStatusCode::isError, clientResponse -> {
+        log.error("API 요청 실패: status={}, startIndex={}, endIndex={}",
+          clientResponse.statusCode(), startIndex, endIndex);
+        return clientResponse.bodyToMono(String.class)
+          .flatMap(errorBody -> Mono.error(new RuntimeException("API Call Failed: " + errorBody)));
+      })
+      .bodyToMono(String.class);
+
   }
 }

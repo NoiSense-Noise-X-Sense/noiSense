@@ -4,6 +4,7 @@ package com.dosion.noisense.module.api.config;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -18,13 +19,15 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
+  private @Value("${api.seoul.uri}") String apiUri;
+
   @Bean
   public WebClient.Builder webClientBuilder() {
 
     // 버퍼 사이즈 늘리기
     ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
       .codecs(configurer ->
-        // 기본 버퍼 사이즈(256KB)를 10MB로 늘립니다.
+        // 기본 버퍼 사이즈(256KB)를 10MB로 늘림
         configurer.defaultCodecs().maxInMemorySize(10 * 1024 * 1024))
       .build();
 
@@ -43,7 +46,7 @@ public class WebClientConfig {
 
     return WebClient.builder()
       .exchangeStrategies(exchangeStrategies)
-      .baseUrl("http://openapi.seoul.go.kr:8088") // 기본 URL 설정
+      .baseUrl(apiUri)
       .defaultHeader("User-Agent", "NoisenseApp/1.0") // 모든 요청에 포함될 기본 헤더
       .clientConnector(new ReactorClientHttpConnector(httpClient)); // 타임아웃 설정 적용
   }
