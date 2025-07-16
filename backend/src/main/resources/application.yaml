@@ -11,9 +11,9 @@ spring:
     ansi:
       enabled: always
 
-  docker:
-    compose:
-      file: ../Data/docker-compose.data.yml
+#  docker:
+#    compose:
+#      file: ../Data/docker-compose.data.yml
 
   # Jackson Lib
   jackson:
