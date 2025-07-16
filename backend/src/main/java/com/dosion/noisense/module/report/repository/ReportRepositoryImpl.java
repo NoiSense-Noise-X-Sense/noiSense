@@ -4,15 +4,19 @@ import com.dosion.noisense.web.report.dto.ComparisonChartDto;
 import com.dosion.noisense.web.report.dto.DeviationDto;
 import com.dosion.noisense.web.report.dto.OverallChartDto;
 import com.dosion.noisense.web.report.dto.RankDto;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
+import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
@@ -24,39 +28,64 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Double getAvgNoiseByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict) {
+  public Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
     return jpaQueryFactory
       .select(sensorData.avgNoise.avg())
       .from(sensorData)
       .where(
         betweenDate(startDate, endDate)
-        , eqAutonomous(autonomousDistrict))
+        , eqAutonomous(autonomousDistrict)
+      )
       .fetchOne();
   }
 
 
   @Override
-  public Tuple getMaxDataByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict) {
-    StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
+  public Tuple getMaxDataByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
+
+    StringPath region;
+    BooleanBuilder builder = new BooleanBuilder(betweenDate(startDate, endDate));
+    if (autonomousDistrict.equals("all")) {
+      region = sensorData.autonomousDistrict;
+      builder.and(sensorData.autonomousDistrict.ne("Seoul_Grand_Park"));
+    } else {
+      region = sensorData.administrativeDistrict;
+      builder.and(sensorData.autonomousDistrict.eq(autonomousDistrict));
+    }
+
+    JPQLQuery<Double> subQuery = JPAExpressions
+      .select(sensorData.maxNoise.max())
+      .from(sensorData)
+      .where(builder);
+
     return jpaQueryFactory
       .select(
         region
         , sensorData.sensingTime.hour()
+        , sensorData.maxNoise
       )
       .from(sensorData)
       .where(
-        betweenDate(startDate, endDate)
-        , eqAutonomous(autonomousDistrict))
-      .orderBy(sensorData.maxNoise.desc())
+        builder
+        , sensorData.maxNoise.eq(subQuery)
+      )
+      .orderBy(sensorData.sensingTime.desc())
       .limit(1)
       .fetchOne();
   }
 
 
   @Override
-  public List<RankDto> getAvgNoiseRankByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String rankType, int limit) {
+  public List<RankDto> getAvgNoiseRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit) {
 
-    StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
+    StringPath region;
+    BooleanExpression excludeParkCondition = null;
+    if (autonomousDistrict.equals("all")) {
+      region = sensorData.autonomousDistrict;
+      excludeParkCondition = sensorData.autonomousDistrict.ne("Seoul_Grand_Park");
+    } else {
+      region = sensorData.administrativeDistrict;
+    }
 
     OrderSpecifier<?> order = "top".equals(rankType) ? sensorData.avgNoise.avg().desc() : sensorData.avgNoise.avg().asc();
 
@@ -71,6 +100,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       .where(
         betweenDate(startDate, endDate)
         , eqAutonomous(autonomousDistrict)
+        , excludeParkCondition
       )
       .groupBy(region)
       .orderBy(order.nullsLast())
@@ -79,9 +109,16 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   }
 
   @Override
-  public List<DeviationDto> getDeviationRankByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String rankType, int limit) {
+  public List<DeviationDto> getDeviationRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit) {
 
-    StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
+    StringPath region;
+    BooleanExpression excludeParkCondition = null;
+    if (autonomousDistrict.equals("all")) {
+      region = sensorData.autonomousDistrict;
+      excludeParkCondition = sensorData.autonomousDistrict.ne("Seoul_Grand_Park");
+    } else {
+      region = sensorData.administrativeDistrict;
+    }
 
     NumberExpression<Double> deviation = sensorData.maxNoise.max().subtract(sensorData.minNoise.min());
 
@@ -101,6 +138,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       .where(
         betweenDate(startDate, endDate)
         , eqAutonomous(autonomousDistrict)
+        , excludeParkCondition
       )
       .groupBy(region)
       .orderBy(order.nullsLast())
@@ -109,7 +147,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   }
 
   @Override
-  public List<OverallChartDto> getOverallAvgData(String type, LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict) {
+  public List<OverallChartDto> getOverallAvgData(String type, LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
 
     StringExpression xAxisE = getXAxisExpression(type);
 
@@ -131,7 +169,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 
   @Override
   public List<ComparisonChartDto> getTrendPointAvgData(
-    String type, LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomousDistrict) {
+    String type, LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrict) {
 
     StringExpression xAxisE = getXAxisExpression(type);
 
@@ -157,8 +195,8 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 
   // between SQL쿼리
   // BETWEEN startDate AND endDate
-  private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
-    return sensorData.sensingTime.between(startDate, endDate);
+  private BooleanExpression betweenDate(LocalDate startDate, LocalDate endDate) {
+    return sensorData.sensingTime.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
   }
 
   // autonomous 값이 all이면 null을 반환

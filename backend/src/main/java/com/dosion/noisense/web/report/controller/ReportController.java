@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Tag(name = "Noise-Report-Controller", description = "소음 리포트")
 @RestController
@@ -30,13 +30,12 @@ public class ReportController {
     description = "성공"
     //content = @Content(schema = @Schema(implementation = ReportDto.class))
   )
-  @GetMapping("/getReport")
-  public ResponseEntity<ReportDto> getReport( // @Parameter example : swagger 기본값 설정
-                                              @Parameter(example = "2025-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate
-    , @Parameter(example = "2025-06-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate
-    , @Parameter(example = "all") String autonomousDistrict) {
+  @GetMapping("/getReport") // @Parameter example : swagger 기본값 설정
+  public ResponseEntity<ReportDto> getReport(
+    @Parameter(example = "2024-06-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate
+    , @Parameter(example = "2025-07-30") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    , @Parameter(example = "전체") String autonomousDistrict) {
     return ResponseEntity.ok(reportService.getReport(startDate, endDate, autonomousDistrict));
   }
-
 
 }

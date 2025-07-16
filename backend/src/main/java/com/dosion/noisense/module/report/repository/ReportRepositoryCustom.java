@@ -6,7 +6,7 @@ import com.dosion.noisense.web.report.dto.OverallChartDto;
 import com.dosion.noisense.web.report.dto.RankDto;
 import com.querydsl.core.Tuple;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 // queryDsl 사용할 메서드
@@ -17,14 +17,14 @@ public interface ReportRepositoryCustom {
     해당 지역 평균 소음
      autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
-  Double getAvgNoiseByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict);
+  Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict);
 
 
   /*
     해당 지역의 최대 소음 지역
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
-  Tuple getMaxDataByAutonomousDistrict(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict);
+  Tuple getMaxDataByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict);
 
 
   /*
@@ -35,7 +35,7 @@ public interface ReportRepositoryCustom {
       - bottom : 조용한 순위
     limit : rank 조회할 수
    */
-  List<RankDto> getAvgNoiseRankByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String rankType, int limit);
+  List<RankDto> getAvgNoiseRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit);
 
   /*
     해당 지역의 편차 랭크 조회
@@ -45,7 +45,7 @@ public interface ReportRepositoryCustom {
       - bottom : 오름차순
     limit : rank 조회할 수
    */
-  List<DeviationDto> getDeviationRankByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String rankType, int limit);
+  List<DeviationDto> getDeviationRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit);
 
 
   /*
@@ -53,7 +53,7 @@ public interface ReportRepositoryCustom {
     type : hour, dayOfMonth, dayOfWeek, month, year / X축 기준이 되는 값
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
-  List<OverallChartDto> getOverallAvgData(String type, LocalDateTime startDate, LocalDateTime endDate, String autonomous);
+  List<OverallChartDto> getOverallAvgData(String type, LocalDate startDate, LocalDate endDate, String autonomous);
 
 
   /*
@@ -63,6 +63,6 @@ public interface ReportRepositoryCustom {
     trendPointRegionList : autonomous가 all 이면 행정구 목록 -> 행정구끼리 비교
                                 all이 아니면 행정동 목록 -> 행정구의 행정동 끼리 비교
   */
-  List<ComparisonChartDto> getTrendPointAvgData(String type, LocalDateTime startDate, LocalDateTime endDate, List<String> trendPointRegionList, String autonomous);
+  List<ComparisonChartDto> getTrendPointAvgData(String type, LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomous);
 
 }

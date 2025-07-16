@@ -36,6 +36,9 @@ public class ReportDto {
   @Schema(description = "최대 소음 발생 시간대")
   private String maxNoiseTime;
 
+  @Schema(description = "체감 소음")
+  private Double perceivedNoise;
+
   @Schema(description = "시끄러운 지역 top3")
   private List<RankDto> topRankDtoList;
 

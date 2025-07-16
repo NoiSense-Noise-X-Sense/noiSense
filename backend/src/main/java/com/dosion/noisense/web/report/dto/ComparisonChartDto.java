@@ -16,6 +16,6 @@ public class ComparisonChartDto {
   private Double avgNoise;
 
   @Schema(description = "지역명")
-  private String name;
+  private String legion;
 
 }

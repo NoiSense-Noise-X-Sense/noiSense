@@ -48,7 +48,9 @@ public class SecurityConfig {
           , "/v3/api-docs/**", "/configuration/**"
           , "/exception",
           "/swagger-ui/**",
-          "/swagger-ui.html").permitAll()
+          "/swagger-ui.html"
+          ,"/api/batch/run-initial-load"
+          ,"/api/report/*").permitAll()
 
         .requestMatchers(
           "/api/auth/sign-up",
