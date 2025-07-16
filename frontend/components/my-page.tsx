@@ -10,7 +10,7 @@ import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { User, MapPin, FileText, Trash2, Edit, Heart } from "lucide-react"
 
-// Dummy data
+// 행정구 리스트
 const seoulDistricts = [
   "강남구",
   "강동구",
@@ -38,6 +38,14 @@ const seoulDistricts = [
   "중구",
   "중랑구",
 ]
+
+// 예시: 구별 동 목록 (실제 데이터로 바꾸세요!)
+const dongListByDistrict: Record<string, string[]> = {
+  "강남구": ["역삼동", "삼성동", "청담동"],
+  "서초구": ["반포동", "서초동", "방배동"],
+  "마포구": ["공덕동", "서교동", "망원동"],
+  // ... (각 구마다 대표 동 2~3개만 임시로 추가)
+}
 
 const myPosts = [
   {
@@ -71,14 +79,23 @@ const myPosts = [
 
 export default function MyPage() {
   const [nickname, setNickname] = useState("소음지킴이")
-  const [email, setEmail] = useState("user@example.com") // Added email state
-  const [selectedRegion, setSelectedRegion] = useState("강남구")
+  const [email, setEmail] = useState("user@example.com")
+  const [selectedDistrict, setSelectedDistrict] = useState("강남구")
+  // 기본 동(구에 맞는 첫 번째 동으로)
+  const [selectedDong, setSelectedDong] = useState(dongListByDistrict["강남구"]?.[0] ?? "")
+
   const [isEditing, setIsEditing] = useState(false)
+
+  // 구 변경 시 동도 같이 갱신 (해당 구 첫 번째 동으로)
+  const handleDistrictChange = (district: string) => {
+    setSelectedDistrict(district)
+    setSelectedDong(dongListByDistrict[district]?.[0] ?? "")
+  }
 
   const handleSaveProfile = () => {
     setIsEditing(false)
     // Save profile logic here
-    console.log("Profile saved:", { nickname, email, selectedRegion })
+    console.log("Profile saved:", { nickname, email, selectedDistrict, selectedDong })
   }
 
   const handleDeletePost = (postId: number) => {
@@ -131,19 +148,46 @@ export default function MyPage() {
                 </div>
 
                 <div>
-                  <Label htmlFor="region">내 지역</Label>
-                  <Select value={selectedRegion} onValueChange={setSelectedRegion} disabled={!isEditing}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {seoulDistricts.map((district) => (
-                        <SelectItem key={district} value={district}>
-                          {district}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>내 지역</Label>
+                  <div className="flex gap-2">
+                    {/* 구 선택 */}
+                    <Select
+                      value={selectedDistrict}
+                      onValueChange={handleDistrictChange}
+                      disabled={!isEditing}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="구 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {seoulDistricts.map((district) => (
+                          <SelectItem key={district} value={district}>
+                            {district}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* 동 선택 */}
+                    <Select
+                      value={selectedDong}
+                      onValueChange={setSelectedDong}
+                      disabled={!isEditing || !dongListByDistrict[selectedDistrict]}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="동 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {dongListByDistrict[selectedDistrict]?.map((dong) => (
+                          <SelectItem key={dong} value={dong}>
+                            {dong}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+
+                  </div>
                 </div>
               </div>
 
@@ -192,7 +236,9 @@ export default function MyPage() {
                   <div className="text-sm text-gray-600">받은 댓글</div>
                 </div>
                 <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <div className="text-2xl font-bold text-orange-600">{selectedRegion}</div>
+                  <div className="text-2xl font-bold text-orange-600">
+                    {selectedDistrict} {selectedDong}
+                  </div>
                   <div className="text-sm text-gray-600">내 지역</div>
                 </div>
               </div>

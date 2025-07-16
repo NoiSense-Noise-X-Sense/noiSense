@@ -1,10 +1,13 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
+import { CalendarIcon, TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { Line, LineChart, XAxis, YAxis, CartesianGrid } from 'recharts';
+
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -12,411 +15,350 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Download,
-  FileText,
-  TrendingUp,
-  TrendingDown,
-  Clock,
-  MapPin,
-  BarChart3,
-} from 'lucide-react';
-import { BarChart, LineChart } from 'recharts';
-import { Volume2, MessageSquare } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
 
-// Dummy Data for Analysis Report
-const monthlyNoiseData = [
-  { month: '1월', avgNoise: 65, maxNoise: 78, minNoise: 55 },
-  { month: '2월', avgNoise: 67, maxNoise: 80, minNoise: 58 },
-  { month: '3월', avgNoise: 68, maxNoise: 82, minNoise: 59 },
-  { month: '4월', avgNoise: 70, maxNoise: 85, minNoise: 60 },
-  { month: '5월', avgNoise: 72, maxNoise: 88, minNoise: 62 },
-  { month: '6월', avgNoise: 75, maxNoise: 90, minNoise: 65 },
-  { month: '7월', avgNoise: 78, maxNoise: 92, minNoise: 68 },
-  { month: '8월', avgNoise: 76, maxNoise: 91, minNoise: 67 },
-  { month: '9월', avgNoise: 73, maxNoise: 89, minNoise: 64 },
-  { month: '10월', avgNoise: 70, maxNoise: 86, minNoise: 61 },
-  { month: '11월', avgNoise: 68, maxNoise: 84, minNoise: 59 },
-  { month: '12월', avgNoise: 66, maxNoise: 80, minNoise: 57 },
+// Mock data
+
+
+// 행정구 리스트
+const seoulDistricts = [
+  "강남구",
+  "강동구",
+  "강북구",
+  "강서구",
+  "관악구",
+  "광진구",
+  "구로구",
+  "금천구",
+  "노원구",
+  "도봉구",
+  "동대문구",
+  "동작구",
+  "마포구",
+  "서대문구",
+  "서초구",
+  "성동구",
+  "성북구",
+  "송파구",
+  "양천구",
+  "영등포구",
+  "용산구",
+  "은평구",
+  "종로구",
+  "중구",
+  "중랑구",
+]
+
+// 예시: 구별 동 목록
+const dongListByDistrict: Record<string, string[]> = {
+  "강남구": ["역삼동", "삼성동", "청담동"],
+  "강동구": ["천호동", "길동", "둔촌동"],
+  "서초구": ["반포동", "서초동", "방배동"],
+  "마포구": ["공덕동", "서교동", "망원동"],
+  // 나머지 구는 필요에 따라 추가
+};
+
+const hourlyData = [
+  { hour: '00:00', noise: 45.2 },
+  { hour: '01:00', noise: 42.8 },
+  { hour: '02:00', noise: 41.5 },
+  { hour: '03:00', noise: 40.9 },
+  { hour: '04:00', noise: 41.2 },
+  { hour: '05:00', noise: 43.8 },
+  { hour: '06:00', noise: 52.4 },
+  { hour: '07:00', noise: 58.9 },
+  { hour: '08:00', noise: 61.7 },
+  { hour: '09:00', noise: 59.3 },
+  { hour: '10:00', noise: 57.8 },
+  { hour: '11:00', noise: 58.9 },
+  { hour: '12:00', noise: 60.4 },
+  { hour: '13:00', noise: 59.7 },
+  { hour: '14:00', noise: 58.2 },
+  { hour: '15:00', noise: 59.8 },
+  { hour: '16:00', noise: 61.9 },
+  { hour: '17:00', noise: 64.2 },
+  { hour: '18:00', noise: 67.8 },
+  { hour: '19:00', noise: 69.4 },
+  { hour: '20:00', noise: 68.9 },
+  { hour: '21:00', noise: 65.7 },
+  { hour: '22:00', noise: 58.4 },
+  { hour: '23:00', noise: 51.2 },
 ];
 
-const complaintCategories = [
-  { name: '교통 소음', count: 320 },
-  { name: '공사 소음', count: 280 },
-  { name: '생활 소음', count: 250 },
-  { name: '상업 소음', count: 180 },
-  { name: '기타', count: 70 },
+const dailyData = [
+  { day: 'Mon', noise: 58.4 },
+  { day: 'Tue', noise: 59.7 },
+  { day: 'Wed', noise: 61.2 },
+  { day: 'Thu', noise: 62.8 },
+  { day: 'Fri', noise: 65.3 },
+  { day: 'Sat', noise: 67.9 },
+  { day: 'Sun', noise: 54.2 },
 ];
 
-const peakTimeData = [
-  { time: '00-06시', complaints: 50 },
-  { time: '06-12시', complaints: 200 },
-  { time: '12-18시', complaints: 350 },
-  { time: '18-24시', complaints: 400 },
-];
-
-const topDistricts = [
-  { name: '강남구', avgNoise: 78.5, complaints: 1500 },
-  { name: '영등포구', avgNoise: 77.2, complaints: 1300 },
-  { name: '종로구', avgNoise: 76.8, complaints: 1250 },
-  { name: '마포구', avgNoise: 75.9, complaints: 1100 },
-  { name: '구로구', avgNoise: 74.5, complaints: 1000 },
-];
-
-const mockData = [
+const combinedHourlyData = [
   {
-    gu: '강남구',
-    avgNoise: 73.2,
-    complaints: 1245,
-    peakTime: '18:00-21:00',
-    mainType: '주요 도로',
-    maxNoise: 85.4,
-    minNoise: 62.1,
+    hour: '00:00',
+    top1: 52.1,
+    top2: 48.9,
+    top3: 47.2,
+    bottom1: 38.4,
+    bottom2: 36.7,
+    bottom3: 35.1,
   },
   {
-    gu: '마포구',
-    avgNoise: 70.8,
-    complaints: 987,
-    peakTime: '17:00-20:00',
-    mainType: '상업 지역',
-    maxNoise: 82.3,
-    minNoise: 58.9,
+    hour: '01:00',
+    top1: 49.8,
+    top2: 46.3,
+    top3: 44.7,
+    bottom1: 36.2,
+    bottom2: 34.8,
+    bottom3: 33.4,
   },
   {
-    gu: '송파구',
-    avgNoise: 69.9,
-    complaints: 856,
-    peakTime: '19:00-22:00',
-    mainType: '주요 도로',
-    maxNoise: 81.7,
-    minNoise: 59.2,
+    hour: '02:00',
+    top1: 48.5,
+    top2: 45.1,
+    top3: 43.2,
+    bottom1: 35.1,
+    bottom2: 33.7,
+    bottom3: 32.3,
   },
   {
-    gu: '영등포구',
-    avgNoise: 68.5,
-    complaints: 743,
-    peakTime: '18:00-21:00',
-    mainType: '상업 지역',
-    maxNoise: 83.1,
-    minNoise: 55.4,
+    hour: '03:00',
+    top1: 47.9,
+    top2: 44.6,
+    top3: 42.8,
+    bottom1: 34.8,
+    bottom2: 33.2,
+    bottom3: 31.9,
   },
   {
-    gu: '구로구',
-    avgNoise: 67.3,
-    complaints: 692,
-    peakTime: '16:00-19:00',
-    mainType: '산업 지역',
-    maxNoise: 79.8,
-    minNoise: 56.7,
+    hour: '04:00',
+    top1: 48.2,
+    top2: 44.9,
+    top3: 43.1,
+    bottom1: 35.2,
+    bottom2: 33.6,
+    bottom3: 32.1,
   },
   {
-    gu: '용산구',
-    avgNoise: 66.8,
-    complaints: 634,
-    peakTime: '18:00-21:00',
-    mainType: '주요 도로',
-    maxNoise: 78.9,
-    minNoise: 54.2,
+    hour: '05:00',
+    top1: 50.8,
+    top2: 47.4,
+    top3: 45.6,
+    bottom1: 37.1,
+    bottom2: 35.4,
+    bottom3: 34.2,
   },
   {
-    gu: '서초구',
-    avgNoise: 65.4,
-    complaints: 578,
-    peakTime: '17:00-20:00',
-    mainType: '주거 지역',
-    maxNoise: 76.8,
-    minNoise: 53.1,
+    hour: '06:00',
+    top1: 59.4,
+    top2: 56.2,
+    top3: 54.1,
+    bottom1: 44.8,
+    bottom2: 42.9,
+    bottom3: 41.2,
   },
   {
-    gu: '관악구',
-    avgNoise: 64.2,
-    complaints: 523,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 75.6,
-    minNoise: 52.8,
+    hour: '07:00',
+    top1: 65.9,
+    top2: 62.7,
+    top3: 60.4,
+    bottom1: 50.2,
+    bottom2: 48.1,
+    bottom3: 46.7,
   },
   {
-    gu: '동작구',
-    avgNoise: 63.7,
-    complaints: 467,
-    peakTime: '19:00-22:00',
-    mainType: '주거 지역',
-    maxNoise: 74.9,
-    minNoise: 51.7,
+    hour: '08:00',
+    top1: 68.7,
+    top2: 65.4,
+    top3: 63.2,
+    bottom1: 52.9,
+    bottom2: 50.8,
+    bottom3: 49.1,
   },
   {
-    gu: '성동구',
-    avgNoise: 62.9,
-    complaints: 412,
-    peakTime: '17:00-20:00',
-    mainType: '주요 도로',
-    maxNoise: 73.4,
-    minNoise: 50.9,
+    hour: '09:00',
+    top1: 66.3,
+    top2: 63.1,
+    top3: 60.8,
+    bottom1: 50.7,
+    bottom2: 48.9,
+    bottom3: 47.2,
   },
   {
-    gu: '광진구',
-    avgNoise: 62.1,
-    complaints: 389,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 72.8,
-    minNoise: 49.6,
+    hour: '10:00',
+    top1: 64.8,
+    top2: 61.6,
+    top3: 59.4,
+    bottom1: 49.2,
+    bottom2: 47.6,
+    bottom3: 45.9,
   },
   {
-    gu: '종로구',
-    avgNoise: 61.8,
-    complaints: 356,
-    peakTime: '16:00-19:00',
-    mainType: '상업 지역',
-    maxNoise: 72.1,
-    minNoise: 48.9,
+    hour: '11:00',
+    top1: 65.9,
+    top2: 62.7,
+    top3: 60.5,
+    bottom1: 50.3,
+    bottom2: 48.7,
+    bottom3: 47.1,
   },
   {
-    gu: '중구',
-    avgNoise: 61.3,
-    complaints: 334,
-    peakTime: '18:00-21:00',
-    mainType: '상업 지역',
-    maxNoise: 71.7,
-    minNoise: 48.2,
+    hour: '12:00',
+    top1: 67.4,
+    top2: 64.2,
+    top3: 61.9,
+    bottom1: 51.8,
+    bottom2: 50.1,
+    bottom3: 48.4,
   },
   {
-    gu: '성북구',
-    avgNoise: 60.8,
-    complaints: 298,
-    peakTime: '17:00-20:00',
-    mainType: '주거 지역',
-    maxNoise: 71.2,
-    minNoise: 47.8,
+    hour: '13:00',
+    top1: 66.7,
+    top2: 63.5,
+    top3: 61.2,
+    bottom1: 51.1,
+    bottom2: 49.4,
+    bottom3: 47.8,
   },
   {
-    gu: '강서구',
-    avgNoise: 60.5,
-    complaints: 276,
-    peakTime: '19:00-22:00',
-    mainType: '주요 도로',
-    maxNoise: 70.9,
-    minNoise: 47.3,
+    hour: '14:00',
+    top1: 65.2,
+    top2: 62.0,
+    top3: 59.8,
+    bottom1: 49.6,
+    bottom2: 48.0,
+    bottom3: 46.4,
   },
   {
-    gu: '양천구',
-    avgNoise: 60.2,
-    complaints: 245,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 70.6,
-    minNoise: 46.9,
+    hour: '15:00',
+    top1: 66.8,
+    top2: 63.6,
+    top3: 61.4,
+    bottom1: 51.2,
+    bottom2: 49.6,
+    bottom3: 48.0,
   },
   {
-    gu: '은평구',
-    avgNoise: 60.1,
-    complaints: 223,
-    peakTime: '17:00-20:00',
-    mainType: '주거 지역',
-    maxNoise: 70.3,
-    minNoise: 46.5,
+    hour: '16:00',
+    top1: 68.9,
+    top2: 65.7,
+    top3: 63.5,
+    bottom1: 53.3,
+    bottom2: 51.7,
+    bottom3: 50.1,
   },
   {
-    gu: '서대문구',
-    avgNoise: 59.7,
-    complaints: 198,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 69.8,
-    minNoise: 46.1,
+    hour: '17:00',
+    top1: 71.2,
+    top2: 68.0,
+    top3: 65.8,
+    bottom1: 55.6,
+    bottom2: 54.0,
+    bottom3: 52.4,
   },
   {
-    gu: '동대문구',
-    avgNoise: 59.4,
-    complaints: 187,
-    peakTime: '16:00-19:00',
-    mainType: '상업 지역',
-    maxNoise: 69.5,
-    minNoise: 45.8,
+    hour: '18:00',
+    top1: 74.8,
+    top2: 71.6,
+    top3: 69.4,
+    bottom1: 59.2,
+    bottom2: 57.6,
+    bottom3: 56.0,
   },
   {
-    gu: '금천구',
-    avgNoise: 59.1,
-    complaints: 165,
-    peakTime: '18:00-21:00',
-    mainType: '산업 지역',
-    maxNoise: 69.2,
-    minNoise: 45.4,
+    hour: '19:00',
+    top1: 76.4,
+    top2: 73.2,
+    top3: 71.0,
+    bottom1: 60.8,
+    bottom2: 59.2,
+    bottom3: 57.6,
   },
   {
-    gu: '강북구',
-    avgNoise: 58.9,
-    complaints: 143,
-    peakTime: '17:00-20:00',
-    mainType: '주거 지역',
-    maxNoise: 68.9,
-    minNoise: 45.1,
+    hour: '20:00',
+    top1: 75.9,
+    top2: 72.7,
+    top3: 70.5,
+    bottom1: 60.3,
+    bottom2: 58.7,
+    bottom3: 57.1,
   },
   {
-    gu: '노원구',
-    avgNoise: 58.6,
-    complaints: 132,
-    peakTime: '19:00-22:00',
-    mainType: '주거 지역',
-    maxNoise: 68.6,
-    minNoise: 44.7,
+    hour: '21:00',
+    top1: 72.7,
+    top2: 69.5,
+    top3: 67.3,
+    bottom1: 57.1,
+    bottom2: 55.5,
+    bottom3: 53.9,
   },
   {
-    gu: '도봉구',
-    avgNoise: 59.3,
-    complaints: 121,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 69.3,
-    minNoise: 45.9,
+    hour: '22:00',
+    top1: 65.4,
+    top2: 62.2,
+    top3: 60.0,
+    bottom1: 49.8,
+    bottom2: 48.2,
+    bottom3: 46.6,
   },
   {
-    gu: '강동구',
-    avgNoise: 58.4,
-    complaints: 109,
-    peakTime: '17:00-20:00',
-    mainType: '주거 지역',
-    maxNoise: 68.4,
-    minNoise: 44.3,
-  },
-  {
-    gu: '중랑구',
-    avgNoise: 58.7,
-    complaints: 98,
-    peakTime: '18:00-21:00',
-    mainType: '주거 지역',
-    maxNoise: 68.7,
-    minNoise: 44.6,
+    hour: '23:00',
+    top1: 58.2,
+    top2: 55.0,
+    top3: 52.8,
+    bottom1: 42.6,
+    bottom2: 41.0,
+    bottom3: 39.4,
   },
 ];
 
-const timeData = [
-  { time: '00:00', noise: 58.2 },
-  { time: '03:00', noise: 55.8 },
-  { time: '06:00', noise: 58.2 },
-  { time: '09:00', noise: 65.4 },
-  { time: '12:00', noise: 68.7 },
-  { time: '15:00', noise: 70.1 },
-  { time: '18:00', noise: 74.3 },
-  { time: '21:00', noise: 71.8 },
-  { time: '24:00', noise: 62.5 },
+const combinedDailyData = [
+  { day: 'Mon', top1: 65.4, top2: 62.1, top3: 59.8, bottom1: 51.8, bottom2: 49.2, bottom3: 47.6 },
+  { day: 'Tue', top1: 66.7, top2: 63.4, top3: 61.1, bottom1: 53.1, bottom2: 50.5, bottom3: 48.9 },
+  { day: 'Wed', top1: 68.2, top2: 64.9, top3: 62.6, bottom1: 54.6, bottom2: 52.0, bottom3: 50.4 },
+  { day: 'Thu', top1: 69.8, top2: 66.5, top3: 64.2, bottom1: 56.2, bottom2: 53.6, bottom3: 52.0 },
+  { day: 'Fri', top1: 72.3, top2: 69.0, top3: 66.7, bottom1: 58.7, bottom2: 56.1, bottom3: 54.5 },
+  { day: 'Sat', top1: 74.9, top2: 71.6, top3: 69.3, bottom1: 61.3, bottom2: 58.7, bottom3: 57.1 },
+  { day: 'Sun', top1: 61.2, top2: 57.9, top3: 55.6, bottom1: 47.6, bottom2: 45.0, bottom3: 43.4 },
 ];
 
-const areaTypeData = [
-  { name: '주요 도로', value: 72.5, color: '#EF4444' },
-  { name: '상업 지역', value: 68.3, color: '#F59E0B' },
-  { name: '산업 지역', value: 69.1, color: '#8B5CF6' },
-  { name: '주거 지역', value: 61.2, color: '#10B981' },
-  { name: '공원', value: 55.8, color: '#06B6D4' },
-  { name: '공공시설', value: 63.4, color: '#84CC16' },
+const loudestAreas = [
+  { rank: 1, area: 'Industrial Zone A', noise: 74.2 },
+  { rank: 2, area: 'Highway Junction', noise: 71.8 },
+  { rank: 3, area: 'Commercial District', noise: 68.9 },
 ];
 
-const dailyTrendData = [
-  { date: '06-01', noise: 65.2 },
-  { date: '06-05', noise: 67.1 },
-  { date: '06-10', noise: 66.8 },
-  { date: '06-15', noise: 68.3 },
-  { date: '06-20', noise: 69.7 },
-  { date: '06-25', noise: 68.9 },
-  { date: '06-30', noise: 67.4 },
+const quietestAreas = [
+  { rank: 1, area: 'Residential Park', noise: 42.1 },
+  { rank: 2, area: 'Suburban Area', noise: 45.7 },
+  { rank: 3, area: 'Green Belt Zone', noise: 48.3 },
 ];
 
-const complaintTypeData = [
-  { name: '공사장 소음', value: 350 },
-  { name: '교통 소음', value: 280 },
-  { name: '생활 소음', value: 200 },
-  { name: '확성기 소음', value: 120 },
-  { name: '기타', value: 50 },
-];
-
-const dailyNoiseTrendData = [
-  { hour: '00시', noise: 55 },
-  { hour: '03시', noise: 50 },
-  { hour: '06시', noise: 60 },
-  { hour: '09시', noise: 75 },
-  { hour: '12시', noise: 80 },
-  { hour: '15시', noise: 78 },
-  { hour: '18시', noise: 82 },
-  { hour: '21시', noise: 70 },
-];
-
-const topDistrictsByNoise = [
-  { district: '중구', noise: 82.1 },
-  { district: '강서구', noise: 81.2 },
-  { district: '영등포구', noise: 80.3 },
-  { district: '구로구', noise: 79.4 },
-  { district: '종로구', noise: 78.9 },
-];
-
-const noiseSourceData = [
-  { name: '공사장 소음', value: 350 },
-  { name: '교통 소음', value: 280 },
-  { name: '생활 소음', value: 200 },
-  { name: '확성기 소음', value: 120 },
-  { name: '기타', value: 50 },
-];
-
-const timeOfDayData = [
-  { time: '00:00', avgNoise: 58.2 },
-  { time: '03:00', avgNoise: 55.8 },
-  { time: '06:00', avgNoise: 58.2 },
-  { time: '09:00', avgNoise: 65.4 },
-  { time: '12:00', avgNoise: 68.7 },
-  { time: '15:00', avgNoise: 70.1 },
-  { time: '18:00', avgNoise: 74.3 },
-  { time: '21:00', avgNoise: 71.8 },
-  { time: '24:00', avgNoise: 62.5 },
+const varianceAreas = [
+  { rank: 1, area: 'Entertainment District', variance: 15.8 },
+  { rank: 2, area: 'School Zone', variance: 12.4 },
+  { rank: 3, area: 'Mixed Use Area', variance: 10.7 },
 ];
 
 export default function AnalysisReport() {
-  const [selectedGu, setSelectedGu] = useState<string>('전체');
-  const [dateRange, setDateRange] = useState({ start: '2025-06-01', end: '2025-06-30' });
+  const [startDate, setStartDate] = useState<Date>();
+  const [endDate, setEndDate] = useState<Date>();
 
-  const filteredData = useMemo(() => {
-    return selectedGu === '전체' ? mockData : mockData.filter(d => d.gu === selectedGu);
-  }, [selectedGu]);
-
-  const top3 = useMemo(
-    () => [...filteredData].sort((a, b) => b.avgNoise - a.avgNoise).slice(0, 3),
-    [filteredData]
-  );
-  const bottom3 = useMemo(
-    () => [...filteredData].sort((a, b) => a.avgNoise - b.avgNoise).slice(0, 3),
-    [filteredData]
+  // District와 Dong 기본값 설정
+  const [selectedDistrict, setSelectedDistrict] = useState<string>(seoulDistricts[0]);
+  const [selectedDong, setSelectedDong] = useState<string>(
+    dongListByDistrict[seoulDistricts[0]]?.[0] || ''
   );
 
-  const overallAvg = useMemo(
-    () =>
-      (filteredData.reduce((sum, item) => sum + item.avgNoise, 0) / filteredData.length).toFixed(1),
-    [filteredData]
-  );
-
-  const mostCommonPeakTime = useMemo(() => {
-    const timeCount: { [key: string]: number } = {};
-    filteredData.forEach(item => {
-      timeCount[item.peakTime] = (timeCount[item.peakTime] || 0) + 1;
-    });
-    return Object.entries(timeCount).sort(([, a], [, b]) => b - a)[0]?.[0] || '18:00-21:00';
-  }, [filteredData]);
-
-  const mostCommonAreaType = useMemo(() => {
-    const typeCount: { [key: string]: number } = {};
-    filteredData.forEach(item => {
-      typeCount[item.mainType] = (typeCount[item.mainType] || 0) + 1;
-    });
-    return Object.entries(typeCount).sort(([, a], [, b]) => b - a)[0]?.[0] || '주거 지역';
-  }, [filteredData]);
-
-  const highestVarianceDistricts = useMemo(() => {
-    return [...filteredData]
-      .map(item => ({
-        ...item,
-        variance: item.maxNoise - item.minNoise,
-      }))
-      .sort((a, b) => b.variance - a.variance)
-      .slice(0, 3);
-  }, [filteredData]);
+  // 구를 변경하면 해당 구의 첫번째 동으로 자동 설정
+  const handleDistrictChange = (district: string) => {
+    setSelectedDistrict(district);
+    setSelectedDong(dongListByDistrict[district]?.[0] || '');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -429,6 +371,416 @@ export default function AnalysisReport() {
             </h1>
             <p className="text-gray-600 mt-2">서울시 소음 데이터 종합 분석 보고서</p>
           </div>
+        </div>
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Filter Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Data Filters</CardTitle>
+              <CardDescription>Select date range and area to filter the noise data</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-4">
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">날짜 범위</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="date"
+                      className="w-full border rounded px-3 py-2"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                    />
+                    <span className="mx-1 text-gray-500">~</span>
+                    <input
+                      type="date"
+                      className="w-full border rounded px-3 py-2"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {/* 동/구 SelectBox */}
+                <div className="flex flex-col space-y-2">
+                  <label className="text-sm font-medium">내 지역 선택</label>
+                  <div className="flex gap-2">
+                    {/* 구 Select */}
+                    <Select value={selectedDistrict} onValueChange={handleDistrictChange}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="구 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {seoulDistricts.map(district => (
+                          <SelectItem key={district} value={district}>{district}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                    {/* 동 Select */}
+                    <Select value={selectedDong} onValueChange={setSelectedDong}>
+                      <SelectTrigger className="w-[140px]">
+                        <SelectValue placeholder="동 선택" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {dongListByDistrict[selectedDistrict]?.map(dong => (
+                          <SelectItem key={dong} value={dong}>{dong}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+
+                  </div>
+                </div>
+
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* KPI Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Overall Average Noise</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">62.9 dB</div>
+                <p className="text-xs text-muted-foreground">+2.1% from last month</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Top Noise Area Type</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">Residential Area</div>
+                <p className="text-xs text-muted-foreground">Most affected zone type</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Peak Noise Time Slot</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">18:00-21:00</div>
+                <p className="text-xs text-muted-foreground">Evening rush hours</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Overall Average Noise</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">62.9 dB</div>
+                <p className="text-xs text-muted-foreground">Consistent measurement</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Area Rankings */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-red-500" />
+                  Top 3 Loudest Areas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {loudestAreas.map(area => (
+                    <div key={area.rank} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">
+                          {area.rank}
+                        </div>
+                        <span className="font-medium">{area.area}</span>
+                      </div>
+                      <span className="text-red-600 font-bold">{area.noise} dB</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingDown className="h-5 w-5 text-green-500" />
+                  Top 3 Quietest Areas
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {quietestAreas.map(area => (
+                    <div key={area.rank} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-sm font-bold">
+                          {area.rank}
+                        </div>
+                        <span className="font-medium">{area.area}</span>
+                      </div>
+                      <span className="text-green-600 font-bold">{area.noise} dB</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-blue-500" />
+                  Top 3 Areas with Largest Noise Variance
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {varianceAreas.map(area => (
+                    <div key={area.rank} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold">
+                          {area.rank}
+                        </div>
+                        <span className="font-medium">{area.area}</span>
+                      </div>
+                      <span className="text-blue-600 font-bold">{area.variance}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Noise Trend Graph */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Noise Trend Analysis</CardTitle>
+              <CardDescription>Switch between hourly and daily noise patterns</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="hourly" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="hourly">Hourly Noise Trend</TabsTrigger>
+                  <TabsTrigger value="daily">Daily Noise Trend</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="hourly" className="space-y-4">
+                  <ChartContainer
+                    config={{
+                      noise: {
+                        label: 'Noise Level (dB)',
+                        color: 'hsl(var(--chart-1))',
+                      },
+                    }}
+                    className="h-[400px]"
+                  >
+                    <LineChart data={hourlyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="hour" tick={{ fontSize: 12 }} interval={2} />
+                      <YAxis domain={['dataMin - 5', 'dataMax + 5']} tick={{ fontSize: 12 }} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Line
+                        type="monotone"
+                        dataKey="noise"
+                        stroke="var(--color-noise)"
+                        strokeWidth={2}
+                        dot={{ r: 4 }}
+                      />
+                    </LineChart>
+                  </ChartContainer>
+                </TabsContent>
+
+                <TabsContent value="daily" className="space-y-4">
+                  <ChartContainer
+                    config={{
+                      noise: {
+                        label: 'Noise Level (dB)',
+                        color: 'hsl(var(--chart-2))',
+                      },
+                    }}
+                    className="h-[400px]"
+                  >
+                    <LineChart data={dailyData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                      <YAxis domain={['dataMin - 5', 'dataMax + 5']} tick={{ fontSize: 12 }} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Line
+                        type="monotone"
+                        dataKey="noise"
+                        stroke="var(--color-noise)"
+                        strokeWidth={2}
+                        dot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ChartContainer>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
+
+          {/* Combined Hourly Noise Graph */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Combined Hourly Noise Analysis</CardTitle>
+              <CardDescription>Top 3 vs Bottom 3 hourly noise levels comparison</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  top1: { label: 'Top Area 1', color: 'hsl(0, 70%, 50%)' },
+                  top2: { label: 'Top Area 2', color: 'hsl(15, 70%, 50%)' },
+                  top3: { label: 'Top Area 3', color: 'hsl(30, 70%, 50%)' },
+                  bottom1: { label: 'Bottom Area 1', color: 'hsl(120, 50%, 50%)' },
+                  bottom2: { label: 'Bottom Area 2', color: 'hsl(135, 50%, 50%)' },
+                  bottom3: { label: 'Bottom Area 3', color: 'hsl(150, 50%, 50%)' },
+                }}
+                className="h-[400px]"
+              >
+                <LineChart data={combinedHourlyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" tick={{ fontSize: 12 }} interval={2} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+
+                  {/* Top 3 lines - solid */}
+                  <Line
+                    type="monotone"
+                    dataKey="top1"
+                    stroke="var(--color-top1)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="top2"
+                    stroke="var(--color-top2)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="top3"
+                    stroke="var(--color-top3)"
+                    strokeWidth={2}
+                    dot={false}
+                  />
+
+                  {/* Bottom 3 lines - dashed */}
+                  <Line
+                    type="monotone"
+                    dataKey="bottom1"
+                    stroke="var(--color-bottom1)"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bottom2"
+                    stroke="var(--color-bottom2)"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bottom3"
+                    stroke="var(--color-bottom3)"
+                    strokeWidth={2}
+                    strokeDasharray="5 5"
+                    dot={false}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+
+          {/* Combined Daily Average Noise Graph */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Combined Daily Average Noise Analysis</CardTitle>
+              <CardDescription>
+                Top 3 vs Bottom 3 daily average noise levels by day of week
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={{
+                  top1: { label: 'Top Area 1', color: 'hsl(0, 70%, 50%)' },
+                  top2: { label: 'Top Area 2', color: 'hsl(15, 70%, 50%)' },
+                  top3: { label: 'Top Area 3', color: 'hsl(30, 70%, 50%)' },
+                  bottom1: { label: 'Bottom Area 1', color: 'hsl(120, 50%, 50%)' },
+                  bottom2: { label: 'Bottom Area 2', color: 'hsl(135, 50%, 50%)' },
+                  bottom3: { label: 'Bottom Area 3', color: 'hsl(150, 50%, 50%)' },
+                }}
+                className="h-[400px]"
+              >
+                <LineChart data={combinedDailyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+
+                  {/* Top 3 lines - solid */}
+                  <Line
+                    type="monotone"
+                    dataKey="top1"
+                    stroke="var(--color-top1)"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="top2"
+                    stroke="var(--color-top2)"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="top3"
+                    stroke="var(--color-top3)"
+                    strokeWidth={3}
+                    dot={{ r: 5 }}
+                  />
+
+                  {/* Bottom 3 lines - dashed */}
+                  <Line
+                    type="monotone"
+                    dataKey="bottom1"
+                    stroke="var(--color-bottom1)"
+                    strokeWidth={3}
+                    strokeDasharray="8 4"
+                    dot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bottom2"
+                    stroke="var(--color-bottom2)"
+                    strokeWidth={3}
+                    strokeDasharray="8 4"
+                    dot={{ r: 5 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="bottom3"
+                    stroke="var(--color-bottom3)"
+                    strokeWidth={3}
+                    strokeDasharray="8 4"
+                    dot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
