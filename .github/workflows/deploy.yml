@@ -73,4 +73,5 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           pkill -f 'java' || true
+          export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
           nohup java -jar /home/ec2-user/app/*.jar > app.log 2>&1 &
