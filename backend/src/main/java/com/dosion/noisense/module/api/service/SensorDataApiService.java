@@ -18,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -65,8 +68,9 @@ public class SensorDataApiService {
       return;
 
     }
+    log.info("최초 데이터 수집을 위한 S-DoT 병렬 수집 작업을 시작합니다.");
     Long startTime = System.currentTimeMillis();
-    log.info("S-DoT 전체 데이터 병렬 수집 작업을 시작합니다.");
+    log.info("최초 데이터 수집 시작 시간: {}", timeFormatter(startTime));
     try {
 
 
@@ -114,6 +118,7 @@ public class SensorDataApiService {
 
     log.info("정기적인 S-DoT 최신 데이터 수집을 시작합니다...");
     Long startTime = System.currentTimeMillis();
+    log.info("최초 데이터 수집 시작 시간: {}", timeFormatter(startTime));
 
     // 증분 업데이트를 위해 DB에서 가장 마지막 시간을 조회
     Set<LocalDateTime> lastKnownTimes = sensorDataRepository.findLatestSensingTime();
@@ -226,24 +231,14 @@ public class SensorDataApiService {
     }
   }
 
-  // 정기적인 패치 중 데이터가 null인 경우 전체 데이터 넣기
-  private void runFullData(long startTime) {
-    try {
-
-      processPage(1, CHUNK_SIZE, startTime);
-
-    } catch (Exception e) {
-      log.error("전체 데이터 수집 중 예외가 발생했습니다.", e);
-    }
-  }
-
   // 총 소요시간 표시 메서드
   private void takenTimeLog(long startTime) {
 
     long endTime = System.currentTimeMillis();
     long takenTime = endTime - startTime;
 
-    log.info("작업이 완료되었습니다. 총 소요시간: {}", timeFormatter(takenTime));
+    log.info("작업이 완료되었습니다. 종료시간: {}", timeFormatter(endTime));
+    log.info("총 소요시간: {}", timeFormatter(takenTime));
 
   }
 
@@ -251,14 +246,27 @@ public class SensorDataApiService {
   // Millis 단위를 가독성 좋게 실제 시간으로 표기
   private String timeFormatter(long millis) {
 
-    if (millis < 1000) {
-      return String.format("%dms", millis);
-    }
     long totalSeconds = millis / 1000;
     long minutes = totalSeconds / 60;
+    long hours = minutes / 60;
     double seconds = (millis % 60000) / 1000.0;
 
-    if (minutes > 0) {
+    // 현재 시각으로 바꾸기 위해 변환 (UTC 기준)
+    Instant instant = Instant.ofEpochMilli(millis);
+
+    // 한국 시간으로 바꾸기
+    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, java.time.ZoneId.of("Asia/Seoul"));
+
+    // 시간 format 설정
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    // 최종 적용
+    String formattedDateTime = zonedDateTime.format(formatter);
+
+
+    if(hours >= 1) {
+      return formattedDateTime;
+    } else if (hours < 1 && minutes > 0) {
       return String.format("%d분 %.3f초", minutes, seconds);
     } else {
       return String.format("%.3f초", seconds);

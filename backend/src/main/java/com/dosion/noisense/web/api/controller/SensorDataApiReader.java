@@ -46,11 +46,11 @@ public class SensorDataApiReader {
     String sortOrder = "?$order=SENSING_TIME DESC";
 
     if (districtNameEn == null || districtNameEn.isEmpty()) {
-      // sortOrder -> 내장 정렬 파라미터
-      // 최초 데이터 넣을 때
+      // 최초 데이터 넣을 때는 정렬 X -> 오래 걸림
       path = String.format("/%s/json/%s/%d/%d", apiKey, serviceName, startIndex, endIndex);
     } else {
-      // 자치구 필터 뒤에 정렬 파라미터
+      // 자치구 필터 뒤에 정렬 파라미터 추가
+      // sortOrder -> 내장 정렬 파라미터
       path = String.format("/%s/json/%s/%d/%d/%s%s", apiKey, serviceName, startIndex, endIndex, districtNameEn, sortOrder);
     }
 
