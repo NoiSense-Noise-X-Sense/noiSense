@@ -15,7 +15,7 @@ import lombok.Setter;
 @Schema(description = "회원 정보")
 public class UserDto {
 
-  @Schema(description = "회원 아이디")
+  @Schema(description = "회원 아이디(userId)")
   private Long id;
 
   @Schema(description = "회원명") //@kakao
