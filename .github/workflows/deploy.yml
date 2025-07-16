@@ -60,10 +60,12 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            cd /home/ec2-user/app/backend/build/libs
+
             pkill -f 'java' || true
 
-            # .env 파일 생성
-            cat <<EOF > /home/ec2-user/app/.env
+            # .env 생성
+            cat <<EOF > .env
             GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
             GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
             JWT_EXPIRATION_MS=${{ secrets.JWT_EXPIRATION_MS }}
@@ -86,4 +88,4 @@ jobs:
             set +a
 
             # Spring Boot JAR 실행
-            nohup java -jar *.jar > app.log 2>&1 &
+            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
