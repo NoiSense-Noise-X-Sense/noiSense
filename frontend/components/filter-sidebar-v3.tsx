@@ -1,31 +1,23 @@
-"use client";
+"use client"
 
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useState } from "react";
+import { Slider } from "@/components/ui/slider"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useState } from "react"
 
 export default function FilterSidebar() {
-  const [timeRange, setTimeRange] = useState([240]); // 04:00 in minutes
-  const [noiseRange, setNoiseRange] = useState([70]);
+  const [timeRange, setTimeRange] = useState([240]) // 04:00 in minutes
+  const [noiseRange, setNoiseRange] = useState([70])
 
   // Convert minutes to time format
   const formatTime = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${hours.toString().padStart(2, "0")}:${mins
-      .toString()
-      .padStart(2, "0")}`;
-  };
+    const hours = Math.floor(minutes / 60)
+    const mins = minutes % 60
+    return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`
+  }
 
   const districts = [
     "강남구",
@@ -53,21 +45,10 @@ export default function FilterSidebar() {
     "종로구",
     "중구",
     "중랑구",
-  ];
+  ]
 
   const dongsByDistrict: { [key: string]: string[] } = {
-    강남구: [
-      "역삼동",
-      "신사동",
-      "논현동",
-      "압구정동",
-      "청담동",
-      "삼성동",
-      "대치동",
-      "개포동",
-      "세곡동",
-      "자곡동",
-    ],
+    강남구: ["역삼동", "신사동", "논현동", "압구정동", "청담동", "삼성동", "대치동", "개포동", "세곡동", "자곡동"],
     종로구: [
       "청운효자동",
       "사직동",
@@ -106,7 +87,7 @@ export default function FilterSidebar() {
       "성산2동",
       "상암동",
     ],
-  };
+  }
 
   return (
     <div className="w-[360px] p-4 bg-white shadow-md overflow-y-auto h-screen">
@@ -114,9 +95,7 @@ export default function FilterSidebar() {
 
       {/* 날짜 범위 */}
       <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">
-          날짜 범위
-        </Label>
+        <Label className="block text-sm font-medium text-gray-700 mb-1">날짜 범위</Label>
         <div className="flex gap-2">
           <Input type="date" className="w-full" />
           <Input type="date" className="w-full" />
@@ -126,17 +105,9 @@ export default function FilterSidebar() {
       {/* 시간대 슬라이더 */}
       <div className="mb-4">
         <Label className="block text-sm font-medium text-gray-700 mb-1">
-          시간대 (예: {formatTime(timeRange[0])}~
-          {formatTime(timeRange[0] + 300)})
+          시간대 (예: {formatTime(timeRange[0])}~{formatTime(timeRange[0] + 300)})
         </Label>
-        <Slider
-          value={timeRange}
-          onValueChange={setTimeRange}
-          min={0}
-          max={1440}
-          step={30}
-          className="w-full mt-2"
-        />
+        <Slider value={timeRange} onValueChange={setTimeRange} min={0} max={1440} step={30} className="w-full mt-2" />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>00:00</span>
           <span>12:00</span>
@@ -146,9 +117,7 @@ export default function FilterSidebar() {
 
       {/* 자치구 */}
       <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">
-          자치구
-        </Label>
+        <Label className="block text-sm font-medium text-gray-700 mb-1">자치구</Label>
         <Select>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="자치구 선택" />
@@ -165,9 +134,7 @@ export default function FilterSidebar() {
 
       {/* 행정동 */}
       <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">
-          행정동
-        </Label>
+        <Label className="block text-sm font-medium text-gray-700 mb-1">행정동</Label>
         <Select>
           <SelectTrigger className="w-full">
             <SelectValue placeholder="행정동 선택" />
@@ -185,17 +152,8 @@ export default function FilterSidebar() {
 
       {/* 소음 값 슬라이더 */}
       <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">
-          소음 dB 범위 ({noiseRange[0]} dB 이상)
-        </Label>
-        <Slider
-          value={noiseRange}
-          onValueChange={setNoiseRange}
-          min={40}
-          max={100}
-          step={5}
-          className="w-full mt-2"
-        />
+        <Label className="block text-sm font-medium text-gray-700 mb-1">소음 dB 범위 ({noiseRange[0]} dB 이상)</Label>
+        <Slider value={noiseRange} onValueChange={setNoiseRange} min={40} max={100} step={5} className="w-full mt-2" />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>40 dB</span>
           <span>70 dB</span>
@@ -205,36 +163,22 @@ export default function FilterSidebar() {
 
       {/* 지역 유형 */}
       <div className="mb-6">
-        <Label className="block text-sm font-medium text-gray-700 mb-2">
-          지역 유형
-        </Label>
+        <Label className="block text-sm font-medium text-gray-700 mb-2">지역 유형</Label>
         <div className="space-y-2">
-          {[
-            "상업 지역",
-            "산업 지역",
-            "주요 도로",
-            "공원",
-            "공공시설",
-            "주거 지역",
-            "도로 및 공원",
-            "전통 시장",
-          ].map((type, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Checkbox id={`area-${index}`} defaultChecked />
-              <Label
-                htmlFor={`area-${index}`}
-                className="text-sm cursor-pointer"
-              >
-                {type}
-              </Label>
-            </div>
-          ))}
+          {["상업 지역", "산업 지역", "주요 도로", "공원", "공공시설", "주거 지역", "도로 및 공원", "전통 시장"].map(
+            (type, index) => (
+              <div key={index} className="flex items-center space-x-2">
+                <Checkbox id={`area-${index}`} defaultChecked />
+                <Label htmlFor={`area-${index}`} className="text-sm cursor-pointer">
+                  {type}
+                </Label>
+              </div>
+            ),
+          )}
         </div>
       </div>
 
-      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">
-        적용
-      </Button>
+      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold">적용</Button>
     </div>
-  );
+  )
 }

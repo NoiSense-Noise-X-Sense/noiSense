@@ -1,147 +1,149 @@
+"use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+
+// 서울시 각 구별 소음 데이터 (샘플)
+const districtData = {
+  gangnam: { name: "강남구", noise: 76.8, status: "보통", color: "yellow", noiseTemp: 87 },
+  gangdong: { name: "강동구", noise: 68.5, status: "양호", color: "green", noiseTemp: 92 },
+  gangbuk: { name: "강북구", noise: 72.1, status: "보통", color: "yellow", noiseTemp: 85 },
+  gangseo: { name: "강서구", noise: 81.2, status: "주의", color: "red", noiseTemp: 70 },
+  gwanak: { name: "관악구", noise: 74.3, status: "보통", color: "yellow", noiseTemp: 88 },
+  gwangjin: { name: "광진구", noise: 73.9, status: "보통", color: "yellow", noiseTemp: 86 },
+  guro: { name: "구로구", noise: 79.4, status: "보통", color: "yellow", noiseTemp: 78 },
+  geumcheon: { name: "금천구", noise: 75.6, status: "보통", color: "yellow", noiseTemp: 84 },
+  nowon: { name: "노원구", noise: 69.8, status: "양호", color: "green", noiseTemp: 90 },
+  dobong: { name: "도봉구", noise: 67.2, status: "양호", color: "green", noiseTemp: 93 },
+  dongdaemun: { name: "동대문구", noise: 77.5, status: "보통", color: "yellow", noiseTemp: 82 },
+  dongjak: { name: "동작구", noise: 74.8, status: "보통", color: "yellow", noiseTemp: 85 },
+  mapo: { name: "마포구", noise: 78.1, status: "보통", color: "yellow", noiseTemp: 80 },
+  seodaemun: { name: "서대문구", noise: 75.2, status: "보통", color: "yellow", noiseTemp: 83 },
+  seocho: { name: "서초구", noise: 73.4, status: "보통", color: "yellow", noiseTemp: 89 },
+  seongdong: { name: "성동구", noise: 76.9, status: "보통", color: "yellow", noiseTemp: 81 },
+  seongbuk: { name: "성북구", noise: 71.8, status: "보통", color: "yellow", noiseTemp: 87 },
+  songpa: { name: "송파구", noise: 75.1, status: "보통", color: "yellow", noiseTemp: 84 },
+  yangcheon: { name: "양천구", noise: 72.6, status: "보통", color: "yellow", noiseTemp: 86 },
+  yeongdeungpo: { name: "영등포구", noise: 80.3, status: "주의", color: "red", noiseTemp: 72 },
+  yongsan: { name: "용산구", noise: 77.8, status: "보통", color: "yellow", noiseTemp: 79 },
+  eunpyeong: { name: "은평구", noise: 70.4, status: "보통", color: "yellow", noiseTemp: 88 },
+  jongno: { name: "종로구", noise: 78.9, status: "보통", color: "yellow", noiseTemp: 77 },
+  jung: { name: "중구", noise: 82.1, status: "주의", color: "red", noiseTemp: 68 },
+  jungnang: { name: "중랑구", noise: 71.3, status: "보통", color: "yellow", noiseTemp: 85 },
+}
+
+type DistrictKey = keyof typeof districtData
 
 export default function SeoulMap() {
-  // 서울 25개 구 데이터 (소음 레벨에 따른 색상)
-  const districts = [
-    { name: "강남구", level: "high", x: 60, y: 65 },
-    { name: "강동구", level: "medium", x: 75, y: 55 },
-    { name: "강북구", level: "low", x: 45, y: 25 },
-    { name: "강서구", level: "medium", x: 15, y: 50 },
-    { name: "관악구", level: "high", x: 45, y: 75 },
-    { name: "광진구", level: "medium", x: 65, y: 45 },
-    { name: "구로구", level: "high", x: 25, y: 65 },
-    { name: "금천구", level: "medium", x: 35, y: 70 },
-    { name: "노원구", level: "low", x: 55, y: 15 },
-    { name: "도봉구", level: "low", x: 50, y: 20 },
-    { name: "동대문구", level: "medium", x: 55, y: 35 },
-    { name: "동작구", level: "high", x: 40, y: 70 },
-    { name: "마포구", level: "high", x: 35, y: 45 },
-    { name: "서대문구", level: "medium", x: 40, y: 40 },
-    { name: "서초구", level: "high", x: 50, y: 70 },
-    { name: "성동구", level: "medium", x: 60, y: 40 },
-    { name: "성북구", level: "low", x: 50, y: 30 },
-    { name: "송파구", level: "medium", x: 70, y: 60 },
-    { name: "양천구", level: "medium", x: 25, y: 55 },
-    { name: "영등포구", level: "high", x: 30, y: 60 },
-    { name: "용산구", level: "high", x: 45, y: 55 },
-    { name: "은평구", level: "low", x: 35, y: 30 },
-    { name: "종로구", level: "medium", x: 45, y: 45 },
-    { name: "중구", level: "high", x: 50, y: 50 },
-    { name: "중랑구", level: "medium", x: 60, y: 30 },
-  ]
-
-  const getColor = (level: string) => {
-    switch (level) {
-      case "high":
-        return "#EF4444" // 빨간색 - 높은 소음
-      case "medium":
-        return "#F59E0B" // 주황색 - 중간 소음
-      case "low":
-        return "#10B981" // 초록색 - 낮은 소음
+  const getColorClass = (color: string) => {
+    switch (color) {
+      case "green":
+        return "fill-green-500 hover:fill-green-600"
+      case "yellow":
+        return "fill-yellow-500 hover:fill-yellow-600"
+      case "red":
+        return "fill-red-500 hover:fill-red-600"
       default:
-        return "#6B7280"
+        return "fill-gray-400 hover:fill-gray-500"
     }
   }
 
   return (
-    <Card className="w-full shadow-xl border-0 bg-white hover:shadow-2xl transition-all duration-300">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-xl font-bold text-gray-900">서울시 소음 분포 지도</CardTitle>
-        <p className="text-sm text-gray-600">실시간 구별 소음 현황</p>
+        <CardTitle className="text-lg font-semibold">서울시 자치구별 소음 지도</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="relative bg-gradient-to-br from-blue-50 to-indigo-100 rounded-xl p-6 h-[500px]">
-          {/* 서울 지도 SVG */}
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-            {/* 한강 표시 */}
-            <path
-              d="M10 45 Q30 50 50 48 Q70 46 90 50 Q85 55 65 53 Q45 51 25 55 Q15 52 10 45"
-              fill="#3B82F6"
-              opacity="0.3"
-              stroke="#2563EB"
-              strokeWidth="0.5"
-            />
-            <text x="50" y="52" fontSize="2" fill="#2563EB" textAnchor="middle" fontWeight="bold">
-              한강
-            </text>
-
-            {/* 구별 원형 마커 */}
-            {districts.map((district, index) => (
-              <g key={index}>
-                <circle
-                  cx={district.x}
-                  cy={district.y}
-                  r="3"
-                  fill={getColor(district.level)}
-                  stroke="white"
-                  strokeWidth="0.5"
-                  className="hover:r-4 transition-all duration-200 cursor-pointer"
-                  opacity="0.8"
-                />
+      <CardContent className="space-y-4">
+        {/* 지도 영역 */}
+        <div className="relative h-96 bg-gray-100 rounded-lg border overflow-hidden">
+          {/* 간단한 서울시 지도 SVG */}
+          <svg viewBox="0 0 400 300" className="w-full h-full">
+            {/* 각 구를 간단한 사각형으로 표현 */}
+            <TooltipProvider>
+              {Object.entries(districtData).map(([key, data], index) => {
+                const row = Math.floor(index / 5)
+                const col = index % 5
+                const x = col * 80 + 10
+                const y = row * 60 + 10
+                return (
+                  <Tooltip key={key}>
+                    <TooltipTrigger asChild>
+                      <rect
+                        x={x}
+                        y={y}
+                        width="70"
+                        height="50"
+                        className={`${getColorClass(data.color)} cursor-pointer transition-all duration-200 stroke-white stroke-2`}
+                      />
+                    </TooltipTrigger>
+                    <TooltipContent className="bg-black text-white p-3 rounded-lg shadow-lg">
+                      <h3 className="text-lg font-semibold mb-2">{data.name} 소음 현황</h3>
+                      <div className="flex justify-between items-center gap-4 mb-2">
+                        <div>
+                          <p className="text-sm text-gray-300">소음지수</p>
+                          <p
+                            className={`text-xl font-bold ${
+                              data.color === "green"
+                                ? "text-green-400"
+                                : data.color === "yellow"
+                                  ? "text-yellow-400"
+                                  : "text-red-400"
+                            }`}
+                          >
+                            {data.noise} dB
+                          </p>
+                        </div>
+                        <div className="w-px h-10 bg-gray-600" />
+                        <div className="relative group">
+                          <p className="text-sm text-gray-300">소음온도</p>
+                          <p className="text-xl font-bold text-blue-400">{data.noiseTemp} 점</p>
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                            소음온도 공식: (100 - (소음dB - 50) * 2)
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">클릭하여 상세보기 화면으로 이동</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )
+              })}
+            </TooltipProvider>
+            {/* 구 이름 표시 */}
+            {Object.entries(districtData).map(([key, data], index) => {
+              const row = Math.floor(index / 5)
+              const col = index % 5
+              const x = col * 80 + 45
+              const y = row * 60 + 40
+              return (
                 <text
-                  x={district.x}
-                  y={district.y - 4}
-                  fontSize="2.5"
-                  fill="#374151"
+                  key={`${key}-text`}
+                  x={x}
+                  y={y}
                   textAnchor="middle"
-                  fontWeight="bold"
-                  className="pointer-events-none"
+                  className="text-xs font-medium fill-white pointer-events-none"
                 >
-                  {district.name}
+                  {data.name}
                 </text>
-              </g>
-            ))}
-
-            {/* 서울 경계선 (간단한 형태) */}
-            <path
-              d="M15 20 Q25 15 35 18 Q45 12 55 15 Q65 12 75 18 Q85 25 88 35 Q90 45 85 55 Q80 65 70 70 Q60 75 50 73 Q40 75 30 70 Q20 65 15 55 Q10 45 12 35 Q13 25 15 20 Z"
-              fill="none"
-              stroke="#6B7280"
-              strokeWidth="0.8"
-              strokeDasharray="2,1"
-              opacity="0.6"
-            />
+              )
+            })}
           </svg>
-
-          {/* 범례 */}
-          <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg">
-            <h4 className="text-sm font-semibold mb-2">소음 수준</h4>
-            <div className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <span className="text-xs">높음 (70+ dB)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-                <span className="text-xs">보통 (60-70 dB)</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-xs">낮음 (50-60 dB)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* 현재 시간 표시 */}
-          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-lg shadow-lg">
-            <div className="text-xs text-gray-600">업데이트</div>
-            <div className="text-sm font-semibold">2025.01.07 15:30</div>
-          </div>
         </div>
 
-        {/* 상세 정보 */}
-        <div className="mt-4 grid grid-cols-3 gap-4 text-center">
-          <div className="p-3 bg-red-50 rounded-lg">
-            <div className="text-lg font-bold text-red-600">8개구</div>
-            <div className="text-xs text-gray-600">높은 소음</div>
-          </div>
-          <div className="p-3 bg-amber-50 rounded-lg">
-            <div className="text-lg font-bold text-amber-600">12개구</div>
-            <div className="text-xs text-gray-600">보통 소음</div>
-          </div>
-          <div className="p-3 bg-green-50 rounded-lg">
-            <div className="text-lg font-bold text-green-600">5개구</div>
-            <div className="text-xs text-gray-600">낮은 소음</div>
+        {/* 범례 */}
+        <div className="space-y-2">
+          <h4 className="font-medium text-gray-700">범례</h4>
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <span>70dB 미만</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+              <span>70~79dB</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-red-500 rounded"></div>
+              <span>80dB 이상</span>
+            </div>
           </div>
         </div>
       </CardContent>

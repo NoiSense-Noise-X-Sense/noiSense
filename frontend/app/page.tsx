@@ -4,14 +4,14 @@ import { Volume2, Home, User, MessageSquare, Map, BarChart3, LogIn, LayoutDashbo
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import LoginPage from "../components/login-page"
-import SeoulNoiseDashboardV3 from "../components/seoul-noise-dashboard-v3"
+import SeoulNoiseDashboard from "../components/seoul-noise-dashboard"
 import MyPage from "../components/my-page"
 import NoiseBoard from "../components/noise-board"
 import PostDetail from "../components/post-detail"
 import WritePost from "../components/write-post"
 import DistrictDashboard from "../components/district-dashboard"
-import SeoulMapV3 from "../components/seoul-map-v3"
-import FilterSidebarV3 from "../components/filter-sidebar-v3"
+import SeoulMapV3 from "../components/seoul-map"
+import FilterSidebar from "../components/filter-sidebar"
 import AnalysisReport from "../components/analysis-report"
 
 type PageType =
@@ -181,10 +181,10 @@ export default function NoiSenseDashboard() {
       </header>
 
       {/* Main Content */}
-      {currentPage === "main" && <SeoulNoiseDashboardV3 onDistrictClick={handleDistrictClick} />}
+      {currentPage === "main" && <SeoulNoiseDashboard onDistrictClick={handleDistrictClick} />}
       {currentPage === "noise-map" && (
         <div className="flex">
-          <FilterSidebarV3 />
+          <FilterSidebar />
           <div className="flex-1 p-6">
             <SeoulMapV3 />
           </div>
