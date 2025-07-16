@@ -80,7 +80,6 @@ jobs:
             SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
             EOF
 
-            cd /home/ec2-user/app
 
             # 환경변수 로드
             set -a
