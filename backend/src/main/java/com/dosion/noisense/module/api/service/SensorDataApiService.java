@@ -38,7 +38,7 @@ public class SensorDataApiService {
   private final Executor batchTaskExecutor;
   private final ObjectMapper objectMapper;
   private static final int CHUNK_SIZE = 1000;
-  private @Value("${api.seoul.service-name}") String serviceName;
+  private @Value("${api.sdot.service-name}") String serviceName;
 
   // run 중 일 때 체크
   private final AtomicBoolean isInitialLoadRunning = new AtomicBoolean(false);
@@ -58,6 +58,7 @@ public class SensorDataApiService {
     this.batchTaskExecutor = batchTaskExecutor;
   }
 
+  // 최초 데이터 저장(모든 데이터 저장)
   @Async
   public void fetchAllHistoricalData() {
 
@@ -65,15 +66,34 @@ public class SensorDataApiService {
 
       log.warn("이미 최초 데이터 수집 작업이 진행 중입니다.");
 
+      isInitialLoadRunning.set(false);
+
       return;
 
     }
-    log.info("최초 데이터 수집을 위한 S-DoT 병렬 수집 작업을 시작합니다.");
+
+    Set<LocalDateTime> lastKnownTimes = sensorDataRepository.findLatestSensingTime();
+
+    // lastKnownTimes에 데이터가 아예 들어오지 않는 경우 -> 최초 데이터 없음
+    // 반대인 경우 최초 데이터가 아니므로 정기 업데이트로 실행하도록 기다리게 함
+    if (!lastKnownTimes.isEmpty() && !lastKnownTimes.contains(null)) {
+
+      log.warn("초기 데이터가 이미 저장되어 있습니다. 정기 업데이트를 기다려 주세요.");
+
+      // 실행 중 아님 표시
+      isInitialLoadRunning.set(false);
+      return;
+    }
+
+    // 실행 시작 플래그 true
+    isInitialLoadRunning.set(true);
+
     Long startTime = System.currentTimeMillis();
     log.info("최초 데이터 수집 시작 시간: {}", timeFormatter(startTime));
+
     try {
 
-
+      // 전체 Data Count 조회
       int totalCount = sensorDataApiReader.getTotalCount();
       log.info("수집 할 데이터는 총 {}건 입니다.", totalCount);
 
@@ -83,15 +103,19 @@ public class SensorDataApiService {
       }
 
       List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+      // Data 호출하기 위한 반복문
       for (int startIndex = 1; startIndex <= totalCount; startIndex += CHUNK_SIZE) {
 
         final int start = startIndex;
         final int end = Math.min(startIndex + CHUNK_SIZE - 1, totalCount);
+
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
           processPage(start, end, startTime);
         }, this.batchTaskExecutor);
         futures.add(future);
       }
+
 
       CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
       log.info("S-DoT 전체 데이터 병렬 수집 작업이 성공적으로 완료되었습니다.");
@@ -107,6 +131,7 @@ public class SensorDataApiService {
 
   }
 
+  // 정기 데이터 일 때 사용(최근 데이터만)
   @Transactional
   public void fetchRecentData() {
 
@@ -122,7 +147,6 @@ public class SensorDataApiService {
 
     // 증분 업데이트를 위해 DB에서 가장 마지막 시간을 조회
     Set<LocalDateTime> lastKnownTimes = sensorDataRepository.findLatestSensingTime();
-    String timeToLog;
 
     // lastKnownTimes에 데이터가 아예 들어오지 않는 경우 -> 최초 데이터 없음
     if (lastKnownTimes.isEmpty() || lastKnownTimes.contains(null)) {
@@ -130,28 +154,44 @@ public class SensorDataApiService {
       // 전체 데이터 가져오기
       fetchAllHistoricalData();
     } else {
-      // 있다면 증분 업데이트 실행
-      LocalDateTime latestTime = lastKnownTimes.iterator().next();
-
+      LocalDateTime latestTime = lastKnownTimes.iterator().next(); // 이 값을 직접 넘김
       log.info("증분 업데이트를 시작합니다. 기준 시간: {}", latestTime);
-      runIncrementalUpdate(lastKnownTimes, startTime);
-    }
+      runIncrementalUpdate(latestTime, startTime); // 파라미터 변경
+    }//    }
     log.info("정기적인 S-DoT 최신 데이터 수집이 완료되었습니다.");
     takenTimeLog(startTime);
   }
 
   // 증분 업데이트 실행
-  private void runIncrementalUpdate(Set<LocalDateTime> lastKnownTimes, Long startTime) {
+  private void runIncrementalUpdate(LocalDateTime latestTime, Long startTime) {
 
     List<AutonomousDistrictEntity> districtList = autonomousDistrictRepository.findAll();
+
+    log.info("DB에서 조회한 자치구 목록의 개수: {}", districtList.size());
+
+
     for (AutonomousDistrictEntity district : districtList) {
+
+      int startIndex = 1;
+      int endIndex = CHUNK_SIZE;
+
       String districtNameEn = district.getNameEn();
       String districtNameKo = district.getNameKo();
-      try {
-        processFirstPageForDistrict(districtNameEn, districtNameKo, lastKnownTimes, startTime);
-      } catch (Exception e) {
-        log.error("[{}] 최신 데이터 처리 중 예외가 발생했습니다.", districtNameKo, e);
+      // 최신데이터 2000개만 받아오게 설정
+      for (int i=0; i<2; i++) {
+        try {
+          processFirstPageForDistrict(districtNameEn, districtNameKo, latestTime, startTime, startIndex, endIndex);
+
+          if (startIndex == 1) {
+              startIndex += CHUNK_SIZE;
+              endIndex += CHUNK_SIZE;
+          }
+        } catch (Exception e) {
+
+          log.error("[{}] 최신 데이터 처리 중 예외가 발생했습니다.", districtNameKo, e);
+        }
       }
+
     }
 
   }
@@ -165,6 +205,7 @@ public class SensorDataApiService {
 
       if (!dtoList.isEmpty()) {
         // 전체 데이터 수집 시에는 시간 필터링이 없다는 의미로 null 전달
+        // Data 저장하는 메서드 호출
         saveNewData(dtoList, "전체 일괄", null, startTime);
       }
     } catch (Exception e) {
@@ -172,48 +213,56 @@ public class SensorDataApiService {
     }
   }
 
+
+  // 9시 30분, 15시 30분에 한 번씩 부르기
+  // S-DoT Data가 하루에 한 번만 업데이트 됨
+  // 오전에 누락 될 수 있으니 15시에 한 번 더
   @Scheduled(cron = "0 */1 * * * *")
+//  @Scheduled(cron = "0 30 9,15 * * *")
   public void scheduledBatchExecution() {
     fetchRecentData();
   }
 
   // lastKnownTimes 받도록 함
-  private void processFirstPageForDistrict(String districtNameEn, String districtNameKo, Set<LocalDateTime> lastKnownTimes, Long startTime) throws Exception {
-    String jsonResponse = sensorDataApiReader.callApiForDistrict(districtNameEn, 1, CHUNK_SIZE).block();
+  private void processFirstPageForDistrict(String districtNameEn, String districtNameKo, LocalDateTime lastestTime, Long startTime, int startIndex, int endIndex ) throws Exception {
+
+    String jsonResponse = sensorDataApiReader.callApiForDistrict(districtNameEn, startIndex, endIndex).block();
+
     List<SensorDataApiDto> dtoList = parseResponse(jsonResponse);
 
     if (!dtoList.isEmpty()) {
       // 그대로 saveNewData로 전달
-      saveNewData(dtoList, districtNameKo, lastKnownTimes, startTime);
+      saveNewData(dtoList, districtNameKo, lastestTime, startTime);
     } else {
       log.info("[{}] 새롭게 추가할 데이터가 없습니다.", districtNameKo);
     }
+
   }
 
-  private void saveNewData(List<SensorDataApiDto> dtoList, String sourceName, Set<LocalDateTime> lastKnownTimes, Long startTime) {
+  // 데이터 저장 메서드
+  private void saveNewData(List<SensorDataApiDto> dtoList, String sourceName, LocalDateTime latestTime, Long startTime) {
     if (dtoList == null || dtoList.isEmpty()) {
       return;
     }
 
+    log.info("[{}] 필터링 전 데이터 {}건 수신.", sourceName, dtoList.size());
+
     List<SensorDataApiDto> dataToProcess;
 
     // 기존 데이터가 있을 경우 lastKnownTimes로 필터링
-    if ( lastKnownTimes == null || lastKnownTimes.isEmpty() ) {
+    if ( latestTime == null) {
 
       dataToProcess = new ArrayList<>(dtoList);
 
     } else {
 
-      dataToProcess = lastKnownTimes
-        .stream().map(lastTime -> dtoList.stream()
-          .filter(dto -> dto.getSensingTime().isAfter(lastTime))
-          .collect(Collectors.toList()))
-        .findAny().orElse(dtoList);
-
+      dataToProcess = dtoList.stream()
+        .filter(dto -> dto.getSensingTime().isAfter(latestTime))
+        .collect(Collectors.toList());
     }
 
     if (dataToProcess.isEmpty()) {
-      log.info("[{}] 처리할 새로운 데이터가 없습니다.", sourceName);
+      log.info("[{}] 처리할 새로운 데이터가 없습니다. 기준시간: [{}]", sourceName, latestTime);
       return;
     }
 
@@ -224,8 +273,6 @@ public class SensorDataApiService {
 
     if (!newEntitiesToSave.isEmpty()) {
       sensorDataRepository.bulkInsert(newEntitiesToSave);
-
-
       log.info("[{}] 새로운 데이터 {}건을 저장했습니다.", sourceName, newEntitiesToSave.size());
 
     }
@@ -274,8 +321,9 @@ public class SensorDataApiService {
 
   }
 
-
+  // Entity로 빌드
   private SensorDataApiEntity mapDtoToEntity(SensorDataApiDto sensorDataApiDTO) {
+
     return SensorDataApiEntity.builder()
       .sensingTime(sensorDataApiDTO.getSensingTime())
       .region(sensorDataApiDTO.getRegion())
@@ -291,6 +339,7 @@ public class SensorDataApiService {
       .avgHumi(sensorDataApiDTO.getAvgHumi())
       .minHumi(sensorDataApiDTO.getMinHumi())
       .build();
+
   }
 
 

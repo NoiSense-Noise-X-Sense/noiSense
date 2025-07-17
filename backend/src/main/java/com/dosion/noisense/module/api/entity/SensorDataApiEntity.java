@@ -22,7 +22,6 @@ public class SensorDataApiEntity {
   private Long id;
 
   @Column(name = "sensing_time", nullable = false)
-
   private LocalDateTime sensingTime;
 
   // 지역 데이터

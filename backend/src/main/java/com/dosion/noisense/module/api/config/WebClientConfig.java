@@ -19,7 +19,7 @@ import reactor.netty.http.client.HttpClient;
 @Configuration
 public class WebClientConfig {
 
-  private @Value("${api.seoul.uri}") String apiUri;
+  private @Value("${api.sdot.uri}") String apiUri;
 
   @Bean
   public WebClient.Builder webClientBuilder() {

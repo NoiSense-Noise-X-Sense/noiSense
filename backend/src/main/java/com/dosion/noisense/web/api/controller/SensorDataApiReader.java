@@ -14,7 +14,7 @@ public class SensorDataApiReader {
 
   private final WebClient webClient;
   private final String apiKey;
-  private @Value("${api.seoul.service-name}")String serviceName;
+  private @Value("${api.sdot.service-name}")String serviceName;
 
   // 전체 데이터 건수 가져오기
   public int getTotalCount() {
@@ -34,7 +34,7 @@ public class SensorDataApiReader {
   }
 
   // WebClient.Builder와 apiKey를 생성자로 주입
-  public SensorDataApiReader(WebClient.Builder webClientBuilder, @Value("${api.seoul.key}") String apiKey, @Value("${api.seoul.uri}") String apiUri) {
+  public SensorDataApiReader(WebClient.Builder webClientBuilder, @Value("${api.sdot.key}") String apiKey, @Value("${api.sdot.uri}") String apiUri) {
     this.webClient = webClientBuilder.baseUrl(apiUri).build();
     this.apiKey = apiKey;
   }
@@ -42,15 +42,15 @@ public class SensorDataApiReader {
   public Mono<String> callApiForDistrict(String districtNameEn, int startIndex, int endIndex) {
 
     String path;
-    // SENSING_TIME을 기준으로 내림차순(최신순) 정렬 파라미터를 추가합니다.
+    // SENSING_TIME을 기준으로 내림차순(최신순) 정렬하는 파라미터
     String sortOrder = "?$order=SENSING_TIME DESC";
 
     if (districtNameEn == null || districtNameEn.isEmpty()) {
-      // 최초 데이터 넣을 때는 정렬 X -> 오래 걸림
+      // 최초 데이터 넣을 때는 정렬 X -> 소요시간 증가
       path = String.format("/%s/json/%s/%d/%d", apiKey, serviceName, startIndex, endIndex);
     } else {
       // 자치구 필터 뒤에 정렬 파라미터 추가
-      // sortOrder -> 내장 정렬 파라미터
+      // sortOrder -> api 내장 정렬 파라미터 전체 정렬해서 가져옴
       path = String.format("/%s/json/%s/%d/%d/%s%s", apiKey, serviceName, startIndex, endIndex, districtNameEn, sortOrder);
     }
 
