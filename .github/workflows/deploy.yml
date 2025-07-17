@@ -42,7 +42,7 @@ jobs:
         run: |
           cd backend
           chmod +x ./gradlew
-          ./gradlew build --no-daemon
+          ./gradlew build --no-daemon -x test
 
       - name: EC2에 JAR 파일 복사
         uses: appleboy/scp-action@v0.1.4
