@@ -5,8 +5,8 @@ services:
     container_name: postgresDB_noise
     ports:
       - "5432:5432"
-    env_file:
-      - ./.env
+#    env_file:
+#      - ./.env
     environment:
       POSTGRES_DB: noisense
       POSTGRES_USER: ${DB_USER:-root} # :- DB_USER가 없으면 root를 사용
