@@ -5,8 +5,8 @@ services:
     container_name: postgresDB_noise
     ports:
       - "5432:5432"
-    env_file:
-      - ./.env
+#    env_file:
+#      - ./.env
     environment:
       POSTGRES_DB: noisense
       POSTGRES_USER: ${DB_USER:-root} # :- DB_USER가 없으면 root를 사용
@@ -17,6 +17,7 @@ services:
       - ./init/postgresql.repo.schema.init.sql:/tmp/table.sql:ro # 자동 실행 방지 목적으로 /tmp로 복사, 읽기 전용
       - ./init/autonomous_district.sql:/tmp/autonomous_district.sql:ro
       - ./init/administrative_district.sql:/tmp/administrative_district.sql:ro
+      - ./init/boundary_polygon.sql:/tmp/boundary_polygon.sql:ro
     #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
 #      interval: 10s
