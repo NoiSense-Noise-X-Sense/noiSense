@@ -15,12 +15,14 @@ jobs:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
       KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}%
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       SPRING_DATASOURCE_PORT: ${{ secrets.SPRING_DATASOURCE_PORT }}
       SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
       SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      API_SDOT_KEY: ${{ secrets.API_SDOT_KEY }}
+      API_SDOT_SERVICENAME: ${{ secrets.API_SDOT_SERVICENAME }}
 
     steps:
       - name: Checkout 코드
@@ -113,7 +115,7 @@ jobs:
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
 
             echo "======== 자바 실행 ========="
-            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
+            nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
             sleep 5
 
             echo "======== 실행된 자바 프로세스 확인 ========"
