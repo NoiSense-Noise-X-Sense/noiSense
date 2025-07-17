@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ develop ]
+    branches: [ feature/awscicd ]
 
 jobs:
   build-and-deploy:
@@ -89,6 +89,8 @@ jobs:
               echo ".env 파일이 존재하지 않습니다. 배포를 중단합니다."
               exit 1
             fi
+
+            echo "URL   = [$SPRING_DATASOURCE_URL]"
 
             echo "======== 기존 java kill ========"
             pkill -f 'java' || true
