@@ -33,12 +33,12 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Frontend Build
-        run: |
-          cd frontend
-          npm ci
-          npm run build
-          cp -r dist/* ../backend/src/main/resources/static/
+#      - name: Frontend Build
+#        run: |
+#          cd frontend
+#          npm ci
+#          npm run build
+#          cp -r dist/* ../backend/src/main/resources/static/
 
 
       - name: EC2에 .env 파일 생성

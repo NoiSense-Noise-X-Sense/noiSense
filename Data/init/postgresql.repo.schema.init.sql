@@ -1,4 +1,4 @@
-SET search_path TO noisense;
+-- SET search_path TO noisense;
 
 
 CREATE TYPE boundary_type AS ENUM ('AUTONOMOUS_DISTRICT', 'ADMINISTRATIVE_DISTRICT');

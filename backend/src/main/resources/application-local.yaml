@@ -5,7 +5,7 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL:localhost}:${SPRING_DATASOURCE_PORT}/noisense
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -17,7 +17,10 @@ spring:
 
   docker:
     compose:
-      file: ../Data/docker-compose.data.yml
+      enabled: false
+#  docker:
+#    compose:
+#      file: ../Data/docker-compose.data.yml
 
   # JPA
   jpa:
