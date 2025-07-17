@@ -75,7 +75,7 @@ jobs:
             echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
             echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
 
-            echo "======== .env 내용 확인 ========"
+            echo "======== .env 내용 확인 ========="
             cat .env
 
             echo "======== 환경변수 적용 ========"
