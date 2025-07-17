@@ -3,27 +3,27 @@
 import { Volume2, Home, User, MessageSquare, Map, BarChart3, LogIn, LayoutDashboard } from "lucide-react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import LoginPage from "../components/login-page"
-import SeoulNoiseDashboard from "../components/seoul-noise-dashboard"
-import MyPage from "../components/my-page"
-import NoiseBoard from "../components/noise-board"
-import PostDetail from "../components/post-detail"
-import WritePost from "../components/write-post"
-import DistrictDashboard from "../components/district-dashboard"
-import SeoulMapV3 from "../components/seoul-map"
-import FilterSidebar from "../components/filter-sidebar"
-import AnalysisReport from "../components/analysis-report"
+import LoginPage from "../components/LoginPage"
+import SeoulNoiseDashboard from "../components/SeoulNoiseDashboard"
+import MyPage from "../components/MyPage"
+import NoiseBoard from "../components/NoiseBoard"
+import PostDetail from "../components/PostDetail"
+import WritePost from "../components/WritePost"
+import DistrictDashboard from "../components/DistrictDashboard"
+import SeoulMapV3 from "../components/SeoulMap"
+import FilterSidebar from "../components/FilterSidebar"
+import AnalysisReport from "../components/AnalysisReport"
 
 type PageType =
   | "main"
   | "login"
   | "mypage"
   | "board"
-  | "post-detail"
-  | "write-post"
-  | "district-dashboard"
-  | "noise-map"
-  | "analysis-report"
+  | "PostDetail"
+  | "WritePost"
+  | "DistrictDashboard"
+  | "NoiseMap"
+  | "AnalysisReport"
 
 export default function NoiSenseDashboard() {
   const [currentPage, setCurrentPage] = useState<PageType>("main")
@@ -43,12 +43,12 @@ export default function NoiSenseDashboard() {
 
   const handlePostClick = (postId: number) => {
     setSelectedPostId(postId)
-    setCurrentPage("post-detail")
+    setCurrentPage("PostDetail")
   }
 
   const handleWriteClick = () => {
     if (isLoggedIn) {
-      setCurrentPage("write-post")
+      setCurrentPage("WritePost")
     } else {
       setCurrentPage("login")
     }
@@ -56,7 +56,7 @@ export default function NoiSenseDashboard() {
 
   const handleDistrictClick = (district: string) => {
     setSelectedDistrict(district)
-    setCurrentPage("district-dashboard")
+    setCurrentPage("DistrictDashboard")
   }
 
   const handleBackToBoard = () => {
@@ -101,33 +101,33 @@ export default function NoiSenseDashboard() {
                 메인
               </Button>
               <Button
-                variant={currentPage === "district-dashboard" ? "default" : "ghost"}
+                variant={currentPage === "DistrictDashboard" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setCurrentPage("district-dashboard")}
+                onClick={() => setCurrentPage("DistrictDashboard")}
                 className={`flex items-center gap-2 ${
-                  currentPage === "district-dashboard" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
+                  currentPage === "DistrictDashboard" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
                 }`}
               >
                 <LayoutDashboard className="h-4 w-4" />
                 지역 대시보드
               </Button>
               <Button
-                variant={currentPage === "noise-map" ? "default" : "ghost"}
+                variant={currentPage === "NoiseMap" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setCurrentPage("noise-map")}
+                onClick={() => setCurrentPage("NoiseMap")}
                 className={`flex items-center gap-2 ${
-                  currentPage === "noise-map" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
+                  currentPage === "NoiseMap" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
                 }`}
               >
                 <Map className="h-4 w-4" />
                 소음지도
               </Button>
               <Button
-                variant={currentPage === "analysis-report" ? "default" : "ghost"}
+                variant={currentPage === "AnalysisReport" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setCurrentPage("analysis-report")}
+                onClick={() => setCurrentPage("AnalysisReport")}
                 className={`flex items-center gap-2 ${
-                  currentPage === "analysis-report" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
+                  currentPage === "AnalysisReport" ? "bg-white shadow-sm text-purple-600" : "hover:bg-gray-200"
                 }`}
               >
                 <BarChart3 className="h-4 w-4" />
@@ -135,14 +135,14 @@ export default function NoiSenseDashboard() {
               </Button>
               <Button
                 variant={
-                  currentPage === "board" || currentPage === "post-detail" || currentPage === "write-post"
+                  currentPage === "board" || currentPage === "PostDetail" || currentPage === "WritePost"
                     ? "default"
                     : "ghost"
                 }
                 size="sm"
                 onClick={() => setCurrentPage("board")}
                 className={`flex items-center gap-2 ${
-                  currentPage === "board" || currentPage === "post-detail" || currentPage === "write-post"
+                  currentPage === "board" || currentPage === "PostDetail" || currentPage === "WritePost"
                     ? "bg-white shadow-sm text-purple-600"
                     : "hover:bg-gray-200"
                 }`}
@@ -182,7 +182,7 @@ export default function NoiSenseDashboard() {
 
       {/* Main Content */}
       {currentPage === "main" && <SeoulNoiseDashboard onDistrictClick={handleDistrictClick} />}
-      {currentPage === "noise-map" && (
+      {currentPage === "NoiseMap" && (
         <div className="flex">
           <FilterSidebar />
           <div className="flex-1 p-6">
@@ -190,17 +190,17 @@ export default function NoiSenseDashboard() {
           </div>
         </div>
       )}
-      {currentPage === "analysis-report" && <AnalysisReport />}
+      {currentPage === "AnalysisReport" && <AnalysisReport />}
       {currentPage === "mypage" && isLoggedIn && <MyPage />}
       {currentPage === "board" && <NoiseBoard onPostClick={handlePostClick} onWriteClick={handleWriteClick} />}
-      {currentPage === "post-detail" && <PostDetail onBack={handleBackToBoard} postId={0}
+      {currentPage === "PostDetail" && <PostDetail onBack={handleBackToBoard} postId={0}
                                                     onEdit={function (postId: number): void {
                                                       throw new Error("Function not implemented.")
                                                     }} onDelete={function (postId: number): void {
         throw new Error("Function not implemented.")
       }} />}
-      {currentPage === "write-post" && <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />}
-      {currentPage === "district-dashboard" && <DistrictDashboard selectedDistrict={selectedDistrict} />}
+      {currentPage === "WritePost" && <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />}
+      {currentPage === "DistrictDashboard" && <DistrictDashboard selectedDistrict={selectedDistrict} />}
     </div>
   )
 }

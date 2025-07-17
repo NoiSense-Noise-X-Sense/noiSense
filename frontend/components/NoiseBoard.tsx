@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MessageSquare, MapPin, Heart, Eye, PlusCircle } from "lucide-react";
-import NoiseBoardSearchBar from "./noise-board-search-bar"; // Import the new search bar component
+import NoiseBoardSearchBar from "./NoiseBoardSearchBar"; // Import the new search bar component
 
 // Dummy data for posts
 const dummyPosts = [

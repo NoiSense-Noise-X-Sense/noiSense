@@ -188,7 +188,7 @@ export default function SeoulNoiseDashboard({ onDistrictClick }: { onDistrictCli
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-sm text-gray-600 mb-2">업데이트 주기</div>
-              <div className="font-semibold text-gray-900">실시간 (30분 간격)</div>
+              <div className="font-semibold text-gray-900">한시간 간격</div>
             </CardContent>
           </Card>
           <Card>

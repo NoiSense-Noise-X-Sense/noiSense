@@ -9,8 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react"
 
 export default function FilterSidebar() {
-  const [timeRange, setTimeRange] = useState([240]) // 04:00 in minutes
-  const [noiseRange, setNoiseRange] = useState([70])
+  // 시간대/소음 범위: [min, max] 형식으로!
+  const [timeRange, setTimeRange] = useState<[number, number]>([480, 1020]) // 08:00 ~ 17:00
+  const [noiseRange, setNoiseRange] = useState<[number, number]>([60, 85])
 
   // Convert minutes to time format
   const formatTime = (minutes: number) => {
@@ -105,9 +106,16 @@ export default function FilterSidebar() {
       {/* 시간대 슬라이더 */}
       <div className="mb-4">
         <Label className="block text-sm font-medium text-gray-700 mb-1">
-          시간대 (예: {formatTime(timeRange[0])}~{formatTime(timeRange[0] + 300)})
+          시간대 (예: {formatTime(timeRange[0])} ~ {formatTime(timeRange[1])})
         </Label>
-        <Slider value={timeRange} onValueChange={setTimeRange} min={0} max={1440} step={30} className="w-full mt-2" />
+        <Slider
+          value={timeRange}
+          onValueChange={setTimeRange}
+          min={0}
+          max={1440}
+          step={30}
+          className="w-full mt-2"
+        />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>00:00</span>
           <span>12:00</span>
@@ -152,8 +160,17 @@ export default function FilterSidebar() {
 
       {/* 소음 값 슬라이더 */}
       <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">소음 dB 범위 ({noiseRange[0]} dB 이상)</Label>
-        <Slider value={noiseRange} onValueChange={setNoiseRange} min={40} max={100} step={5} className="w-full mt-2" />
+        <Label className="block text-sm font-medium text-gray-700 mb-1">
+          소음 dB 범위 ({noiseRange[0]} ~ {noiseRange[1]} dB)
+        </Label>
+        <Slider
+          value={noiseRange}
+          onValueChange={setNoiseRange}
+          min={40}
+          max={100}
+          step={5}
+          className="w-full mt-2"
+        />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>40 dB</span>
           <span>70 dB</span>
