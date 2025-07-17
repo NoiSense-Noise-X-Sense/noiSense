@@ -99,7 +99,7 @@ jobs:
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
 
             echo "======== 자바 실행 ========="
-            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 & disown
             sleep 5
 
             echo "======== 실행된 자바 프로세스 확인 ========"
