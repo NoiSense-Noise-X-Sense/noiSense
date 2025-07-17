@@ -53,6 +53,9 @@ dependencies {
   // 게시판 정렬
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+  // api하면서 필요했던 것들
+  implementation 'org.json:json:20231013'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'

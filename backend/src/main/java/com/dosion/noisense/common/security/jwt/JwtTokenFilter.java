@@ -42,7 +42,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
       || path.startsWith("/fetchWithAuth.js")
       || path.startsWith("/swagger-ui")
       || path.startsWith("/v3/api-docs")
-      || path.startsWith("/actuator/prometheus");
+      || path.startsWith("/actuator/prometheus")
+      || path.startsWith("/api/batch/");
   }
 
   @Override
