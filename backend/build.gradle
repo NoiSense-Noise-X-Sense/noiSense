@@ -22,6 +22,24 @@ configurations {
 	}
 }
 
+
+// QueryDSL 설정 추가
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+  main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+  options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+  delete(file(querydslDir))
+}
+// QueryDsl 설정 끝
+
+
 repositories {
 	mavenCentral()
 }
@@ -52,6 +70,12 @@ dependencies {
 
   // 게시판 정렬
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+  // queryDsl
+  implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+  annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+  annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+  annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
   // api하면서 필요했던 것들
   implementation 'org.json:json:20231013'
