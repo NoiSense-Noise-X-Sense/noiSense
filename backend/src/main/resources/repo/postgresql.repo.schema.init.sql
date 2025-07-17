@@ -254,5 +254,3 @@ ALTER TABLE board_empathy ADD CONSTRAINT fk_users_to_board_empathy_1
 ALTER TABLE "sensor_data" ALTER COLUMN "sensing_time" TYPE TIMESTAMP(0);
 
 ALTER TABLE "sensor_data" ALTER COLUMN "batch_time" TYPE TIMESTAMP(0);
-
-create

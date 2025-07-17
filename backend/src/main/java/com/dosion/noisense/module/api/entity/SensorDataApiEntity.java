@@ -17,18 +17,11 @@ import java.time.LocalDateTime;
 public class SensorDataApiEntity {
 
   @Id
-//  @SequenceGenerator(
-//    name = "sensor_data_seq",
-//    sequenceName = "sensor_data_seq",
-//    initialValue = 1,
-//    allocationSize = 500
-//  )
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "sensor_data_id")
   private Long id;
 
   @Column(name = "sensing_time", nullable = false)
-
   private LocalDateTime sensingTime;
 
   // 지역 데이터

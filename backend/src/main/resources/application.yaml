@@ -11,9 +11,9 @@ spring:
     ansi:
       enabled: always
 
-  docker:
-    compose:
-      file: ../Data/docker-compose.data.yml
+#  docker:
+#    compose:
+#      file: ../Data/docker-compose.data.yml
 
   # Jackson Lib
   jackson:
@@ -21,6 +21,9 @@ spring:
 #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
+
 api:
-  seoul:
-    key: "777050586b776b64353266596d5643"
+  sdot:
+    key: ${API_SDOT_KEY}
+    uri: "http://openapi.seoul.go.kr:8088"
+    service-name: ${API_SDOT_SERVICENAME}

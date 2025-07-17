@@ -4,11 +4,9 @@ import com.dosion.noisense.module.api.entity.SensorDataApiEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -16,6 +14,6 @@ public interface SensorDataRepository extends JpaRepository<SensorDataApiEntity,
 
   // 최신 데이터 불러오기
   @Query("SELECT MAX(s.sensingTime) FROM SensorDataApiEntity s")
-  Optional<LocalDateTime> findLatestSensingTime();
+  Set<LocalDateTime> findLatestSensingTime();
 
 }

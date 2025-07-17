@@ -17,6 +17,7 @@ public class AutonomousDistrictEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
+  @Column(name = "code")
   private String code;
 
   @Column(name = "name_ko")
