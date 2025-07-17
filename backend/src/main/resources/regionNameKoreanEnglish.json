@@ -1,0 +1,1754 @@
+[
+  {
+    "english_name": "all",
+    "korean_name": "전체"
+  },
+  {
+    "english_name": "Dobong-gu",
+    "korean_name": "도봉구"
+  },
+  {
+    "english_name": "Dongdaemun-gu",
+    "korean_name": "동대문구"
+  },
+  {
+    "english_name": "Dongjak-gu",
+    "korean_name": "동작구"
+  },
+  {
+    "english_name": "Eunpyeong-gu",
+    "korean_name": "은평구"
+  },
+  {
+    "english_name": "Gangbuk-gu",
+    "korean_name": "강북구"
+  },
+  {
+    "english_name": "Gangdong-gu",
+    "korean_name": "강동구"
+  },
+  {
+    "english_name": "Gangnam-gu",
+    "korean_name": "강남구"
+  },
+  {
+    "english_name": "Gangseo-gu",
+    "korean_name": "강서구"
+  },
+  {
+    "english_name": "Geumcheon-gu",
+    "korean_name": "금천구"
+  },
+  {
+    "english_name": "Guro-gu",
+    "korean_name": "구로구"
+  },
+  {
+    "english_name": "Gwanak-gu",
+    "korean_name": "관악구"
+  },
+  {
+    "english_name": "Gwangjin-gu",
+    "korean_name": "광진구"
+  },
+  {
+    "english_name": "Jongno-gu",
+    "korean_name": "종로구"
+  },
+  {
+    "english_name": "Jung-gu",
+    "korean_name": "중구"
+  },
+  {
+    "english_name": "Jungnang-gu",
+    "korean_name": "중랑구"
+  },
+  {
+    "english_name": "Mapo-gu",
+    "korean_name": "마포구"
+  },
+  {
+    "english_name": "Nowon-gu",
+    "korean_name": "노원구"
+  },
+  {
+    "english_name": "Seocho-gu",
+    "korean_name": "서초구"
+  },
+  {
+    "english_name": "Seodaemun-gu",
+    "korean_name": "서대문구"
+  },
+  {
+    "english_name": "Seongbuk-gu",
+    "korean_name": "성북구"
+  },
+  {
+    "english_name": "Seongdong-gu",
+    "korean_name": "성동구"
+  },
+  {
+    "english_name": "Songpa-gu",
+    "korean_name": "송파구"
+  },
+  {
+    "english_name": "Yangcheon-gu",
+    "korean_name": "양천구"
+  },
+  {
+    "english_name": "Yeongdeungpo-gu",
+    "korean_name": "영등포구"
+  },
+  {
+    "english_name": "Yongsan-gu",
+    "korean_name": "용산구"
+  },
+  {
+    "english_name": "Ahyeon-dong",
+    "korean_name": "아현동"
+  },
+  {
+    "english_name": "Amsa1(il)-dong",
+    "korean_name": "암사1동"
+  },
+  {
+    "english_name": "Amsa2(i)-dong",
+    "korean_name": "암사2동"
+  },
+  {
+    "english_name": "Amsa3(sam)-dong",
+    "korean_name": "암사3동"
+  },
+  {
+    "english_name": "Anam-dong",
+    "korean_name": "안암동"
+  },
+  {
+    "english_name": "Apgujeong-dong",
+    "korean_name": "압구정동"
+  },
+  {
+    "english_name": "Balsan1(il)-dong",
+    "korean_name": "발산1동"
+  },
+  {
+    "english_name": "Bangbae1(il)-dong",
+    "korean_name": "방배1동"
+  },
+  {
+    "english_name": "Bangbae2(i)-dong",
+    "korean_name": "방배2동"
+  },
+  {
+    "english_name": "Bangbae3(sam)-dong",
+    "korean_name": "방배3동"
+  },
+  {
+    "english_name": "Bangbae4(sa)-dong",
+    "korean_name": "방배4동"
+  },
+  {
+    "english_name": "Bangbaebon-dong",
+    "korean_name": "방배본동"
+  },
+  {
+    "english_name": "Banghak1(il)-dong",
+    "korean_name": "방학1동"
+  },
+  {
+    "english_name": "Banghak2(i)-dong",
+    "korean_name": "방학2동"
+  },
+  {
+    "english_name": "Banghak3(sam)-dong",
+    "korean_name": "방학3동"
+  },
+  {
+    "english_name": "Banghwa1(il)-dong",
+    "korean_name": "방화1동"
+  },
+  {
+    "english_name": "Banghwa2(i)-dong",
+    "korean_name": "방화2동"
+  },
+  {
+    "english_name": "Banghwa3(sam)-dong",
+    "korean_name": "방화3동"
+  },
+  {
+    "english_name": "Bangi1(il)-dong",
+    "korean_name": "방이1동"
+  },
+  {
+    "english_name": "Bangi2(i)-dong",
+    "korean_name": "방이2동"
+  },
+  {
+    "english_name": "Banpo1(il)-dong",
+    "korean_name": "반포1동"
+  },
+  {
+    "english_name": "Banpo2(i)-dong",
+    "korean_name": "반포2동"
+  },
+  {
+    "english_name": "Banpo3(sam)-dong",
+    "korean_name": "반포3동"
+  },
+  {
+    "english_name": "Banpo4(sa)-dong",
+    "korean_name": "반포4동"
+  },
+  {
+    "english_name": "Banpobon-dong",
+    "korean_name": "반포본동"
+  },
+  {
+    "english_name": "Beon1(il)-dong",
+    "korean_name": "번1동"
+  },
+  {
+    "english_name": "Beon2(i)-dong",
+    "korean_name": "번2동"
+  },
+  {
+    "english_name": "Beon3(sam)-dong",
+    "korean_name": "번3동"
+  },
+  {
+    "english_name": "Bogwang-dong",
+    "korean_name": "보광동"
+  },
+  {
+    "english_name": "Bomun-dong",
+    "korean_name": "보문동"
+  },
+  {
+    "english_name": "Boramae-dong",
+    "korean_name": "보라매동"
+  },
+  {
+    "english_name": "Buam-dong",
+    "korean_name": "부암동"
+  },
+  {
+    "english_name": "Bukahyeon-dong",
+    "korean_name": "북아현동"
+  },
+  {
+    "english_name": "Bukgajwa1(il)-dong",
+    "korean_name": "북가좌1동"
+  },
+  {
+    "english_name": "Bukgajwa2(i)-dong",
+    "korean_name": "북가좌2동"
+  },
+  {
+    "english_name": "Bulgwang1(il)-dong",
+    "korean_name": "불광1동"
+  },
+  {
+    "english_name": "Bulgwang2(i)-dong",
+    "korean_name": "불광2동"
+  },
+  {
+    "english_name": "Chang1(il)-dong",
+    "korean_name": "창1동"
+  },
+  {
+    "english_name": "Chang2(i)-dong",
+    "korean_name": "창2동"
+  },
+  {
+    "english_name": "Chang3(sam)-dong",
+    "korean_name": "창3동"
+  },
+  {
+    "english_name": "Chang4(sa)-dong",
+    "korean_name": "창4동"
+  },
+  {
+    "english_name": "Chang5-dong",
+    "korean_name": "창5동"
+  },
+  {
+    "english_name": "Changsin1(il)-dong",
+    "korean_name": "창신1동"
+  },
+  {
+    "english_name": "Changsin2(i)-dong",
+    "korean_name": "창신2동"
+  },
+  {
+    "english_name": "Cheongdam-dong",
+    "korean_name": "청담동"
+  },
+  {
+    "english_name": "Cheonggu-dong",
+    "korean_name": "청구동"
+  },
+  {
+    "english_name": "Cheongnim-dong",
+    "korean_name": "청림동"
+  },
+  {
+    "english_name": "Cheongnyangni-dong",
+    "korean_name": "청량리동"
+  },
+  {
+    "english_name": "Cheongnyong-dong",
+    "korean_name": "청룡동"
+  },
+  {
+    "english_name": "Cheongpa-dong",
+    "korean_name": "청파동"
+  },
+  {
+    "english_name": "CheongwoonHyoja-dong",
+    "korean_name": "청운효자동"
+  },
+  {
+    "english_name": "Cheonho1(il)-dong",
+    "korean_name": "천호1동"
+  },
+  {
+    "english_name": "Cheonho2(i)-dong",
+    "korean_name": "천호2동"
+  },
+  {
+    "english_name": "Cheonho3(sam)-dong",
+    "korean_name": "천호3동"
+  },
+  {
+    "english_name": "Cheonyeon-dong",
+    "korean_name": "천연동"
+  },
+  {
+    "english_name": "Chunghyeon-dong",
+    "korean_name": "충현동"
+  },
+  {
+    "english_name": "Daebang-dong",
+    "korean_name": "대방동"
+  },
+  {
+    "english_name": "Daechi1(il)-dong",
+    "korean_name": "대치1동"
+  },
+  {
+    "english_name": "Daechi2(i)-dong",
+    "korean_name": "대치2동"
+  },
+  {
+    "english_name": "Daechi4(sa)-dong",
+    "korean_name": "대치4동"
+  },
+  {
+    "english_name": "Daehak-dong",
+    "korean_name": "대학동"
+  },
+  {
+    "english_name": "Daeheung-dong",
+    "korean_name": "대흥동"
+  },
+  {
+    "english_name": "Daejo-dong",
+    "korean_name": "대조동"
+  },
+  {
+    "english_name": "Daerim1(il)-dong",
+    "korean_name": "대림1동"
+  },
+  {
+    "english_name": "Daerim2(i)-dong",
+    "korean_name": "대림2동"
+  },
+  {
+    "english_name": "Daerim3(sam)-dong",
+    "korean_name": "대림3동"
+  },
+  {
+    "english_name": "Dangsan1(il)-dong",
+    "korean_name": "당산1동"
+  },
+  {
+    "english_name": "Dangsan2(i)-dong",
+    "korean_name": "당산2동"
+  },
+  {
+    "english_name": "Dapsip-ri1(il)-dong",
+    "korean_name": "답십리1동"
+  },
+  {
+    "english_name": "Dapsip-ri2(i)-dong",
+    "korean_name": "답십리2동"
+  },
+  {
+    "english_name": "Dasan-dong",
+    "korean_name": "다산동"
+  },
+  {
+    "english_name": "Deungchon1(il)-dong",
+    "korean_name": "등촌1동"
+  },
+  {
+    "english_name": "Deungchon2(i)-dong",
+    "korean_name": "등촌2동"
+  },
+  {
+    "english_name": "Deungchon3(sam)-dong",
+    "korean_name": "등촌3동"
+  },
+  {
+    "english_name": "Dobong1(il)-dong",
+    "korean_name": "도봉1동"
+  },
+  {
+    "english_name": "Dobong2(i)-dong",
+    "korean_name": "도봉2동"
+  },
+  {
+    "english_name": "Dogok2(i)-dong",
+    "korean_name": "도곡2동"
+  },
+  {
+    "english_name": "Dohwa-dong",
+    "korean_name": "도화동"
+  },
+  {
+    "english_name": "Doksan1(il)-dong",
+    "korean_name": "독산1동"
+  },
+  {
+    "english_name": "Doksan2(i)-dong",
+    "korean_name": "독산2동"
+  },
+  {
+    "english_name": "Doksan3(sam)-dong",
+    "korean_name": "독산3동"
+  },
+  {
+    "english_name": "Doksan4(sa)-dong",
+    "korean_name": "독산4동"
+  },
+  {
+    "english_name": "Donam1(il)-dong",
+    "korean_name": "돈암1동"
+  },
+  {
+    "english_name": "Donam2(i)-dong",
+    "korean_name": "돈암2동"
+  },
+  {
+    "english_name": "Donghwa-dong",
+    "korean_name": "동화동"
+  },
+  {
+    "english_name": "Dongseon-dong",
+    "korean_name": "동선동"
+  },
+  {
+    "english_name": "Dorim-dong",
+    "korean_name": "도림동"
+  },
+  {
+    "english_name": "Dunchon1(il)-dong",
+    "korean_name": "둔촌1동"
+  },
+  {
+    "english_name": "Dunchon2(i)-dong",
+    "korean_name": "둔촌2동"
+  },
+  {
+    "english_name": "Eulji-ro-dong",
+    "korean_name": "을지로동"
+  },
+  {
+    "english_name": "Euncheon-dong",
+    "korean_name": "은천동"
+  },
+  {
+    "english_name": "Eungam1(il)-dong",
+    "korean_name": "응암1동"
+  },
+  {
+    "english_name": "Eungam2(i)-dong",
+    "korean_name": "응암2동"
+  },
+  {
+    "english_name": "Eungam3(sam)-dong",
+    "korean_name": "응암3동"
+  },
+  {
+    "english_name": "Eungbong-dong",
+    "korean_name": "응봉동"
+  },
+  {
+    "english_name": "Gaebong1(il)-dong",
+    "korean_name": "개봉1동"
+  },
+  {
+    "english_name": "Gaebong2(i)-dong",
+    "korean_name": "개봉2동"
+  },
+  {
+    "english_name": "Gaebong3(sam)-dong",
+    "korean_name": "개봉3동"
+  },
+  {
+    "english_name": "Gaepo2(i)-dong",
+    "korean_name": "개포2동"
+  },
+  {
+    "english_name": "Gaepo4(sa)-dong",
+    "korean_name": "개포4동"
+  },
+  {
+    "english_name": "Gahoe-dong",
+    "korean_name": "가회동"
+  },
+  {
+    "english_name": "Galhyeon1(il)-dong",
+    "korean_name": "갈현1동"
+  },
+  {
+    "english_name": "Galhyeon2(i)-dong",
+    "korean_name": "갈현2동"
+  },
+  {
+    "english_name": "Gangil-dong",
+    "korean_name": "강일동"
+  },
+  {
+    "english_name": "Garak2(i)-dong",
+    "korean_name": "가락2동"
+  },
+  {
+    "english_name": "Garakbon-dong",
+    "korean_name": "가락본동"
+  },
+  {
+    "english_name": "Garibong-dong",
+    "korean_name": "가리봉동"
+  },
+  {
+    "english_name": "Gasan-dong",
+    "korean_name": "가산동"
+  },
+  {
+    "english_name": "Gayang1(il)-dong",
+    "korean_name": "가양1동"
+  },
+  {
+    "english_name": "Gayang2(i)-dong",
+    "korean_name": "가양2동"
+  },
+  {
+    "english_name": "Gayang3(sam)-dong",
+    "korean_name": "가양3동"
+  },
+  {
+    "english_name": "Geoyeo1(il)-dong",
+    "korean_name": "거여1동"
+  },
+  {
+    "english_name": "Geoyeo2(i)-dong",
+    "korean_name": "거여2동"
+  },
+  {
+    "english_name": "Geumho-1(il)-dong",
+    "korean_name": "금호1가동"
+  },
+  {
+    "english_name": "Geumho4(sa)-dong",
+    "korean_name": "금호2·3가동"
+  },
+  {
+    "english_name": "Gil-dong",
+    "korean_name": "길동"
+  },
+  {
+    "english_name": "Gileum1(il)-dong",
+    "korean_name": "길음1동"
+  },
+  {
+    "english_name": "Gileum2(i)-dong",
+    "korean_name": "길음2동"
+  },
+  {
+    "english_name": "Gocheok1(il)-dong",
+    "korean_name": "고척1동"
+  },
+  {
+    "english_name": "Gocheok2(i)-dong",
+    "korean_name": "고척2동"
+  },
+  {
+    "english_name": "Godeok1(il)-dong",
+    "korean_name": "고덕1동"
+  },
+  {
+    "english_name": "Godeok2(i)-dong",
+    "korean_name": "고덕2동"
+  },
+  {
+    "english_name": "Gongdeok-dong",
+    "korean_name": "공덕동"
+  },
+  {
+    "english_name": "Gonghang-dong",
+    "korean_name": "공항동"
+  },
+  {
+    "english_name": "Gongneung1(il)-dong",
+    "korean_name": "공릉1동"
+  },
+  {
+    "english_name": "Gongneung2(i)-dong",
+    "korean_name": "공릉2동"
+  },
+  {
+    "english_name": "Gunja-dong",
+    "korean_name": "군자동"
+  },
+  {
+    "english_name": "Gu-ro1(il)-dong",
+    "korean_name": "구로1동"
+  },
+  {
+    "english_name": "Gu-ro2(i)-dong",
+    "korean_name": "구로2동"
+  },
+  {
+    "english_name": "Gu-ro3(sam)-dong",
+    "korean_name": "구로3동"
+  },
+  {
+    "english_name": "Gu-ro4(sa)-dong",
+    "korean_name": "구로4동"
+  },
+  {
+    "english_name": "Gu-ro5(o)-dong",
+    "korean_name": "구로5동"
+  },
+  {
+    "english_name": "Gusan-dong",
+    "korean_name": "구산동"
+  },
+  {
+    "english_name": "Guui1(il)-dong",
+    "korean_name": "구의1동"
+  },
+  {
+    "english_name": "Guui2(i)-dong",
+    "korean_name": "구의2동"
+  },
+  {
+    "english_name": "Guui3(sam)-dong",
+    "korean_name": "구의3동"
+  },
+  {
+    "english_name": "Gwanghui-dong",
+    "korean_name": "광희동"
+  },
+  {
+    "english_name": "Gwangjang-dong",
+    "korean_name": "광장동"
+  },
+  {
+    "english_name": "Gyonam-dong",
+    "korean_name": "교남동"
+  },
+  {
+    "english_name": "Haengdang1(il)-dong",
+    "korean_name": "행당1동"
+  },
+  {
+    "english_name": "Haengdang2(i)-dong",
+    "korean_name": "행당2동"
+  },
+  {
+    "english_name": "Haengun-dong",
+    "korean_name": "행운동"
+  },
+  {
+    "english_name": "Hagye1(il)-dong",
+    "korean_name": "하계1동"
+  },
+  {
+    "english_name": "Hagye2(i)-dong",
+    "korean_name": "하계2동"
+  },
+  {
+    "english_name": "Hangang-ro-dong",
+    "korean_name": "한강로동"
+  },
+  {
+    "english_name": "Hang-dong",
+    "korean_name": "항동"
+  },
+  {
+    "english_name": "Hannam-dong",
+    "korean_name": "한남동"
+  },
+  {
+    "english_name": "Hapjeong-dong",
+    "korean_name": "합정동"
+  },
+  {
+    "english_name": "Heukseok-dong",
+    "korean_name": "흑석동"
+  },
+  {
+    "english_name": "Hoegi-dong",
+    "korean_name": "회기동"
+  },
+  {
+    "english_name": "Hoehyeon-dong",
+    "korean_name": "회현동"
+  },
+  {
+    "english_name": "Hongeun1(il)-dong",
+    "korean_name": "홍은1동"
+  },
+  {
+    "english_name": "Hongeun2(i)-dong",
+    "korean_name": "홍은2동"
+  },
+  {
+    "english_name": "Hongje1(il)-dong",
+    "korean_name": "홍제1동"
+  },
+  {
+    "english_name": "Hongje2(i)-dong",
+    "korean_name": "홍제2동"
+  },
+  {
+    "english_name": "Hongje3(sam)-dong",
+    "korean_name": "홍제3동"
+  },
+  {
+    "english_name": "Huam-dong",
+    "korean_name": "후암동"
+  },
+  {
+    "english_name": "Hwagok1(il)-dong",
+    "korean_name": "화곡1동"
+  },
+  {
+    "english_name": "Hwagok2(i)-dong",
+    "korean_name": "화곡2동"
+  },
+  {
+    "english_name": "Hwagok3(sam)-dong",
+    "korean_name": "화곡3동"
+  },
+  {
+    "english_name": "Hwagok4(sa)-dong",
+    "korean_name": "화곡4동"
+  },
+  {
+    "english_name": "Hwagok6(yuk)-dong",
+    "korean_name": "화곡6동"
+  },
+  {
+    "english_name": "Hwagok8(pal)-dong",
+    "korean_name": "화곡8동"
+  },
+  {
+    "english_name": "Hwagokbon-dong",
+    "korean_name": "화곡본동"
+  },
+  {
+    "english_name": "Hwanghak-dong",
+    "korean_name": "황학동"
+  },
+  {
+    "english_name": "Hwayang-dong",
+    "korean_name": "화양동"
+  },
+  {
+    "english_name": "Hwigyeong1(il)-dong",
+    "korean_name": "휘경1동"
+  },
+  {
+    "english_name": "Hwigyeong2(i)-dong",
+    "korean_name": "휘경2동"
+  },
+  {
+    "english_name": "Hyehwa-dong",
+    "korean_name": "혜화동"
+  },
+  {
+    "english_name": "Hyochang-dong",
+    "korean_name": "효창동"
+  },
+  {
+    "english_name": "Ichon1(il)-dong",
+    "korean_name": "이촌1동"
+  },
+  {
+    "english_name": "Ichon2(i)-dong",
+    "korean_name": "이촌2동"
+  },
+  {
+    "english_name": "Ihwa-dong",
+    "korean_name": "이화동"
+  },
+  {
+    "english_name": "Ilwon1(il)-dong",
+    "korean_name": "일원1동"
+  },
+  {
+    "english_name": "Ilwon2(i)-dong",
+    "korean_name": "일원2동"
+  },
+  {
+    "english_name": "Ilwonbon-dong",
+    "korean_name": "일원본동"
+  },
+  {
+    "english_name": "Imun1(il)-dong",
+    "korean_name": "이문1동"
+  },
+  {
+    "english_name": "Imun2(i)-dong",
+    "korean_name": "이문2동"
+  },
+  {
+    "english_name": "Inheon-dong",
+    "korean_name": "인헌동"
+  },
+  {
+    "english_name": "Insu-dong",
+    "korean_name": "인수동"
+  },
+  {
+    "english_name": "Itaewon1(il)-dong",
+    "korean_name": "이태원1동"
+  },
+  {
+    "english_name": "Itaewon2(i)-dong",
+    "korean_name": "이태원2동"
+  },
+  {
+    "english_name": "Jamsil2(i)-dong",
+    "korean_name": "잠실2동"
+  },
+  {
+    "english_name": "Jamsil3(sam)-dong",
+    "korean_name": "잠실3동"
+  },
+  {
+    "english_name": "Jamsil4(sa)-dong",
+    "korean_name": "잠실4동"
+  },
+  {
+    "english_name": "Jamsil6(yuk)-dong",
+    "korean_name": "잠실6동"
+  },
+  {
+    "english_name": "Jamsil7(chil)-dong",
+    "korean_name": "잠실7동"
+  },
+  {
+    "english_name": "Jamsilbon-dong",
+    "korean_name": "잠실본동"
+  },
+  {
+    "english_name": "Jamwon-dong",
+    "korean_name": "잠원동"
+  },
+  {
+    "english_name": "Jangan1(il)-dong",
+    "korean_name": "장안1동"
+  },
+  {
+    "english_name": "Jangan2(i)-dong",
+    "korean_name": "장안2동"
+  },
+  {
+    "english_name": "Jangchung-dong",
+    "korean_name": "장충동"
+  },
+  {
+    "english_name": "Jangji-dong",
+    "korean_name": "장지동"
+  },
+  {
+    "english_name": "Jangwi1(il)-dong",
+    "korean_name": "장위1동"
+  },
+  {
+    "english_name": "Jangwi2(i)-dong",
+    "korean_name": "장위2동"
+  },
+  {
+    "english_name": "Jayang1(il)-dong",
+    "korean_name": "자양1동"
+  },
+  {
+    "english_name": "Jayang2(i)-dong",
+    "korean_name": "자양2동"
+  },
+  {
+    "english_name": "Jayang3(sam)-dong",
+    "korean_name": "자양3동"
+  },
+  {
+    "english_name": "Jayang4(sa)-dong",
+    "korean_name": "자양4동"
+  },
+  {
+    "english_name": "Jegi-dong",
+    "korean_name": "제기동"
+  },
+  {
+    "english_name": "Jeongneung1(il)-dong",
+    "korean_name": "정릉1동"
+  },
+  {
+    "english_name": "Jeongneung2(i)-dong",
+    "korean_name": "정릉2동"
+  },
+  {
+    "english_name": "Jeongneung3(sam)-dong",
+    "korean_name": "정릉3동"
+  },
+  {
+    "english_name": "Jeongneung4(sa)-dong",
+    "korean_name": "정릉4동"
+  },
+  {
+    "english_name": "Jeonnong1(il)-dong",
+    "korean_name": "전농1동"
+  },
+  {
+    "english_name": "Jeonnong2(i)-dong",
+    "korean_name": "전농2동"
+  },
+  {
+    "english_name": "Jeonnong3(sam)-dong",
+    "korean_name": "전농3동"
+  },
+  {
+    "english_name": "Jeungsan-dong",
+    "korean_name": "증산동"
+  },
+  {
+    "english_name": "Jingwan-dong",
+    "korean_name": "진관동"
+  },
+  {
+    "english_name": "Jongam-dong",
+    "korean_name": "종암동"
+  },
+  {
+    "english_name": "Jong-ro1(il).2(i).3(sam",
+    "korean_name": "종로1·2·3·4가동"
+  },
+  {
+    "english_name": "Jong-ro5(o).6(yuk)-ga-d",
+    "korean_name": "종로5·6가동"
+  },
+  {
+    "english_name": "Jowon-dong",
+    "korean_name": "조원동"
+  },
+  {
+    "english_name": "Jungang-dong",
+    "korean_name": "중앙동"
+  },
+  {
+    "english_name": "Junggok1(il)-dong",
+    "korean_name": "중곡1동"
+  },
+  {
+    "english_name": "Junggok2(i)-dong",
+    "korean_name": "중곡2동"
+  },
+  {
+    "english_name": "Junggok3(sam)-dong",
+    "korean_name": "중곡3동"
+  },
+  {
+    "english_name": "Junggok4(sa)-dong",
+    "korean_name": "중곡4동"
+  },
+  {
+    "english_name": "Junggye1(il)-dong",
+    "korean_name": "중계1동"
+  },
+  {
+    "english_name": "Junggye4(sa)-dong",
+    "korean_name": "중계4동"
+  },
+  {
+    "english_name": "Junggyebon-dong",
+    "korean_name": "중계본동"
+  },
+  {
+    "english_name": "Junghwa1(il)-dong",
+    "korean_name": "중화1동"
+  },
+  {
+    "english_name": "Junghwa2(i)-dong",
+    "korean_name": "중화2동"
+  },
+  {
+    "english_name": "Jungnim-dong",
+    "korean_name": "중림동"
+  },
+  {
+    "english_name": "Macheon1(il)-dong",
+    "korean_name": "마천1동"
+  },
+  {
+    "english_name": "Macheon2(i)-dong",
+    "korean_name": "마천2동"
+  },
+  {
+    "english_name": "Majang-dong",
+    "korean_name": "마장동"
+  },
+  {
+    "english_name": "Man-gu3(sam)-dong",
+    "korean_name": "망우3동"
+  },
+  {
+    "english_name": "Mangubon-dong",
+    "korean_name": "망우본동"
+  },
+  {
+    "english_name": "Mangwon1(il)-dong",
+    "korean_name": "망원1동"
+  },
+  {
+    "english_name": "Mangwon2(i)-dong",
+    "korean_name": "망원2동"
+  },
+  {
+    "english_name": "Mia-dong",
+    "korean_name": "미아동"
+  },
+  {
+    "english_name": "Miseong-dong",
+    "korean_name": "미성동"
+  },
+  {
+    "english_name": "Mok1(il)-dong",
+    "korean_name": "목1동"
+  },
+  {
+    "english_name": "Mok2(i)-dong",
+    "korean_name": "목2동"
+  },
+  {
+    "english_name": "Mok3(sam)-dong",
+    "korean_name": "목3동"
+  },
+  {
+    "english_name": "Mok4(sa)-dong",
+    "korean_name": "목4동"
+  },
+  {
+    "english_name": "Mok5(o)-dong",
+    "korean_name": "목5동"
+  },
+  {
+    "english_name": "Muak-dong",
+    "korean_name": "무악동"
+  },
+  {
+    "english_name": "Muk1(il)-dong",
+    "korean_name": "묵1동"
+  },
+  {
+    "english_name": "Muk2(i)-dong",
+    "korean_name": "묵2동"
+  },
+  {
+    "english_name": "Munjeong1(il)-dong",
+    "korean_name": "문정1동"
+  },
+  {
+    "english_name": "Munjeong2(i)-dong",
+    "korean_name": "문정2동"
+  },
+  {
+    "english_name": "Munllae-dong",
+    "korean_name": "문래동"
+  },
+  {
+    "english_name": "Myeong-dong",
+    "korean_name": "명동"
+  },
+  {
+    "english_name": "Myeon-gil1(il)-dong",
+    "korean_name": "명일1동"
+  },
+  {
+    "english_name": "Myeon-gil2(i)-dong",
+    "korean_name": "명일2동"
+  },
+  {
+    "english_name": "Myeonmok2(i)-dong",
+    "korean_name": "면목2동"
+  },
+  {
+    "english_name": "Myeonmok3(sam).8(pal)-d",
+    "korean_name": "면목3·8동"
+  },
+  {
+    "english_name": "Myeonmok4(sa)-dong",
+    "korean_name": "면목4동"
+  },
+  {
+    "english_name": "Myeonmok5(o)-dong",
+    "korean_name": "면목5동"
+  },
+  {
+    "english_name": "Myeonmok7(chil)-dong",
+    "korean_name": "면목7동"
+  },
+  {
+    "english_name": "Myeonmokbon-dong",
+    "korean_name": "면목본동"
+  },
+  {
+    "english_name": "Naegok-dong",
+    "korean_name": "내곡동"
+  },
+  {
+    "english_name": "Nakseongdae-dong",
+    "korean_name": "낙성대동"
+  },
+  {
+    "english_name": "Namgajwa1(il)-dong",
+    "korean_name": "남가좌1동"
+  },
+  {
+    "english_name": "Namgajwa2(i)-dong",
+    "korean_name": "남가좌2동"
+  },
+  {
+    "english_name": "Namhyeon-dong",
+    "korean_name": "남현동"
+  },
+  {
+    "english_name": "Nangok-dong",
+    "korean_name": "난곡동"
+  },
+  {
+    "english_name": "Nanhyang-dong",
+    "korean_name": "난향동"
+  },
+  {
+    "english_name": "Neung-dong",
+    "korean_name": "능동"
+  },
+  {
+    "english_name": "Nokbeon-dong",
+    "korean_name": "녹번동"
+  },
+  {
+    "english_name": "Nonhyeon1(il)-dong",
+    "korean_name": "논현1동"
+  },
+  {
+    "english_name": "Nonhyeon2(i)-dong",
+    "korean_name": "논현2동"
+  },
+  {
+    "english_name": "Noryangjin1(il)-dong",
+    "korean_name": "노량진1동"
+  },
+  {
+    "english_name": "Ogeum-dong",
+    "korean_name": "오금동"
+  },
+  {
+    "english_name": "Oksu-dong",
+    "korean_name": "옥수동"
+  },
+  {
+    "english_name": "Oryu2(i)-dong",
+    "korean_name": "오류2동"
+  },
+  {
+    "english_name": "Oryun-dong",
+    "korean_name": "오륜동"
+  },
+  {
+    "english_name": "Pil-dong",
+    "korean_name": "필동"
+  },
+  {
+    "english_name": "Pungnap1(il)-dong",
+    "korean_name": "풍납1동"
+  },
+  {
+    "english_name": "Pungnap2(i)-dong",
+    "korean_name": "풍납2동"
+  },
+  {
+    "english_name": "Pyeongchang-dong",
+    "korean_name": "평창동"
+  },
+  {
+    "english_name": "Sadang1(il)-dong",
+    "korean_name": "사당1동"
+  },
+  {
+    "english_name": "Sadang2(i)-dong",
+    "korean_name": "사당2동"
+  },
+  {
+    "english_name": "Sadang3(sam)-dong",
+    "korean_name": "사당3동"
+  },
+  {
+    "english_name": "Sadang4(sa)-dong",
+    "korean_name": "사당4동"
+  },
+  {
+    "english_name": "Sadang5(o)-dong",
+    "korean_name": "사당5동"
+  },
+  {
+    "english_name": "Sageun-dong",
+    "korean_name": "사근동"
+  },
+  {
+    "english_name": "Sajik-dong",
+    "korean_name": "사직동"
+  },
+  {
+    "english_name": "Samcheong-dong",
+    "korean_name": "삼청동"
+  },
+  {
+    "english_name": "Samgaksan-dong",
+    "korean_name": "삼각산동"
+  },
+  {
+    "english_name": "Samjeon-dong",
+    "korean_name": "삼전동"
+  },
+  {
+    "english_name": "Samseon-dong",
+    "korean_name": "삼선동"
+  },
+  {
+    "english_name": "Samseong1(il)-dong",
+    "korean_name": "삼성1동"
+  },
+  {
+    "english_name": "Samseong2(i)-dong",
+    "korean_name": "삼성2동"
+  },
+  {
+    "english_name": "Samseong-dong",
+    "korean_name": "삼성동"
+  },
+  {
+    "english_name": "Samyang-dong",
+    "korean_name": "삼양동"
+  },
+  {
+    "english_name": "Sangam-dong",
+    "korean_name": "상암동"
+  },
+  {
+    "english_name": "Sangbong1(il)-dong",
+    "korean_name": "상봉1동"
+  },
+  {
+    "english_name": "Sangbong2(i)-dong",
+    "korean_name": "상봉2동"
+  },
+  {
+    "english_name": "Sang-do1(il)-dong",
+    "korean_name": "상도1동"
+  },
+  {
+    "english_name": "Sang-do2(i)-dong",
+    "korean_name": "상도2동"
+  },
+  {
+    "english_name": "Sang-do3(sam)-dong",
+    "korean_name": "상도3동"
+  },
+  {
+    "english_name": "Sang-do4(sa)-dong",
+    "korean_name": "상도4동"
+  },
+  {
+    "english_name": "Sanggye1(il)-dong",
+    "korean_name": "상계1동"
+  },
+  {
+    "english_name": "Sanggye10(sip)-dong",
+    "korean_name": "상계10동"
+  },
+  {
+    "english_name": "Sanggye2(i)-dong",
+    "korean_name": "상계2동"
+  },
+  {
+    "english_name": "Sanggye3(sam).4(sa)-don",
+    "korean_name": "상계3·4동"
+  },
+  {
+    "english_name": "Sanggye5(o)-dong",
+    "korean_name": "상계5동"
+  },
+  {
+    "english_name": "Sanggye6(yuk).7(chil)-d",
+    "korean_name": "상계6·7동"
+  },
+  {
+    "english_name": "Sanggye8(pal)-dong",
+    "korean_name": "상계8동"
+  },
+  {
+    "english_name": "Sanggye9(gu)-dong",
+    "korean_name": "상계9동"
+  },
+  {
+    "english_name": "Sangil-dong",
+    "korean_name": "상일동"
+  },
+  {
+    "english_name": "Segok-dong",
+    "korean_name": "세곡동"
+  },
+  {
+    "english_name": "Seobinggo-dong",
+    "korean_name": "서빙고동"
+  },
+  {
+    "english_name": "Seocho1(il)-dong",
+    "korean_name": "서초1동"
+  },
+  {
+    "english_name": "Seocho2(i)-dong",
+    "korean_name": "서초2동"
+  },
+  {
+    "english_name": "Seocho3(sam)-dong",
+    "korean_name": "서초3동"
+  },
+  {
+    "english_name": "Seocho4(sa)-dong",
+    "korean_name": "서초4동"
+  },
+  {
+    "english_name": "Seogyo-dong",
+    "korean_name": "서교동"
+  },
+  {
+    "english_name": "Seokchon-dong",
+    "korean_name": "석촌동"
+  },
+  {
+    "english_name": "Seokgwan-dong",
+    "korean_name": "석관동"
+  },
+  {
+    "english_name": "Seongbuk-dong",
+    "korean_name": "성북동"
+  },
+  {
+    "english_name": "Seonghyeon-dong",
+    "korean_name": "성현동"
+  },
+  {
+    "english_name": "Seongnae1(il)-dong",
+    "korean_name": "성내1동"
+  },
+  {
+    "english_name": "Seongnae2(i)-dong",
+    "korean_name": "성내2동"
+  },
+  {
+    "english_name": "Seongnae3(sam)-dong",
+    "korean_name": "성내3동"
+  },
+  {
+    "english_name": "Seongsan1(il)-dong",
+    "korean_name": "성산1동"
+  },
+  {
+    "english_name": "Seongsan2(i)-dong",
+    "korean_name": "성산2동"
+  },
+  {
+    "english_name": "Seongsu1ga1(il)-dong",
+    "korean_name": "성수1가1동"
+  },
+  {
+    "english_name": "Seongsu1ga2(i)-dong",
+    "korean_name": "성수1가2동"
+  },
+  {
+    "english_name": "Seongsu2ga1(il)-dong",
+    "korean_name": "성수2가1동"
+  },
+  {
+    "english_name": "Seongsu2ga3(sam)-dong",
+    "korean_name": "성수2가3동"
+  },
+  {
+    "english_name": "Seorim-dong",
+    "korean_name": "서림동"
+  },
+  {
+    "english_name": "Seowon-dong",
+    "korean_name": "서원동"
+  },
+  {
+    "english_name": "Siheung1(il)-dong",
+    "korean_name": "시흥1동"
+  },
+  {
+    "english_name": "Siheung2(i)-dong",
+    "korean_name": "시흥2동"
+  },
+  {
+    "english_name": "Siheung3(sam)-dong",
+    "korean_name": "시흥3동"
+  },
+  {
+    "english_name": "Siheung4(sa)-dong",
+    "korean_name": "시흥4동"
+  },
+  {
+    "english_name": "Siheung5(o)-dong",
+    "korean_name": "시흥5동"
+  },
+  {
+    "english_name": "Sinchon-dong",
+    "korean_name": "신촌동"
+  },
+  {
+    "english_name": "Sindaebang1(il)-dong",
+    "korean_name": "신대방1동"
+  },
+  {
+    "english_name": "Sindaebang2(i)-dong",
+    "korean_name": "신대방2동"
+  },
+  {
+    "english_name": "Sindang5(o)-dong",
+    "korean_name": "신당5동"
+  },
+  {
+    "english_name": "Sindang-dong",
+    "korean_name": "신당동"
+  },
+  {
+    "english_name": "Sindorim-dong",
+    "korean_name": "신도림동"
+  },
+  {
+    "english_name": "Sin-gil1(il)-dong",
+    "korean_name": "신길1동"
+  },
+  {
+    "english_name": "Sin-gil3(sam)-dong",
+    "korean_name": "신길3동"
+  },
+  {
+    "english_name": "Sin-gil5(o)-dong",
+    "korean_name": "신길5동"
+  },
+  {
+    "english_name": "Sin-gil6(yuk)-dong",
+    "korean_name": "신길6동"
+  },
+  {
+    "english_name": "Sin-gil7(chil)-dong",
+    "korean_name": "신길7동"
+  },
+  {
+    "english_name": "Sinjeong1(il)-dong",
+    "korean_name": "신정1동"
+  },
+  {
+    "english_name": "Sinjeong2(i)-dong",
+    "korean_name": "신정2동"
+  },
+  {
+    "english_name": "Sinjeong3(sam)-dong",
+    "korean_name": "신정3동"
+  },
+  {
+    "english_name": "Sinjeong4(sa)-dong",
+    "korean_name": "신정4동"
+  },
+  {
+    "english_name": "Sinjeong6(yuk)-dong",
+    "korean_name": "신정6동"
+  },
+  {
+    "english_name": "Sinjeong7(chil)-dong",
+    "korean_name": "신정7동"
+  },
+  {
+    "english_name": "Sinllim-dong",
+    "korean_name": "신림동"
+  },
+  {
+    "english_name": "Sinnae1(il)-dong",
+    "korean_name": "신내1동"
+  },
+  {
+    "english_name": "Sinnae2(i)-dong",
+    "korean_name": "신내2동"
+  },
+  {
+    "english_name": "Sinsa1(il)-dong",
+    "korean_name": "신사1동"
+  },
+  {
+    "english_name": "Sinsa2(i)-dong",
+    "korean_name": "신사2동"
+  },
+  {
+    "english_name": "Sinsa-dong",
+    "korean_name": "신사동"
+  },
+  {
+    "english_name": "Sinsu-dong",
+    "korean_name": "신수동"
+  },
+  {
+    "english_name": "Sinwol1(il)-dong",
+    "korean_name": "신월1동"
+  },
+  {
+    "english_name": "Sinwol2(i)-dong",
+    "korean_name": "신월2동"
+  },
+  {
+    "english_name": "Sinwol3(sam)-dong",
+    "korean_name": "신월3동"
+  },
+  {
+    "english_name": "Sinwol4(sa)-dong",
+    "korean_name": "신월4동"
+  },
+  {
+    "english_name": "Sinwol5(o)-dong",
+    "korean_name": "신월5동"
+  },
+  {
+    "english_name": "Sinwol6(yuk)-dong",
+    "korean_name": "신월6동"
+  },
+  {
+    "english_name": "Sinwol7(chil)-dong",
+    "korean_name": "신월7동"
+  },
+  {
+    "english_name": "Sinwon-dong",
+    "korean_name": "신원동"
+  },
+  {
+    "english_name": "Sogang-dong",
+    "korean_name": "????"
+  },
+  {
+    "english_name": "Sogong-dong",
+    "korean_name": "소공동"
+  },
+  {
+    "english_name": "Songcheon-dong",
+    "korean_name": "송천동"
+  },
+  {
+    "english_name": "Songjeong-dong",
+    "korean_name": "송정동"
+  },
+  {
+    "english_name": "Songjung-dong",
+    "korean_name": "송중동"
+  },
+  {
+    "english_name": "Songpa1(il)-dong",
+    "korean_name": "송파1동"
+  },
+  {
+    "english_name": "Songpa2(i)-dong",
+    "korean_name": "송파2동"
+  },
+  {
+    "english_name": "Ssangmun1(il)-dong",
+    "korean_name": "쌍문1동"
+  },
+  {
+    "english_name": "Ssangmun2(i)-dong",
+    "korean_name": "쌍문2동"
+  },
+  {
+    "english_name": "Ssangmun3(sam)-dong",
+    "korean_name": "쌍문3동"
+  },
+  {
+    "english_name": "Ssangmun4(sa)-dong",
+    "korean_name": "쌍문4동"
+  },
+  {
+    "english_name": "Sugung-dong",
+    "korean_name": "수궁동"
+  },
+  {
+    "english_name": "Sungin1(il)-dong",
+    "korean_name": "숭인1동"
+  },
+  {
+    "english_name": "Sungin2(i)-dong",
+    "korean_name": "숭인2동"
+  },
+  {
+    "english_name": "Susaek-dong",
+    "korean_name": "수색동"
+  },
+  {
+    "english_name": "Suseo-dong",
+    "korean_name": "수서동"
+  },
+  {
+    "english_name": "Suyu1(il)-dong",
+    "korean_name": "수유1동"
+  },
+  {
+    "english_name": "Suyu2(i)-dong",
+    "korean_name": "수유2동"
+  },
+  {
+    "english_name": "Suyu3(sam)-dong",
+    "korean_name": "수유3동"
+  },
+  {
+    "english_name": "Ui-dong",
+    "korean_name": "우이동"
+  },
+  {
+    "english_name": "Wangsimni2(i)-dong",
+    "korean_name": "왕십리2동"
+  },
+  {
+    "english_name": "Wangsimni-doSeondong",
+    "korean_name": "왕십리도선동"
+  },
+  {
+    "english_name": "Wirye-dong",
+    "korean_name": "위례동"
+  },
+  {
+    "english_name": "Wolgok1(il)-dong",
+    "korean_name": "월곡1동"
+  },
+  {
+    "english_name": "Wolgok2(i)-dong",
+    "korean_name": "월곡2동"
+  },
+  {
+    "english_name": "Wolgye1(il)-dong",
+    "korean_name": "월계1동"
+  },
+  {
+    "english_name": "Wolgye2(i)-dong",
+    "korean_name": "월계2동"
+  },
+  {
+    "english_name": "Wolgye3(sam)-dong",
+    "korean_name": "월계3동"
+  },
+  {
+    "english_name": "Wonhyo-ro-1(il)-dong",
+    "korean_name": "원효로1동"
+  },
+  {
+    "english_name": "Wonhyo-ro-2(i)-dong",
+    "korean_name": "원효로2동"
+  },
+  {
+    "english_name": "Yaksu-dong",
+    "korean_name": "약수동"
+  },
+  {
+    "english_name": "Yangjae1(il)-dong",
+    "korean_name": "양재1동"
+  },
+  {
+    "english_name": "Yangjae2(i)-dong",
+    "korean_name": "양재2동"
+  },
+  {
+    "english_name": "Yangpyeong1(il)-dong",
+    "korean_name": "양평1동"
+  },
+  {
+    "english_name": "Yangpyeong2(i)-dong",
+    "korean_name": "양평2동"
+  },
+  {
+    "english_name": "Yeokchon-dong",
+    "korean_name": "역촌동"
+  },
+  {
+    "english_name": "Yeoksam1(il)-dong",
+    "korean_name": "역삼1동"
+  },
+  {
+    "english_name": "Yeoksam2(i)-dong",
+    "korean_name": "역삼2동"
+  },
+  {
+    "english_name": "Yeomchang-dong",
+    "korean_name": "염창동"
+  },
+  {
+    "english_name": "Yeomni-dong",
+    "korean_name": "염리동"
+  },
+  {
+    "english_name": "Yeongdeungpo-dong",
+    "korean_name": "영등포동"
+  },
+  {
+    "english_name": "Yeonhui-dong",
+    "korean_name": "연희동"
+  },
+  {
+    "english_name": "Yeonnam-dong",
+    "korean_name": "연남동"
+  },
+  {
+    "english_name": "Yeouido-dong",
+    "korean_name": "여의동"
+  },
+  {
+    "english_name": "Yongdap-dong",
+    "korean_name": "용답동"
+  },
+  {
+    "english_name": "Yonggang-dong",
+    "korean_name": "용강동"
+  },
+  {
+    "english_name": "Yongmun-dong",
+    "korean_name": "용문동"
+  },
+  {
+    "english_name": "Yongsan2(i)-dong",
+    "korean_name": "용산2가동"
+  },
+  {
+    "english_name": "Yongshin-dong",
+    "korean_name": "용신동"
+  }
+]
