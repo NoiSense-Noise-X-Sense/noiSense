@@ -76,14 +76,6 @@ jobs:
 #            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
 #            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
 
-            echo ".env 내용 확인"
-            cat .env
-
-            # 환경변수 적용
-            set -a
-            source .env
-            set +a
-
             pkill -f 'java' || true
 
             # JAR 실행
