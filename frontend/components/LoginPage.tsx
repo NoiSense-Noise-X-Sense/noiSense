@@ -52,13 +52,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
               Google로 로그인
             </Button>
           </div>
-          <Separator className="my-6" />
-          <p className="text-center text-sm text-gray-500">
-            계정이 없으신가요?{" "}
-            <a href="/signup" className="text-blue-600 hover:underline">
-              회원가입
-            </a>
-          </p>
+
         </CardContent>
       </Card>
     </div>
