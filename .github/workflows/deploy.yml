@@ -92,8 +92,6 @@ jobs:
 
             echo "URL   = [$SPRING_DATASOURCE_URL]"
 
-#            echo "======== 기존 java kill ========"
-#            pkill -f 'java' || true
 
             echo "======== JAR 파일 확인 ========"
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
