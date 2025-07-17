@@ -1,16 +1,30 @@
-"use client"
+// components/LoginPage.tsx
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Chrome, MessageCircle } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Chrome, MessageCircle } from "lucide-react";
+import { useEffect } from "react";
 
 export default function LoginPage({ onLogin }: { onLogin: () => void }) {
-  const handleSocialLogin = (provider: string) => {
-    console.log(`${provider} 로그인 시도`)
-    // 실제 구현에서는 OAuth 로그인 로직
-    onLogin() // 로그인 성공 시 메인 페이지로 이동
-  }
+  // OAuth 콜백에서 토큰이 localStorage에 저장된 경우 로그인 처리
+  useEffect(() => {
+    // 콜백에서 accessToken을 세팅해두었으면
+    if (localStorage.getItem("accessToken")) {
+      onLogin();
+    }
+  }, [onLogin]);
+
+  const OAUTH_URLS: Record<string, string> = {
+    Kakao: "http://localhost:8080/oauth2/authorization/kakao",
+    Google: "http://localhost:8080/oauth2/authorization/google",
+  };
+
+
+  const handleSocialLogin = (provider: "Kakao" | "Google") => {
+    window.location.href = OAUTH_URLS[provider];
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
@@ -38,17 +52,15 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
               Google로 로그인
             </Button>
           </div>
-
           <Separator className="my-6" />
-
           <p className="text-center text-sm text-gray-500">
             계정이 없으신가요?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+            <a href="/signup" className="text-blue-600 hover:underline">
               회원가입
             </a>
           </p>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

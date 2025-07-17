@@ -1,19 +1,23 @@
-"use client"
+"use client";
 
-import { Volume2, Home, User, MessageSquare, Map, BarChart3, LogIn, LayoutDashboard } from "lucide-react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import LoginPage from "../components/LoginPage"
-import SeoulNoiseDashboard from "../components/SeoulNoiseDashboard"
-import MyPage from "../components/MyPage"
-import NoiseBoard from "../components/NoiseBoard"
-import PostDetail from "../components/PostDetail"
-import WritePost from "../components/WritePost"
-import DistrictDashboard from "../components/DistrictDashboard"
-import SeoulMapV3 from "../components/SeoulMap"
-import FilterSidebar from "../components/FilterSidebar"
-import AnalysisReport from "../components/AnalysisReport"
+import { useState, useEffect } from "react";
+import {
+  Volume2, Home, User, MessageSquare, Map, BarChart3, LogIn, LayoutDashboard
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import LoginPage from "../components/LoginPage";
+import SeoulNoiseDashboard from "../components/SeoulNoiseDashboard";
+import MyPage from "../components/MyPage";
+import NoiseBoard from "../components/NoiseBoard";
+import PostDetail from "../components/PostDetail";
+import WritePost from "../components/WritePost";
+import DistrictDashboard from "../components/DistrictDashboard";
+import SeoulMapV3 from "../components/SeoulMap";
+import FilterSidebar from "../components/FilterSidebar";
+import AnalysisReport from "../components/AnalysisReport";
+import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
+// 내부 상태로 화면 전환
 type PageType =
   | "main"
   | "login"
@@ -23,53 +27,83 @@ type PageType =
   | "WritePost"
   | "DistrictDashboard"
   | "NoiseMap"
-  | "AnalysisReport"
+  | "AnalysisReport";
 
 export default function NoiSenseDashboard() {
-  const [currentPage, setCurrentPage] = useState<PageType>("main")
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
-  const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구") // Default selected district
+  const [currentPage, setCurrentPage] = useState<PageType>("main");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
 
+  // 1) 새로고침/OAuth 콜백 등으로 진입 시 토큰 있으면 로그인 상태
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      setIsLoggedIn(true);
+      setCurrentPage("main");
+    }
+  }, []);
+
+  // 2) OAuth 콜백 진입 감지 (예: /?accessToken=xxxxx 형태)
+  useEffect(() => {
+    // 쿼리스트링 파싱
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("accessToken");
+    if (token) {
+      localStorage.setItem("accessToken", token);
+      setIsLoggedIn(true);
+      setCurrentPage("main");
+      // URL에서 accessToken 파라미터 제거 (UX 개선)
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // --------- 이벤트 핸들러들 ---------
   const handleLogin = () => {
-    setIsLoggedIn(true)
-    setCurrentPage("main")
-  }
+    setIsLoggedIn(true);
+    setCurrentPage("main");
+  };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false)
-    setCurrentPage("main")
-  }
+  const handleLogout = async () => {
+    try {
+      await fetchWithAuth("/api/auth/logout", { method: "POST" });
+    } catch (e) {}
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    sessionStorage.clear();
+    setIsLoggedIn(false);
+    setCurrentPage("login");
+  };
 
   const handlePostClick = (postId: number) => {
-    setSelectedPostId(postId)
-    setCurrentPage("PostDetail")
-  }
+    setSelectedPostId(postId);
+    setCurrentPage("PostDetail");
+  };
 
   const handleWriteClick = () => {
     if (isLoggedIn) {
-      setCurrentPage("WritePost")
+      setCurrentPage("WritePost");
     } else {
-      setCurrentPage("login")
+      setCurrentPage("login");
     }
-  }
+  };
 
   const handleDistrictClick = (district: string) => {
-    setSelectedDistrict(district)
-    setCurrentPage("DistrictDashboard")
-  }
+    setSelectedDistrict(district);
+    setCurrentPage("DistrictDashboard");
+  };
 
   const handleBackToBoard = () => {
-    setCurrentPage("board")
-  }
+    setCurrentPage("board");
+  };
 
   const handleWriteSubmit = () => {
-    setCurrentPage("board")
-  }
+    setCurrentPage("board");
+  };
 
-  // Show login page only when explicitly requested
+  // ---- 조건부 렌더링 ----
   if (currentPage === "login") {
-    return <LoginPage onLogin={handleLogin} />
+    // LoginPage에서 소셜 로그인 성공시 handleLogin 콜백 실행!
+    return <LoginPage onLogin={handleLogin} />;
   }
 
   return (
@@ -86,7 +120,6 @@ export default function NoiSenseDashboard() {
                 NoiSense
               </span>
             </div>
-
             {/* Navigation */}
             <div className="flex items-center space-x-1 bg-gray-100 p-1 rounded-lg">
               <Button
@@ -164,7 +197,6 @@ export default function NoiSenseDashboard() {
                 </Button>
               )}
             </div>
-
             {/* Login/Logout Button */}
             {isLoggedIn ? (
               <Button onClick={handleLogout} variant="outline" size="sm">
@@ -179,7 +211,6 @@ export default function NoiSenseDashboard() {
           </div>
         </div>
       </header>
-
       {/* Main Content */}
       {currentPage === "main" && <SeoulNoiseDashboard onDistrictClick={handleDistrictClick} />}
       {currentPage === "NoiseMap" && (
@@ -192,15 +223,26 @@ export default function NoiSenseDashboard() {
       )}
       {currentPage === "AnalysisReport" && <AnalysisReport />}
       {currentPage === "mypage" && isLoggedIn && <MyPage />}
-      {currentPage === "board" && <NoiseBoard onPostClick={handlePostClick} onWriteClick={handleWriteClick} />}
-      {currentPage === "PostDetail" && <PostDetail onBack={handleBackToBoard} postId={0}
-                                                    onEdit={function (postId: number): void {
-                                                      throw new Error("Function not implemented.")
-                                                    }} onDelete={function (postId: number): void {
-        throw new Error("Function not implemented.")
-      }} />}
-      {currentPage === "WritePost" && <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />}
-      {currentPage === "DistrictDashboard" && <DistrictDashboard selectedDistrict={selectedDistrict} />}
+      {currentPage === "board" && (
+        <NoiseBoard
+          onPostClick={handlePostClick}
+          onWriteClick={handleWriteClick}
+        />
+      )}
+      {currentPage === "PostDetail" && selectedPostId !== null && (
+        <PostDetail
+          onBack={handleBackToBoard}
+          postId={selectedPostId}
+          onEdit={() => {/* 구현 필요 */}}
+          onDelete={() => {/* 구현 필요 */}}
+        />
+      )}
+      {currentPage === "WritePost" && (
+        <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />
+      )}
+      {currentPage === "DistrictDashboard" && (
+        <DistrictDashboard selectedDistrict={selectedDistrict} />
+      )}
     </div>
-  )
+  );
 }
