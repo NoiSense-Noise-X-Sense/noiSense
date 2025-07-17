@@ -78,13 +78,23 @@ jobs:
             echo "======== .env 내용 확인 ========"
             cat .env
 
+            echo "======== 환경변수 적용 ========"
             # 환경변수 적용
-            set -a
-            source .env
-            set +a
+            if [ -f .env ]; then
+              echo ".env 파일이 존재합니다. 환경변수를 적용합니다."
+              set -a
+              source .env
+              set +a
+            else
+              echo ".env 파일이 존재하지 않습니다. 배포를 중단합니다."
+              exit 1
+            fi
 
+            echo "======== 기존 java kill ========"
             pkill -f 'java' || true
 
-            # JAR 실행
             echo "======== 자바 실행 ========"
-            "nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &"
+            nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
+
+            echo "======== 실행된 자바 프로세스 확인 ========"
+            pgrep -af java || echo "실행 중인 자바 없음"
