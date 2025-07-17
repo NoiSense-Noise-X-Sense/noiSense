@@ -13,7 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static com.dosion.noisense.web.common.parser.AddressParser.*;
+import com.dosion.noisense.web.common.parser.AddressParser;
 
 
 @Disabled /*개발 시에만 사용*/
@@ -39,8 +39,8 @@ public class InsertDistrictRunnerTest {
         var nameEn = feature.get("properties").get("addr_en").asText();
         var nameKo = feature.get("properties").get("adm_nm").asText();
 
-        String newEn = joinExcludingLastOne(nameEn.split(" "));
-        String newKo = joinExcludingFirstOne(nameKo.split(" "));
+        String newEn = AddressParser.joinExcludingLastOne(nameEn.split(" "));
+        String newKo = AddressParser.joinExcludingFirstOne(nameKo.split(" "));
 
         var sql = """
               insert into noisense.autonomous_district (
@@ -85,8 +85,8 @@ public class InsertDistrictRunnerTest {
         var nameEn = feature.get("properties").get("addr_en").asText();
         var nameKo = feature.get("properties").get("adm_nm").asText();
 
-        String newEn = joinExcludingLastTwo(nameEn.split(" "));
-        String newKo = joinExcludingFirstTwo(nameKo.split(" "));
+        String newEn = AddressParser.joinExcludingLastTwo(nameEn.split(" "));
+        String newKo = AddressParser.joinExcludingFirstTwo(nameKo.split(" "));
 
         var autonomousDistrictCode = code.substring(0, 5);
 
