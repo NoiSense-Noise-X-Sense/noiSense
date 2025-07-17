@@ -3,6 +3,10 @@ spring:
   config:
     activate:
       on-profile: local
+  docker:
+    compose:
+      enabled: false
+
 
   datasource:
     url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
@@ -39,7 +43,7 @@ spring:
     jdbc:
       initialize-schema: always
     job:
-      enabled: true
+      enabled: false
 
 # 로깅
 logging:
@@ -94,4 +98,5 @@ spring:
             token-uri: "https://kauth.kakao.com/oauth/token"
             user-info-uri: "https://kapi.kakao.com/v2/user/me"
             user-name-attribute: id
+
 
