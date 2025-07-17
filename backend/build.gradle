@@ -67,7 +67,8 @@ dependencies {
   // 인증 우회 시 사용
   testImplementation 'org.springframework.security:spring-security-test'
 
-
+  // 배치
+  implementation 'org.springframework.boot:spring-boot-starter-batch'
 }
 
 tasks.withType(JavaCompile) {
