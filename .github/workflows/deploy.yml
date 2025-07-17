@@ -60,39 +60,21 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            set -e
-            set -x
-
             cd /home/ec2-user/app/backend/build/libs
 
-            echo "현재 디렉토리 확인"
-            pwd
-            echo "jar 목록"
-            ls -al *.jar || echo "jar 없음"
-
-            echo "java 확인"
-            which java || echo "java 없음"
-            java -version || echo "버전 확인 실패"
-
-
-            pkill -f 'java' || true
-
-            # .env 생성
-            echo "환경변수 파일 생성"
-            cat <<EOF > .env
-  GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-  GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-  JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
-  JWT_SECRET_KEY=${JWT_SECRET_KEY}
-  KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
-  KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
-  REDIS_HOST=${REDIS_HOST}
-  REDIS_PORT=${REDIS_PORT}
-  SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
-  SPRING_DATASOURCE_PORT=${SPRING_DATASOURCE_PORT}
-  SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
-  SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
-  EOF
+            echo "test-----------" > .env
+#            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+#            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+#            echo "JWT_EXPIRATION_MS=${{ secrets.JWT_EXPIRATION_MS }}" >> .env
+#            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+#            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+#            echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+#            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+#            echo "REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+#            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+#            echo "SPRING_DATASOURCE_PORT=${{ secrets.SPRING_DATASOURCE_PORT }}" >> .env
+#            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+#            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
 
             echo ".env 내용 확인"
             cat .env
@@ -102,7 +84,8 @@ jobs:
             source .env
             set +a
 
+            pkill -f 'java' || true
+
             # JAR 실행
             echo "자바 실행"
             nohup java -jar backend-0.0.1-SNAPSHOT.jar > app.log 2>&1 &
-            echo "실행 결과 코드: $?"
