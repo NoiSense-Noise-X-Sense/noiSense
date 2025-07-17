@@ -1,7 +1,8 @@
 plugins {
-  id 'java'
-  id 'org.springframework.boot' version '3.5.3'
-  id 'io.spring.dependency-management' version '1.1.7'
+  id 'com.github.node-gradle.node' version '7.0.2'
+	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.dosion.noisense'
@@ -10,6 +11,12 @@ version = '0.0.1-SNAPSHOT'
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
 	}
 }
 
@@ -44,14 +51,23 @@ dependencies {
   // 게시판 정렬
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+  // api하면서 필요했던 것들
+  implementation 'org.json:json:20231013'
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+//  Mock Test
+  testImplementation 'org.postgresql:postgresql:42.7.3'
+  testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
+  testImplementation 'org.mockito:mockito-core:5.11.0'
+  testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+  // 인증 우회 시 사용
+  testImplementation 'org.springframework.security:spring-security-test'
 
 
-  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
 }
 
 tasks.withType(JavaCompile) {

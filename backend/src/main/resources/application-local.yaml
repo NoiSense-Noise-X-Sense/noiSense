@@ -28,7 +28,11 @@ spring:
         format_sql: true
         show_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
+        # jdbc batch size 설정
+        jdbc:
+          batch_size: 500
+    show_sql: true
+
 
   # batch
   batch:
@@ -44,6 +48,8 @@ logging:
     org.springframework.web: DEBUG
 
 ---
+
+
 
 
 jwt:
@@ -88,3 +94,4 @@ spring:
             token-uri: "https://kauth.kakao.com/oauth/token"
             user-info-uri: "https://kapi.kakao.com/v2/user/me"
             user-name-attribute: id
+
