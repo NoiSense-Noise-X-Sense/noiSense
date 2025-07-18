@@ -1,7 +1,6 @@
--- SET search_path TO noisense;
+SET search_path TO public;
 
-
-CREATE TYPE boundary_type AS ENUM ('AUTONOMOUS_DISTRICT', 'ADMINISTRATIVE_DISTRICT');
+create type boundary_type as enum ('AUTONOMOUS_DISTRICT', 'ADMINISTRATIVE_DISTRICT');
 CREATE TYPE geometry_format AS ENUM ('GeoJSON', 'WKT');
 CREATE TYPE geometry_type AS ENUM ('MultiPolygon', 'Polygon');
 CREATE TYPE region_type AS ENUM ('residential_area', 'roads_and_parks', 'industrial_area', 'traditional_markets', 'main_street', 'commercial_area', 'public_facilities', 'parks');

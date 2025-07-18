@@ -1,1 +1,0 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/routes.tsx","./src/vite-env.d.ts","./src/components/privateroute.tsx","./src/pages/home.tsx","./src/pages/login.tsx","./src/utils/fetchwithauth.ts"],"version":"5.8.3"}
