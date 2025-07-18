@@ -1,45 +1,89 @@
 {
   "settings": {
-    "index.max_ngram_diff": 3,
-    "analysis": {
-      "filter": {
-        "autocomplete_filter": {
-          "type": "edge_ngram",
-          "min_gram": 1,
-          "max_gram": 20
+    "index": {
+      "max_ngram_diff": 3,
+      "analysis": {
+        "tokenizer": {
+          "nori_no_decompound": {
+            "type": "nori_tokenizer",
+            "decompound_mode": "none"
+          }
         },
-        "ngram_filter": {
-          "type": "ngram",
-          "min_gram": 2,
-          "max_gram": 5
+        "filter": {
+          "autocomplete_filter": {
+            "type": "edge_ngram",
+            "min_gram": 1,
+            "max_gram": 20
+          },
+          "ngram_filter": {
+            "type": "ngram",
+            "min_gram": 2,
+            "max_gram": 5
+          },
+          "chosung_filter": {
+            "type": "hanhinsam_chosung"
+          },
+          "korean_stop": {
+            "type": "stop",
+            "stopwords": "_korean_"
+          },
+          "korean_pos_filter": {
+            "type": "nori_part_of_speech",
+            "stoptags": [
+              "E",
+              "IC",
+              "J",
+              "MAG",
+              "MAJ",
+              "MM",
+              "SP",
+              "SSC",
+              "SSO",
+              "SC",
+              "SE",
+              "XPN",
+              "XSA",
+              "XSN",
+              "XSV",
+              "UNA",
+              "NA",
+              "VSV"
+            ]
+          }
         },
-        "chosung_filter": {
-          "type": "hanhinsam_chosung"
-        }
-      },
-      "analyzer": {
-        "autocomplete_analyzer": {
-          "type": "custom",
-          "tokenizer": "standard",
-          "filter": [
-            "lowercase",
-            "autocomplete_filter"
-          ]
-        },
-        "ngram_analyzer": {
-          "type": "custom",
-          "tokenizer": "standard",
-          "filter": [
-            "lowercase",
-            "ngram_filter"
-          ]
-        },
-        "chosung_analyzer": {
-          "type": "custom",
-          "tokenizer": "standard",
-          "filter": [
-            "chosung_filter"
-          ]
+        "analyzer": {
+          "autocomplete_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "autocomplete_filter"
+            ]
+          },
+          "ngram_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "lowercase",
+              "ngram_filter"
+            ]
+          },
+          "chosung_analyzer": {
+            "type": "custom",
+            "tokenizer": "standard",
+            "filter": [
+              "chosung_filter"
+            ]
+          },
+          "korean_clean_analyzer": {
+            "type": "custom",
+            "tokenizer": "nori_no_decompound",
+            "filter": [
+              "korean_pos_filter",
+              "lowercase",
+              "korean_stop"
+            ]
+          }
         }
       }
     }
@@ -67,6 +111,11 @@
           "ngram": {
             "type": "text",
             "analyzer": "ngram_analyzer"
+          },
+          "morph": {
+            "type": "text",
+            "analyzer": "korean_clean_analyzer",
+            "fielddata": true
           }
         }
       },
@@ -110,16 +159,19 @@
           }
         }
       },
-      "created_date": {
+      "createdDate": {
         "type": "date",
-        "format": "yyyy-MM-dd HH:mm:ss.SSSSSS||yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis"
+        "format": "strict_date_time"
       },
-      "updated_date": {
+      "modifiedDate": {
         "type": "date",
-        "format": "yyyy-MM-dd HH:mm:ss.SSSSSS||yyyy-MM-dd HH:mm:ss||strict_date_optional_time||epoch_millis"
+        "format": "strict_date_time"
       },
-      "view_count": {
+      "viewCount": {
         "type": "long"
+      },
+      "autonomousDistrict": {
+        "type": "keyword"
       }
     }
   }

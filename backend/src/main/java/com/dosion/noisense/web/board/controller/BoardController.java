@@ -7,9 +7,10 @@ import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Board-Controller", description = "게시판 API")
 @RestController
@@ -22,10 +23,10 @@ public class BoardController {
 
   /** 게시글 작성 **/
   @PostMapping
-  public ResponseEntity<BoardDto> createBoard(@RequestBody BoardDto boardDto) {
+  public ResponseEntity<?> createBoard(@RequestBody List<BoardDto> boardDtoList) {
     // Security 미구현 상태: userId, nickname을 프론트에서 받아 사용
-    BoardDto createdBoard = boardService.createBoard(boardDto);
-    return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
+    boardDtoList.forEach(boardService::createBoard); //반복 insert
+    return ResponseEntity.ok().build();
   }
 
   /** 통합 검색 **/

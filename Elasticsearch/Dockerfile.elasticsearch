@@ -1,7 +1,6 @@
 FROM docker.elastic.co/elasticsearch/elasticsearch:8.12.0
 
-# 플러그인 zip 복사 및 설치
-COPY hanhinsam-0.1.zip /usr/share/elasticsearch/plugins/
-RUN cd /usr/share/elasticsearch/plugins && \
-    unzip hanhinsam-0.1.zip -d hanhinsam && \
-    rm hanhinsam-0.1.zip
+# nori와 hanhinsam 모두 설치
+RUN elasticsearch-plugin install analysis-nori
+COPY hanhinsam-0.1.zip /tmp/hanhinsam-0.1.zip
+RUN elasticsearch-plugin install file:///tmp/hanhinsam-0.1.zip

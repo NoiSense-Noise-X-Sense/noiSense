@@ -1,90 +1,98 @@
 package com.dosion.noisense.module.board.elasticsearch.service;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.SortOrder;
-import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import co.elastic.clients.elasticsearch.core.SearchRequest;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.dosion.noisense.module.board.elasticsearch.repository.BoardEsRepository;
+import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-@Slf4j
-@Service
 @RequiredArgsConstructor
+@Service
 public class BoardEsService {
 
-  private final ElasticsearchClient client;
   private final BoardEsRepository repository;
 
   public void save(BoardEsDocument document) {
     repository.save(document);
   }
 
-  public void deleteById(String id) {
-    repository.deleteById(id);
+  public void saveBoardToElasticsearch(BoardDto dto) {
+    BoardEsDocument document = BoardEsDocument.from(dto);
+    repository.save(document);
   }
 
+
+  /** 통합 검색 (title or content에 keyword 포함) **/
   public Page<BoardEsDocument> search(String keyword, int page, int size) {
-    try {
-      int from = page * size;
-      Query query;
+    List<BoardEsDocument> results =
+      repository.findByTitleContainingOrContentContaining(keyword, keyword);
 
-      if (keyword == null || keyword.isBlank()) {
-        query = MatchAllQuery.of(m -> m)._toQuery();
-      } else {
-        query = BoolQuery.of(b -> {
-          b.should(PrefixQuery.of(p -> p.field("title").value(keyword))._toQuery());
-          b.should(PrefixQuery.of(p -> p.field("content").value(keyword))._toQuery());
-          b.should(PrefixQuery.of(p -> p.field("title.chosung").value(keyword))._toQuery());
-          b.should(PrefixQuery.of(p -> p.field("content.chosung").value(keyword))._toQuery());
-          b.should(MatchQuery.of(p -> p.field("title.ngram").query(keyword))._toQuery());
-          b.should(MatchQuery.of(p -> p.field("content.ngram").query(keyword))._toQuery());
+    int start = Math.min(page * size, results.size());
+    int end = Math.min(start + size, results.size());
 
-          // ✅ 닉네임(username) 검색 추가
-          b.should(PrefixQuery.of(p -> p.field("username").value(keyword))._toQuery());
-          b.should(MatchQuery.of(p -> p.field("username").query(keyword))._toQuery());
+    List<BoardEsDocument> pageContent = results.subList(start, end);
+    return new PageImpl<>(pageContent, PageRequest.of(page, size), results.size());
+  }
 
-          if (keyword.length() >= 3) {
-            b.should(MatchQuery.of(m -> m.field("title").query(keyword).fuzziness("AUTO"))._toQuery());
-            b.should(MatchQuery.of(m -> m.field("content").query(keyword).fuzziness("AUTO"))._toQuery());
-          }
-          return b;
-        })._toQuery();
+  /** 자주 등장하는 단어 직접 집계 **/
+  public Map<String, Long> getFrequentWords(String autonomousDistrict,
+                                            LocalDateTime startDate,
+                                            LocalDateTime endDate,
+                                            int size) {
+
+    List<BoardEsDocument> all = StreamSupport
+      .stream(repository.findAll().spliterator(), false)
+      .collect(Collectors.toList());
+
+    // 1. 필터링
+    List<BoardEsDocument> filtered = all.stream()
+      .filter(doc -> {
+        if (autonomousDistrict != null && !autonomousDistrict.isBlank()) {
+          if (!autonomousDistrict.equals(doc.getAutonomousDistrict())) return false;
+        }
+        if (startDate != null && endDate != null && doc.getCreatedDate() != null) {
+          // Instant → LocalDateTime (KST 기준)
+          LocalDateTime created = LocalDateTime.ofInstant(doc.getCreatedDate(), ZoneId.of("Asia/Seoul"));
+          if (created.isBefore(startDate) || created.isAfter(endDate)) return false;
+        }
+        return true;
+      })
+      .collect(Collectors.toList());
+
+    // 2. content에서 단어 추출 및 카운팅
+    Map<String, Long> wordCount = new HashMap<>();
+    for (BoardEsDocument doc : filtered) {
+      String content = doc.getContent();
+      if (content == null) continue;
+
+      String[] words = content.split("\\s+");
+      for (String word : words) {
+        String clean = word.replaceAll("[^가-힣a-zA-Z0-9]", "");
+        if (clean.length() <= 1) continue; // 한 글자 제외
+
+        wordCount.put(clean, wordCount.getOrDefault(clean, 0L) + 1);
       }
-
-      SearchRequest request = SearchRequest.of(s -> s
-        .index("board-index")
-        .from(from)
-        .size(size)
-        .query(query)
-        .sort(sort -> sort.field(f -> f.field("created_date").order(SortOrder.Desc)))
-      );
-
-      SearchResponse<BoardEsDocument> response = client.search(request, BoardEsDocument.class);
-
-      List<BoardEsDocument> content = response.hits()
-        .hits()
-        .stream()
-        .map(Hit::source)
-        .collect(Collectors.toList());
-
-      long total = response.hits().total().value();
-      return new PageImpl<>(content, PageRequest.of(page, size), total);
-
-    } catch (IOException e) {
-      log.error("검색 오류", e);
-      throw new RuntimeException("검색 중 오류 발생", e);
     }
+
+    // 3. 상위 size개 정렬 후 반환
+    return wordCount.entrySet().stream()
+      .sorted((e1, e2) -> Long.compare(e2.getValue(), e1.getValue()))
+      .limit(size)
+      .collect(Collectors.toMap(
+        Map.Entry::getKey,
+        Map.Entry::getValue,
+        (e1, e2) -> e1,
+        LinkedHashMap::new
+      ));
   }
 }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -46,15 +47,15 @@ public class BoardService {
     BoardDto resultDto = toDTO(savedBoard);
 
     //Elasticsearch 저장
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     boardEsService.save(BoardEsDocument.builder()
       .id(String.valueOf(savedBoard.getId()))
       .title(savedBoard.getTitle())
       .content(savedBoard.getContent())
       .username(savedBoard.getNickname())
       .userId(savedBoard.getUserId())
-      .created_date(savedBoard.getCreatedDate().format(formatter))
-      .updated_date(savedBoard.getModifiedDate().format(formatter))
+      .autonomousDistrict(savedBoard.getAutonomousDistrict())
+      .createdDate(savedBoard.getCreatedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
+      .modifiedDate(savedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .view_count(savedBoard.getViewCount())
       .build());
 
@@ -75,15 +76,14 @@ public class BoardService {
     BoardDto resultDto = toDTO(updatedBoard);
 
     // ElasticSearch 조회수 증가
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     boardEsService.save(BoardEsDocument.builder()
       .id(String.valueOf(updatedBoard.getId()))
       .title(updatedBoard.getTitle())
       .content(updatedBoard.getContent())
       .username(updatedBoard.getNickname())
       .userId(updatedBoard.getUserId())
-      .created_date(updatedBoard.getCreatedDate().format(formatter))
-      .updated_date(updatedBoard.getModifiedDate().format(formatter))
+      .createdDate(updatedBoard.getCreatedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
+      .modifiedDate(updatedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .view_count(updatedBoard.getViewCount())
       .build());
 
