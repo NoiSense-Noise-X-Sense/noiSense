@@ -1,4 +1,4 @@
-package com.dosion.noisense.module.report;
+package com.dosion.noisense.module.report.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,5 @@
 package com.dosion.noisense.module.report.service;
 
-import com.dosion.noisense.module.report.RegionConverter;
 import com.dosion.noisense.module.report.repository.ReportRepository;
 import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.Tuple;
@@ -20,7 +19,8 @@ import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
 public class ReportService {
 
   private final ReportRepository reportRepository;
-  // private final PerceivedNoiseCalculator perceivedNoiseCalculator;
+
+  private final PerceivedNoiseCalculator perceivedNoiseCalculator;
 
       /*
       응답 데이터 목록
@@ -48,6 +48,7 @@ public class ReportService {
     }
 
     String englishAutonomousDistrict = RegionConverter.toEnglish(autonomousDistrict);
+    // englishAutonomousDistrict = englishAutonomousDistrict.equals("all") ? null : englishAutonomousDistrict;
 
     // 지역 평균 소음
     Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
@@ -56,8 +57,8 @@ public class ReportService {
     Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
 
     // 체감 소음
-    Double perceivedNoise = avgNoise;
-    // Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate, endDate, englishAutonomousDistrict);
+    String auton = englishAutonomousDistrict.equals("all") ? null : englishAutonomousDistrict;
+    Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate, endDate, auton, null);
 
     /* 랭킹 데이터
     시끄러운 지역(Top 3) -> String, Double
