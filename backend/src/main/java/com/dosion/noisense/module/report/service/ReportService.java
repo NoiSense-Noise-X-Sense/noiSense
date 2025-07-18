@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
@@ -47,6 +49,8 @@ public class ReportService {
       throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다. 시작일 : " + startDate + ", 종료일 : " + endDate);
     }
 
+    LocalDateTime startDateTime = startDate.atStartOfDay();
+
     String englishAutonomousDistrict = RegionConverter.toEnglish(autonomousDistrict);
     // englishAutonomousDistrict = englishAutonomousDistrict.equals("all") ? null : englishAutonomousDistrict;
 
@@ -58,7 +62,7 @@ public class ReportService {
 
     // 체감 소음
     String auton = englishAutonomousDistrict.equals("all") ? null : englishAutonomousDistrict;
-    Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate, endDate, auton, null);
+    Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), auton, null);
 
     /* 랭킹 데이터
     시끄러운 지역(Top 3) -> String, Double

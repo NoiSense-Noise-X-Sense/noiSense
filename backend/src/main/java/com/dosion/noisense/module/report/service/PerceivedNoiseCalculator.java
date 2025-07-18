@@ -1,18 +1,19 @@
 package com.dosion.noisense.module.report.service;
 
-import com.dosion.noisense.module.report.entity.Board;
 import com.dosion.noisense.module.report.repository.BoardRepository;
+import com.dosion.noisense.web.report.dto.EmotionBoardDto;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class PerceivedNoiseCalculator { // 체감 소음 계산
 
   private final BoardRepository boardRepository;
@@ -40,8 +41,8 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
    *  게시판 기능 개발 중이라 그거에 따라 getBoardInfo 수정하여 사용해야 함
    *  행정동까지 필요하면 변수 추가
    * */
-  public Double calcPerceivedNoise(double avgNoise, LocalDate startDate, LocalDate endDate, String autonomousDistrict, String administrativeDistrict) {
-
+  public Double calcPerceivedNoise(double avgNoise, LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String administrativeDistrict) {
+    log.info("PerceivedNoiseCalculator.calcPerceivedNoise");
     // 민원 가중치 알파,  추후 값 수정 필요
     final Double ALPHA = 1.2;
 
@@ -59,8 +60,8 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
     timeWeights.put(18, 1.1);
 
     // 게시글
-    List<Board> boardList = boardRepository.findEmotionScoresByCriteria(startDate, endDate, autonomousDistrict, administrativeDistrict);
-
+    List<EmotionBoardDto> boardList = boardRepository.findEmotionScoresByCriteria(startDate, endDate, autonomousDistrict, administrativeDistrict);
+    log.info("boardList ====" + boardList.toString());
     // 게시글이 없으면 평균 소음 반환
     if (boardList.isEmpty()) {
       return avgNoise;
@@ -69,9 +70,9 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
     Double logValue = Math.log10(boardList.size() + 1) * ALPHA;
 
     Double emotionScoreByTimeWeight = 0.0;
-    for (Board board : boardList) {
-      Double beta = timeWeights.get((board.getCreatedDate().getHour() / 6) * 6);
-      emotionScoreByTimeWeight += board.getEmotionalScore() * ALPHA * beta;
+    for (EmotionBoardDto emo : boardList) {
+      Double beta = timeWeights.get((emo.getCreatedDate().getHour() / 6) * 6);
+      emotionScoreByTimeWeight += emo.getEmotionalScore() * ALPHA * beta;
     }
 
     return avgNoise + logValue + emotionScoreByTimeWeight;
