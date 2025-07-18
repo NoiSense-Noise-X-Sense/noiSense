@@ -59,10 +59,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
     // 로그인 성공시, 쿼리스트링에 토큰 추가
-    String redirectUrl = String.format(
-      "http://localhost:3000/?accessToken=%s&refreshToken=%s",
-      accessToken, refreshToken
-    );
+    String redirectUrl = String.format("http://localhost:3000/");
     response.sendRedirect(redirectUrl);
   }
 }
