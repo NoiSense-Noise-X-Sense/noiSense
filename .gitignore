@@ -57,7 +57,7 @@ yarn-error.log*
 # ====================
 # Environment Variables
 # ====================
-.env
+Data/.env
 .env.*
 
 # ====================
@@ -86,3 +86,10 @@ temp/
 
 backend/src/main/gen
 monitoring/volumes/
+
+
+Data/volumes
+
+backend/src/main/resources/static
+backend/src/main/resources/static/index.html
+backend/src/main/resources/static/vite.sv
