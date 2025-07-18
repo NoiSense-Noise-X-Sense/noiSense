@@ -19,6 +19,7 @@ import org.springframework.security.oauth2.client.web.AuthorizationRequestReposi
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
 @Configuration
@@ -40,6 +41,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
+      .cors(withDefaults())
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/index.html", "/*.html", "/favicon.ico",
@@ -56,7 +58,8 @@ public class SecurityConfig {
           "/api/auth/logout",
           "/oauth2/**",
           "/login/**",
-          "/actuator/prometheus"
+          "/actuator/prometheus",
+          "/api/batch/run-initial-load"
         ).permitAll()
 
         .requestMatchers("/api/**").authenticated()

@@ -58,6 +58,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     response.addCookie(refreshTokenCookie);
 
 
-      response.sendRedirect("/home" + (id != null ? "?id=" + id : ""));
+    // 로그인 성공
+    String redirectUrl = String.format("http://localhost:3000/");
+    response.sendRedirect(redirectUrl);
   }
 }

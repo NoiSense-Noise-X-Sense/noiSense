@@ -59,6 +59,7 @@ yarn-error.log*
 # ====================
 .env
 .env.*
+Data/.env
 
 # ====================
 # Logs & Temp files
@@ -85,3 +86,6 @@ temp/
 
 
 backend/src/main/gen
+
+
+Data/volumes

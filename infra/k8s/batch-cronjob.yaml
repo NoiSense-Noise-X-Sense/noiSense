@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: noisense-batch-job
+spec:
+  schedule: "*/3 * * * *"       # 3분마다 실행 (테스트)
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: noisense-batch
+              image: registry.dosion.com/noisense/backend-batch:1.0.0  # 빌드한 이미지 태그
+              args:
+                - --spring.profiles.active=local
+                - --job.name=hourlyNoiseJob
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: local
+          restartPolicy: OnFailure
+  successfulJobsHistoryLimit: 2  # 완료된 Job 이력 유지 수
+  failedJobsHistoryLimit: 1      # 실패한 Job 이력 유지 수
