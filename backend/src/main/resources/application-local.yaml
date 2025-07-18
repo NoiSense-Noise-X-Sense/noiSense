@@ -18,9 +18,6 @@ spring:
       host:  ${REDIS_HOST:localhost}
       port: 6379
 
-  docker:
-    compose:
-      enabled: false
 #  docker:
 #    compose:
 #      file: ../Data/docker-compose.data.yml
