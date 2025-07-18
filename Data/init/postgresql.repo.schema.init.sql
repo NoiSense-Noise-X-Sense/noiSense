@@ -1,4 +1,4 @@
-SET search_path TO public;
+SET search_path TO noisense;
 
 create type boundary_type as enum ('AUTONOMOUS_DISTRICT', 'ADMINISTRATIVE_DISTRICT');
 CREATE TYPE geometry_format AS ENUM ('GeoJSON', 'WKT');
