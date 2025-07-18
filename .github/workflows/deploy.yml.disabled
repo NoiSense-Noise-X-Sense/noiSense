@@ -5,7 +5,55 @@ on:
     branches: [ feature/awscicd ]
 
 jobs:
-  build-and-deploy:
+
+  frontend-build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install and Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Archive Next.js build
+        run: |
+          cd frontend
+          tar czf nextjs_build.tar.gz .next public package.json package-lock.json
+
+      - name: Copy Next.js build to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: frontend/nextjs_build.tar.gz
+          target: /home/ec2-user/app/
+
+      - name: Deploy Next.js on EC2 with PM2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ec2-user/app/nextjs
+            cd /home/ec2-user/app/nextjs
+            tar xzf ../nextjs_build.tar.gz
+            npm ci || npm install
+            pm2 delete nextjs-app || true
+            pm2 start npm --name "nextjs-app" -- start
+            pm2 save
+
+
+  backend-build-and-deploy:
     runs-on: ubuntu-latest
 
     env:
@@ -15,7 +63,7 @@ jobs:
       JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
       KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
-      REDIS_HOST: ${{ secrets.REDIS_HOST }}%
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
       REDIS_PORT: ${{ secrets.REDIS_PORT }}
       SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
       SPRING_DATASOURCE_PORT: ${{ secrets.SPRING_DATASOURCE_PORT }}
@@ -26,20 +74,13 @@ jobs:
 
     steps:
       - name: Checkout 코드
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Node.js 설치
-        uses: actions/setup-node@v4
+      - name: Install JDK
+        uses: actions/setup-java@v4
         with:
-          node-version: '20'
-
-#      - name: Frontend Build
-#        run: |
-#          cd frontend
-#          npm ci
-#          npm run build
-#          cp -r dist/* ../backend/src/main/resources/static/
-
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: EC2에 .env 파일 생성
         uses: appleboy/ssh-action@v0.1.10
