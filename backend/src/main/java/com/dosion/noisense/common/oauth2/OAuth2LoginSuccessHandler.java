@@ -58,7 +58,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     response.addCookie(refreshTokenCookie);
 
 
-    // 로그인 성공시, 쿼리스트링에 토큰 추가
+    // 로그인 성공
     String redirectUrl = String.format("http://localhost:3000/");
     response.sendRedirect(redirectUrl);
   }

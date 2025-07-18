@@ -43,23 +43,6 @@ export default function NoiSenseDashboard() {
   const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
 
   useEffect(() => {
-    // // accessToken 쿼리스트링으로 받은 경우 저장
-    // const params = new URLSearchParams(window.location.search);
-    // const token = params.get("accessToken");
-    // if (token) {
-    //   localStorage.setItem("accessToken", token);
-    //   setIsLoggedIn(true);
-    //   setCurrentPage("main");
-    //   window.history.replaceState({}, document.title, window.location.pathname);
-    //   return;
-    // }
-    // // accessToken이 localStorage에 이미 있는 경우 상태 반영
-    // const storedToken = localStorage.getItem("accessToken");
-    // if (storedToken) {
-    //   setIsLoggedIn(true);
-    //   setCurrentPage("main");
-    // }
-
     const fetchUser = async () => {
       try {
         const res = await fetch('http://localhost:8080/api/user', {
