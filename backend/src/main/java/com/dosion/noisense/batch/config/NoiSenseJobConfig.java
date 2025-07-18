@@ -2,6 +2,7 @@ package com.dosion.noisense.batch.config;
 
 import com.dosion.noisense.batch.tasklet.ApiDataFetchTasklet;
 import com.dosion.noisense.batch.tasklet.DashboardStatBuildTasklet;
+import com.dosion.noisense.batch.util.StringRunIdIncrementer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -9,7 +10,6 @@ import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
-import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +40,9 @@ public class NoiSenseJobConfig {
       .build();
 
     return new JobBuilder("hourlyNoiseJob", jobRepository)
-      .incrementer(new RunIdIncrementer())
+      .incrementer(new StringRunIdIncrementer())
       .start(apiStep)
-      .on("*").to(decisionFlow)  // 💡 이렇게 연결
+      .on("*").to(decisionFlow)  // 이렇게 연결
       .end()
       .build();
   }
