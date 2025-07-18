@@ -1,3 +1,5 @@
+SET search_path TO noisense;
+
 INSERT INTO noisense.administrative_district (code, name_ko, name_en, autonomous_district) VALUES ('11010530', '사직동', 'Sajik-dong', '11010');
 INSERT INTO noisense.administrative_district (code, name_ko, name_en, autonomous_district) VALUES ('11010540', '삼청동', 'Samcheong-dong', '11010');
 INSERT INTO noisense.administrative_district (code, name_ko, name_en, autonomous_district) VALUES ('11010550', '부암동', 'Buam-dong', '11010');
