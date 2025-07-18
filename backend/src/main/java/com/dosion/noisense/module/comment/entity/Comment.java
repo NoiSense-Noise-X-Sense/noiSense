@@ -53,3 +53,4 @@ public class Comment extends BaseEntity {
     return user != null ? user.getNickname() : null;
   }
 }
+
