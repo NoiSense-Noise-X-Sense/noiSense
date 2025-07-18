@@ -19,9 +19,8 @@ public class DashboardStatBuildTasklet implements Tasklet {
 
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-    log.info("📊 대시보드 통계 생성 작업 실행됨");
 
-    // ✅ TODO: 여기에 통계 계산 + 통계 테이블 insert/update 로직 작성
+    // TODO: 여기에 통계 계산 + 통계 테이블 insert/update 로직 작성
 
     // 예: 하루 평균 소음, 최고 시간대, 민원 키워드 요약 등
     // ex: dashboard_district_noise_summary, dashboard_district_noise_hourly 등 갱신
@@ -32,6 +31,8 @@ public class DashboardStatBuildTasklet implements Tasklet {
         .message("하루 1회 대시보드 통계 작업")
         .build()
     );
+
+    log.info("[DashboardStatBuildTasklet][Sucess] 대시보드 통계 생성 작업 실행완료");
 
     return RepeatStatus.FINISHED; // 작업은 1회 실행으로 종료
   }
