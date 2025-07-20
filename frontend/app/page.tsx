@@ -246,9 +246,6 @@ export default function NoiSenseDashboard() {
       {currentPage === "WritePost" && (
         <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />
       )}
-      {currentPage === "DistrictDashboard" && (
-        <DistrictDashboard selectedDistrict={selectedDistrict} />
-      )}
     </div>
   );
 }

@@ -58,7 +58,6 @@ export default function SeoulNoiseDashboard({ onDistrictClick }: Props) {
   const router = useRouter();
 
   const handleDistrictClick = (district: DistrictKey) => {
-    alert(`${districtData[district].name} 상세 대시보드로 이동합니다.`);
     onDistrictClick(districtData[district].name); // props로 콜백 호출
   };
 

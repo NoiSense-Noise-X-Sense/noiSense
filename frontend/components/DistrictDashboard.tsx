@@ -8,12 +8,17 @@ import { Volume2, Moon, TrendingUp } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label as UILabel } from '@/components/ui/label';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis,
-  CartesianGrid, Tooltip, ResponsiveContainer
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
 } from 'recharts';
-import {
-  fetchSummary, fetchHourly, fetchYearly, fetchComplaints
-} from '@/lib/api/dashboard';
+import { fetchSummary, fetchHourly, fetchYearly, fetchComplaints } from '@/lib/api/dashboard';
 
 type KeywordCount = {
   keyword: string;
@@ -21,20 +26,66 @@ type KeywordCount = {
 };
 
 const allDistricts = [
-  '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구',
-  '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구',
-  '용산구', '은평구', '종로구', '중구', '중랑구',
+  '강남구',
+  '강동구',
+  '강북구',
+  '강서구',
+  '관악구',
+  '광진구',
+  '구로구',
+  '금천구',
+  '노원구',
+  '도봉구',
+  '동대문구',
+  '동작구',
+  '마포구',
+  '서대문구',
+  '서초구',
+  '성동구',
+  '성북구',
+  '송파구',
+  '양천구',
+  '영등포구',
+  '용산구',
+  '은평구',
+  '종로구',
+  '중구',
+  '중랑구',
 ];
 
 const districtMap: Record<string, string> = {
-  강남구: 'Gangnam-gu', 강동구: 'Gangdong-gu', 강북구: 'Gangbuk-gu', 강서구: 'Gangseo-gu', 관악구: 'Gwanak-gu',
-  광진구: 'Gwangjin-gu', 구로구: 'Guro-gu', 금천구: 'Geumcheon-gu', 노원구: 'Nowon-gu', 도봉구: 'Dobong-gu',
-  동대문구: 'Dongdaemun-gu', 동작구: 'Dongjak-gu', 마포구: 'Mapo-gu', 서대문구: 'Seodaemun-gu', 서초구: 'Seocho-gu',
-  성동구: 'Seongdong-gu', 성북구: 'Seongbuk-gu', 송파구: 'Songpa-gu', 양천구: 'Yangcheon-gu', 영등포구: 'Yeongdeungpo-gu',
-  용산구: 'Yongsan-gu', 은평구: 'Eunpyeong-gu', 종로구: 'Jongno-gu', 중구: 'Jung-gu', 중랑구: 'Jungnang-gu',
+  강남구: 'Gangnam-gu',
+  강동구: 'Gangdong-gu',
+  강북구: 'Gangbuk-gu',
+  강서구: 'Gangseo-gu',
+  관악구: 'Gwanak-gu',
+  광진구: 'Gwangjin-gu',
+  구로구: 'Guro-gu',
+  금천구: 'Geumcheon-gu',
+  노원구: 'Nowon-gu',
+  도봉구: 'Dobong-gu',
+  동대문구: 'Dongdaemun-gu',
+  동작구: 'Dongjak-gu',
+  마포구: 'Mapo-gu',
+  서대문구: 'Seodaemun-gu',
+  서초구: 'Seocho-gu',
+  성동구: 'Seongdong-gu',
+  성북구: 'Seongbuk-gu',
+  송파구: 'Songpa-gu',
+  양천구: 'Yangcheon-gu',
+  영등포구: 'Yeongdeungpo-gu',
+  용산구: 'Yongsan-gu',
+  은평구: 'Eunpyeong-gu',
+  종로구: 'Jongno-gu',
+  중구: 'Jung-gu',
+  중랑구: 'Jungnang-gu',
 };
 
-export default function DistrictDashboard({ selectedDistrict: initialDistrict }: { selectedDistrict: string }) {
+export default function DistrictDashboard({
+  selectedDistrict: initialDistrict,
+}: {
+  selectedDistrict: string;
+}) {
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -113,7 +164,38 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
     setSelectedDistrict(district);
   };
 
-  if (!districtData) return <div className="p-6">데이터 불러오는 중...</div>;
+  if (!districtData)
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
+        <div className="relative mb-3 flex items-center justify-center">
+          <img
+            src="/placeholder-logo.png"
+            alt="로딩"
+            className="w-20 h-20 opacity-60 animate-pulse"
+          />
+          <svg
+            className="absolute animate-spin h-10 w-10 text-blue-400"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+        </div>
+        <div className="text-gray-400 mt-2 text-base font-medium">
+          소음 데이터를 불러오는 중입니다...
+        </div>
+        <div className="text-xs text-gray-300 mt-1">잠시만 기다려주세요</div>
+      </div>
+    );
 
   const yearlyComplaintsChartData = Object.entries(districtData.yearlyComplaints).map(
     ([year, count]) => ({ year, '민원 건수': count })
@@ -227,7 +309,8 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
             </CardTitle>
             <div className="flex flex-wrap gap-2 justify-center items-start">
               {(() => {
-                if (!districtData.keywords || districtData.keywords.length === 0) return <span>데이터 없음</span>;
+                if (!districtData.keywords || districtData.keywords.length === 0)
+                  return <span>데이터 없음</span>;
 
                 const max = Math.max(...districtData.keywords.map((k: KeywordCount) => k.count));
                 const min = Math.min(...districtData.keywords.map((k: KeywordCount) => k.count));
@@ -255,14 +338,13 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
 
                   return (
                     <span key={idx} className={`${textSize} ${color} font-semibold`}>
-            {kw.keyword}
-          </span>
+                      {kw.keyword}
+                    </span>
                   );
                 });
               })()}
             </div>
           </Card>
-
 
           {/* Yearly Complaints Chart - Second Row */}
           <Card className="col-span-1 lg:col-span-2 py-1 px-2 min-h-[60px] h-36">
