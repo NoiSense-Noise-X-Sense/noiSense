@@ -215,7 +215,7 @@ export default function DistrictDashboard({
       </div>
 
       {/* Right Main Dashboard */}
-      <div className="flex-1 p-4 flex flex-col gap-3 overflow-hidden">
+      <div className="flex-1 p-4 flex flex-col gap-3 overflow-auto">
         {/* Main Grid Layout with explicit rows */}
         <div
           className="grid grid-cols-1 lg:grid-cols-5 gap-4"
