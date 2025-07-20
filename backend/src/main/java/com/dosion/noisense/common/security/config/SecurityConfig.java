@@ -57,7 +57,8 @@ public class SecurityConfig {
           "/oauth2/**",
           "/login/**",
           "/actuator/prometheus",
-          "/api/batch/run-initial-load"
+          "/api/batch/run-initial-load",
+          "/api/dashboard/**"
         ).permitAll()
 
         .requestMatchers("/api/**").authenticated()

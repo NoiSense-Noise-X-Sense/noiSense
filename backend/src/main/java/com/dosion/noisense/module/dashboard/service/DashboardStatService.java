@@ -121,7 +121,6 @@ public class DashboardStatService {
       );
     }
 
-    dashboardDistrictNoiseHourlyRepository.deleteByBatchId(batchId);
     dashboardDistrictNoiseHourlyRepository.saveAll(entities);
     log.info("Inserted hourly stats: {}", entities.size());
   }
@@ -193,7 +192,6 @@ public class DashboardStatService {
         .build());
     }
 
-    dashboardDistrictNoiseZoneRepository.deleteByBatchId(batchId); // 배치별 삭제
     log.info("Inserted zone stats !!!: {}", entities);
     dashboardDistrictNoiseZoneRepository.saveAll(entities);
   }
