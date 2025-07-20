@@ -1,151 +1,105 @@
+// 통합된 버전: 더미데이터 제거 + API 연동 적용
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Label,
-} from 'recharts';
-import { Volume2, MessageSquare, Moon, TrendingUp } from 'lucide-react';
+import { Volume2, Moon, TrendingUp } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 import { Label as UILabel } from '@/components/ui/label';
+import {
+  BarChart, Bar, LineChart, Line, XAxis, YAxis,
+  CartesianGrid, Tooltip, ResponsiveContainer
+} from 'recharts';
+import {
+  fetchSummary, fetchHourly, fetchYearly, fetchComplaints
+} from '@/lib/api/dashboard';
 
-// Dummy data for districts and their noise info
 const allDistricts = [
-  '강남구',
-  '강동구',
-  '강북구',
-  '강서구',
-  '관악구',
-  '광진구',
-  '구로구',
-  '금천구',
-  '노원구',
-  '도봉구',
-  '동대문구',
-  '동작구',
-  '마포구',
-  '서대문구',
-  '서초구',
-  '성동구',
-  '성북구',
-  '송파구',
-  '양천구',
-  '영등포구',
-  '용산구',
-  '은평구',
-  '종로구',
-  '중구',
-  '중랑구',
+  '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구',
+  '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구',
+  '용산구', '은평구', '종로구', '중구', '중랑구',
 ];
 
-const generateDummyData = (districtName: string) => {
-  const baseNoise = 60 + Math.random() * 20; // 60-80 dB
-  const baseComplaints = 150 + Math.random() * 100; // 150-250 complaints
-
-  const yearlyComplaints = {
-    '2020': Math.floor(baseComplaints * (0.8 + Math.random() * 0.4)),
-    '2021': Math.floor(baseComplaints * (0.9 + Math.random() * 0.4)),
-    '2022': Math.floor(baseComplaints * (1.0 + Math.random() * 0.4)),
-    '2023': Math.floor(baseComplaints * (1.1 + Math.random() * 0.4)),
-    '2024': Math.floor(baseComplaints * (1.2 + Math.random() * 0.4)),
-  };
-
-  const noiseTrendData = Array.from({ length: 24 }, (_, i) => ({
-    hour: `${i.toString().padStart(2, '0')}시`,
-    실시간: Math.floor(baseNoise + Math.random() * 10 - 5),
-    일주일평균: Math.floor(baseNoise + Math.random() * 5 - 2.5),
-    한달평균: Math.floor(baseNoise + Math.random() * 3 - 1.5),
-  }));
-
-  const yearlyAvgNoise = {
-    '2022': { seoul: 66 + Math.random() * 5, district: baseNoise * (0.9 + Math.random() * 0.2) },
-    '2023': { seoul: 68 + Math.random() * 5, district: baseNoise * (0.95 + Math.random() * 0.2) },
-    '2024': { seoul: 64 + Math.random() * 5, district: baseNoise * (1.0 + Math.random() * 0.2) },
-    '2025': { seoul: 62 + Math.random() * 5, district: baseNoise * (1.05 + Math.random() * 0.2) },
-  };
-
-  const keywords = [
-    { text: '시끄러움', sentiment: 'negative', size: 'text-2xl' },
-    { text: '불쾌함', sentiment: 'negative', size: 'text-xl' },
-    { text: '스트레스', sentiment: 'negative', size: 'text-lg' },
-    { text: '짜증남', sentiment: 'negative', size: 'text-base' },
-    { text: '피곤함', sentiment: 'negative', size: 'text-base' },
-    { text: '답답함', sentiment: 'positive', size: 'text-base' },
-    { text: '조용함', sentiment: 'positive', size: 'text-lg' },
-    { text: '평화로움', sentiment: 'positive', size: 'text-base' },
-    { text: '편안함', sentiment: 'positive', size: 'text-base' },
-  ];
-
-  return {
-    complaints: {
-      '2024': yearlyComplaints['2024'],
-      analysisPeriod: '2025.06.06 ~ 2025.07.06',
-    },
-    avgNoise: {
-      value: (baseNoise + Math.random() * 5).toFixed(1),
-      analysisPeriod: '2025.06.06 ~ 2025.07.06',
-    },
-    peakTime: {
-      time: '오후 6시',
-      noise: (baseNoise + Math.random() * 5 + 5).toFixed(0),
-      analysisPeriod: '2025.06.06 ~ 2025.07.06',
-    },
-    quietTime: {
-      time: '새벽 4시',
-      noise: (baseNoise - Math.random() * 5 - 10).toFixed(0),
-      analysisPeriod: '2025.06.06 ~ 2025.07.06',
-    },
-    yearlyComplaints,
-    noiseTrendData,
-    yearlyAvgNoise,
-    keywords,
-  };
+const districtMap: Record<string, string> = {
+  강남구: 'Gangnam-gu', 강동구: 'Gangdong-gu', 강북구: 'Gangbuk-gu', 강서구: 'Gangseo-gu', 관악구: 'Gwanak-gu',
+  광진구: 'Gwangjin-gu', 구로구: 'Guro-gu', 금천구: 'Geumcheon-gu', 노원구: 'Nowon-gu', 도봉구: 'Dobong-gu',
+  동대문구: 'Dongdaemun-gu', 동작구: 'Dongjak-gu', 마포구: 'Mapo-gu', 서대문구: 'Seodaemun-gu', 서초구: 'Seocho-gu',
+  성동구: 'Seongdong-gu', 성북구: 'Seongbuk-gu', 송파구: 'Songpa-gu', 양천구: 'Yangcheon-gu', 영등포구: 'Yeongdeungpo-gu',
+  용산구: 'Yongsan-gu', 은평구: 'Eunpyeong-gu', 종로구: 'Jongno-gu', 중구: 'Jung-gu', 중랑구: 'Jungnang-gu',
 };
 
-export default function DistrictDashboard({
-  selectedDistrict: initialDistrict,
-}: {
-  selectedDistrict: string;
-}) {
+export default function DistrictDashboard({ selectedDistrict: initialDistrict }: { selectedDistrict: string }) {
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const [districtData, setDistrictData] = useState(() => generateDummyData(initialDistrict));
+  const [districtData, setDistrictData] = useState<any>(null);
 
   useEffect(() => {
-    setDistrictData(generateDummyData(selectedDistrict));
+    const fetchData = async () => {
+      try {
+        const engDistrict = districtMap[selectedDistrict];
+        const [summary, hourly, yearly, complaints] = await Promise.all([
+          fetchSummary(engDistrict),
+          fetchHourly(engDistrict),
+          fetchYearly(engDistrict),
+          fetchComplaints(engDistrict),
+        ]);
+
+        setDistrictData({
+          avgNoise: {
+            value: parseFloat(summary.avgNoise),
+            analysisPeriod: `${summary.startDate} ~ ${summary.endDate}`,
+          },
+          peakTime: {
+            time: `${summary.peakHour}시`,
+            noise: summary.peakNoise,
+            analysisPeriod: `${summary.startDate} ~ ${summary.endDate}`,
+          },
+          quietTime: {
+            time: `${summary.calmHour}시`,
+            noise: summary.calmNoise,
+            analysisPeriod: `${summary.startDate} ~ ${summary.endDate}`,
+          },
+          keywords: summary.topKeywords, // count 포함된 구조
+
+          noiseTrendData: hourly.map((h: any) => ({
+            hour: `${h.hour.toString().padStart(2, '0')}시`,
+            실시간: h.avgDay,
+            일주일평균: h.avgWeek,
+            한달평균: h.avgMonth,
+          })),
+          yearlyAvgNoise: yearly.reduce((acc: any, cur: any) => {
+            acc[cur.year] = { seoul: cur.avgSeoul, district: cur.avgDistrict };
+            return acc;
+          }, {}),
+          yearlyComplaints: complaints.reduce((acc: any, cur: any) => {
+            acc[cur.year] = cur.count;
+            return acc;
+          }, {}),
+        });
+      } catch (err) {
+        console.error('데이터 로딩 실패:', err);
+      }
+    };
+
+    fetchData();
   }, [selectedDistrict]);
 
   useEffect(() => {
     if (autoScroll) {
       scrollIntervalRef.current = setInterval(() => {
-        setSelectedDistrict(prevDistrict => {
-          const currentIndex = allDistricts.indexOf(prevDistrict);
-          const nextIndex = (currentIndex + 1) % allDistricts.length;
-          return allDistricts[nextIndex];
+        setSelectedDistrict(prev => {
+          const idx = allDistricts.indexOf(prev);
+          return allDistricts[(idx + 1) % allDistricts.length];
         });
-      }, 5000);
+      }, 5000000);
     } else {
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-      }
+      if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     }
     return () => {
-      if (scrollIntervalRef.current) {
-        clearInterval(scrollIntervalRef.current);
-      }
+      if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     };
   }, [autoScroll]);
 
@@ -154,28 +108,14 @@ export default function DistrictDashboard({
     setSelectedDistrict(district);
   };
 
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment) {
-      case 'negative':
-        return 'text-red-500';
-      case 'neutral':
-        return 'text-yellow-500';
-      case 'positive':
-        return 'text-green-500';
-      default:
-        return 'text-gray-700';
-    }
-  };
+  if (!districtData) return <div className="p-6">데이터 불러오는 중...</div>;
 
   const yearlyComplaintsChartData = Object.entries(districtData.yearlyComplaints).map(
-    ([year, count]) => ({
-      year,
-      '민원 건수': count,
-    })
+    ([year, count]) => ({ year, '민원 건수': count })
   );
 
   const yearlyAvgNoiseChartData = Object.entries(districtData.yearlyAvgNoise).map(
-    ([year, data]) => ({
+    ([year, data]: any) => ({
       year,
       '서울시 평균': data.seoul,
       [`${selectedDistrict} 평균`]: data.district,
@@ -280,29 +220,43 @@ export default function DistrictDashboard({
             <CardTitle className="text-sm font-semibold mb-0">
               {selectedDistrict}의 TOP 키워드
             </CardTitle>
-            <div className="flex flex-wrap gap-1 justify-center items-start min-h-[24px] text-xs">
-              {districtData.keywords.slice(0, 1).map((keyword, idx) => (
-                <span key={idx} className="text-base font-bold text-red-500 mr-2">
-                  {keyword.text}
-                </span>
-              ))}
-              {districtData.keywords.slice(1, 3).map((keyword, idx) => (
-                <span
-                  key={idx}
-                  className={`text-base font-bold ${
-                    idx === 0 ? 'text-blue-500' : 'text-green-500'
-                  } mr-2`}
-                >
-                  {keyword.text}
-                </span>
-              ))}
-              {districtData.keywords.slice(3).map((keyword, idx) => (
-                <span key={idx} className="text-base font-bold text-gray-500 mr-2">
-                  {keyword.text}
-                </span>
-              ))}
+            <div className="flex flex-wrap gap-2 justify-center items-start">
+              {(() => {
+                if (!districtData.keywords || districtData.keywords.length === 0) return <span>데이터 없음</span>;
+
+                const max = Math.max(...districtData.keywords.map(k => k.count));
+                const min = Math.min(...districtData.keywords.map(k => k.count));
+                const range = max - min || 1;
+
+                return districtData.keywords.map((kw: any, idx: number) => {
+                  const norm = (kw.count - min) / range;
+                  let textSize = 'text-base';
+                  let color = 'text-gray-500';
+
+                  if (norm >= 0.8) {
+                    textSize = 'text-3xl';
+                    color = 'text-red-600';
+                  } else if (norm >= 0.6) {
+                    textSize = 'text-2xl';
+                    color = 'text-orange-500';
+                  } else if (norm >= 0.4) {
+                    textSize = 'text-xl';
+                    color = 'text-yellow-500';
+                  } else if (norm >= 0.2) {
+                    textSize = 'text-lg';
+                    color = 'text-green-500';
+                  }
+
+                  return (
+                    <span key={idx} className={`${textSize} ${color} font-semibold`}>
+            {kw.keyword}
+          </span>
+                  );
+                });
+              })()}
             </div>
           </Card>
+
 
           {/* Yearly Complaints Chart - Second Row */}
           <Card className="col-span-1 lg:col-span-2 py-1 px-2 min-h-[60px] h-36">
