@@ -15,6 +15,11 @@ import {
   fetchSummary, fetchHourly, fetchYearly, fetchComplaints
 } from '@/lib/api/dashboard';
 
+type KeywordCount = {
+  keyword: string;
+  count: number;
+};
+
 const allDistricts = [
   '강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구',
   '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구',
@@ -224,8 +229,9 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
               {(() => {
                 if (!districtData.keywords || districtData.keywords.length === 0) return <span>데이터 없음</span>;
 
-                const max = Math.max(...districtData.keywords.map(k => k.count));
-                const min = Math.min(...districtData.keywords.map(k => k.count));
+                const max = Math.max(...districtData.keywords.map((k: KeywordCount) => k.count));
+                const min = Math.min(...districtData.keywords.map((k: KeywordCount) => k.count));
+
                 const range = max - min || 1;
 
                 return districtData.keywords.map((kw: any, idx: number) => {

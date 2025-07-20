@@ -1,14 +1,13 @@
 package com.dosion.noisense.module.dashboard.service;
 
 import com.dosion.noisense.module.api.repository.SensorDataRepository;
-import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseHourly;
-import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseSummary;
-import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseYearly;
-import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseZone;
+import com.dosion.noisense.module.dashboard.entity.*;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseYearlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseHourlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseSummaryRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseZoneRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +30,7 @@ public class DashboardStatService {
   private final DashboardDistrictNoiseHourlyRepository dashboardDistrictNoiseHourlyRepository;
   private final DashboardDistrictNoiseYearlyRepository dashboardDistrictNoiseYearlyRepository;
   private final DashboardDistrictNoiseZoneRepository dashboardDistrictNoiseZoneRepository;
+  private final ObjectMapper objectMapper;
 
   // 여기에 통계별 Repository 주입
 
@@ -55,6 +55,19 @@ public class DashboardStatService {
     List<DashboardDistrictNoiseSummary> summaries = new ArrayList<>();
     String batchId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 
+    // 테스트
+    List<KeywordCount> keywordList = List.of(
+      new KeywordCount("시끄러워", 30),
+      new KeywordCount("공사", 24),
+      new KeywordCount("층간소음", 20),
+      new KeywordCount("놀이터", 19),
+      new KeywordCount("왜", 18),
+      new KeywordCount("ㅋㅋ", 14),
+      new KeywordCount("ㅎㅎ", 13),
+      new KeywordCount("ㅜㅜ", 12),
+      new KeywordCount("아", 10)
+    );
+
     for (Object[] row : results) {
       String district = (String) row[0];
       Integer peakHour = row[1] != null ? ((Number) row[1]).intValue() : null;
@@ -62,6 +75,8 @@ public class DashboardStatService {
       Integer calmHour = row[3] != null ? ((Number) row[3]).intValue() : null;
       BigDecimal calmNoise = row[4] != null ? new BigDecimal(row[4].toString()) : null;
       BigDecimal avgNoise = row[5] != null ? new BigDecimal(row[5].toString()) : null;  // <- 추가
+
+      JsonNode topKeywordsNode = objectMapper.valueToTree(keywordList);
 
       DashboardDistrictNoiseSummary summary = DashboardDistrictNoiseSummary.builder()
         .batchId(batchId)
@@ -72,8 +87,8 @@ public class DashboardStatService {
         .peakNoise(peakNoise)
         .calmHour(calmHour)
         .calmNoise(calmNoise)
-        .avgNoise(avgNoise)    // <- 추가
-        .topKeywords(null)
+        .avgNoise(avgNoise)
+        .topKeywords(topKeywordsNode)
         .build();
 
       summaries.add(summary);

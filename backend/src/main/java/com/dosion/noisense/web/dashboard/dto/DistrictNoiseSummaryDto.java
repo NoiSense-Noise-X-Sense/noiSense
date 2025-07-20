@@ -1,5 +1,6 @@
 package com.dosion.noisense.web.dashboard.dto;
 
+import com.dosion.noisense.module.dashboard.entity.KeywordCount;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -40,5 +41,5 @@ public class DistrictNoiseSummaryDto {
   private BigDecimal calmNoise;
 
   @Schema(description = "상위 키워드 리스트 (감정 키워드)")
-  private List<String> topKeywords;
+  private List<KeywordCount> topKeywords;
 }

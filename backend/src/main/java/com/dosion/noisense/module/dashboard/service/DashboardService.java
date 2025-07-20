@@ -2,10 +2,14 @@ package com.dosion.noisense.module.dashboard.service;
 
 import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseSummary;
 import com.dosion.noisense.module.dashboard.entity.DashboardDistrictNoiseYearly;
+import com.dosion.noisense.module.dashboard.entity.KeywordCount;
 import com.dosion.noisense.module.dashboard.repository.*;
 import com.dosion.noisense.web.dashboard.dto.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.math.BigDecimal;
 import java.time.Year;
@@ -24,7 +28,7 @@ public class DashboardService {
   private final DashboardDistrictNoiseYearlyRepository yearlyRepository;
   private final DashboardDistrictNoiseZoneRepository zoneRepository;
   private final NoiseComplaintsRepository noiseComplaintsRepository;
-
+  private final ObjectMapper objectMapper;
 
   /**
    * 자치구별 최신 소음 요약 데이터를 반환한다.
@@ -39,7 +43,12 @@ public class DashboardService {
       throw new IllegalArgumentException("해당 자치구의 소음 데이터가 없습니다: " + district);
     }
 
-    List<String> keywordList = convertKeywordStringToList(entity.getTopKeywords());
+    JsonNode topKeywords = entity.getTopKeywords();
+    List<KeywordCount> keywordList = Collections.emptyList();
+    if (topKeywords != null && topKeywords.isArray()) {
+      keywordList = objectMapper.convertValue(
+        topKeywords, new TypeReference<List<KeywordCount>>() {});
+    }
 
     return DistrictNoiseSummaryDto.builder()
       .autonomousDistrict(entity.getAutonomousDistrict())

@@ -1,11 +1,17 @@
 package com.dosion.noisense.module.dashboard.entity;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @IdClass(DashboardDistrictNoiseSummaryId.class)
@@ -54,7 +60,9 @@ public class DashboardDistrictNoiseSummary implements Serializable {
   @Comment("소음 안정 데시벨")
   private BigDecimal calmNoise;
 
-  @Column(name = "top_keywords", length = 255)
-  @Comment("상위 민원 키워드 (쉼표로 구분)")
-  private String topKeywords;
+
+  @Column(name = "top_keywords", columnDefinition = "jsonb")
+  @Comment("상위 민원 키워드 (JSON 배열)")
+  @JdbcTypeCode(SqlTypes.JSON)
+  private JsonNode topKeywords;
 }

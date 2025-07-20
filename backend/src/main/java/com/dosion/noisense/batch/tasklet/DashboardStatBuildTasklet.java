@@ -23,11 +23,6 @@ public class DashboardStatBuildTasklet implements Tasklet {
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-    // TODO: 여기에 통계 계산 + 통계 테이블 insert/update 로직 작성
-
-    // 예: 하루 평균 소음, 최고 시간대, 민원 키워드 요약 등
-    // ex: dashboard_district_noise_summary, dashboard_district_noise_hourly 등 갱신
-
 
     dashboardStatService.updateNoiseSummary();
     dashboardStatService.updateNoiseHourly();
