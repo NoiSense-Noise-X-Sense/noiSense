@@ -2,6 +2,7 @@ package com.dosion.noisense.batch.tasklet;
 
 import com.dosion.noisense.module.batchlog.entity.BatchResultLog;
 import com.dosion.noisense.module.batchlog.repository.BatchResultLogRepository;
+import com.dosion.noisense.module.dashboard.service.DashboardStatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -17,6 +18,8 @@ public class DashboardStatBuildTasklet implements Tasklet {
 
   private final BatchResultLogRepository logRepository;  // 작업 로그 저장용 Repository
 
+  private final DashboardStatService dashboardStatService;
+
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -24,6 +27,13 @@ public class DashboardStatBuildTasklet implements Tasklet {
 
     // 예: 하루 평균 소음, 최고 시간대, 민원 키워드 요약 등
     // ex: dashboard_district_noise_summary, dashboard_district_noise_hourly 등 갱신
+
+
+    dashboardStatService.updateNoiseSummary();
+    dashboardStatService.updateNoiseHourly();
+    dashboardStatService.updateNoiseYearly();
+    dashboardStatService.updateZoneNoise();
+
 
     logRepository.save(
       BatchResultLog.builder()
