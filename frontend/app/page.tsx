@@ -87,10 +87,6 @@ export default function NoiSenseDashboard() {
     }
   };
 
-  const handleDistrictClick = (district: string) => {
-    setSelectedDistrict(district);
-    setCurrentPage("DistrictDashboard");
-  };
 
   const handleBackToBoard = () => {
     setCurrentPage("board");
@@ -98,6 +94,11 @@ export default function NoiSenseDashboard() {
 
   const handleWriteSubmit = () => {
     setCurrentPage("board");
+  };
+
+  const handleDistrictClick = (district: string) => {
+    setSelectedDistrict(district);
+    setCurrentPage("DistrictDashboard");
   };
 
   // ---- 조건부 렌더링 ----
@@ -212,7 +213,12 @@ export default function NoiSenseDashboard() {
         </div>
       </header>
       {/* Main Content */}
-      {currentPage === "main" && <SeoulNoiseDashboard onDistrictClick={handleDistrictClick} />}
+      {currentPage === "main" && (
+        <SeoulNoiseDashboard onDistrictClick={handleDistrictClick} />
+      )}
+      {currentPage === "DistrictDashboard" && (
+        <DistrictDashboard selectedDistrict={selectedDistrict} />
+      )}
       {currentPage === "NoiseMap" && (
         <div className="flex">
           <FilterSidebar />
