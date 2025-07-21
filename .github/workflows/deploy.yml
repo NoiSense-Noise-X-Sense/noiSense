@@ -19,12 +19,18 @@ jobs:
 
       - name: Install and Build Frontend
         run: |
+          echo "========= Build Front ================"
+          pwd
+          ls -al
           cd frontend
           npm ci
           npm run build
-          tar czf nextjs_build.tar.gz .next public package.json package-lock.json
+          tar czf nextjs_build.tar.gz \
+           .next package.json package-lock.json next.config.mjs \
+           public styles components hooks lib app \
+           tailwind.config.ts postcss.config.mjs tsconfig.json
 
-      - name: Copy Next.js build to EC2
+      - name: Copy to EC2
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -33,8 +39,8 @@ jobs:
           source: frontend/nextjs_build.tar.gz
           target: /home/ec2-user/app/
 
-      - name: Deploy Next.js on EC2 with PM2
-        uses: appleboy/ssh-action@v0.1.10
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
