@@ -63,7 +63,7 @@ class GeodataControllerTest {
   void getAutonomousPolygons_shouldReturnPolygonDtoList() throws Exception {
     // given
     List<BoundaryPolygonDto> mockData = GeodataFixture.getBoundaryPolygonDto();
-    given(geodataService.getAllPolygons()).willReturn(mockData);
+    given(geodataService.getAutonomousPolygons()).willReturn(mockData);
 
     // when + then
     String uriTemplate = PATH + "/polygons/autonomous";
@@ -84,7 +84,7 @@ class GeodataControllerTest {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
       http
-        .csrf().disable()
+//        .csrf().disable()
         .authorizeHttpRequests(authz -> authz
           .anyRequest().permitAll()
         );

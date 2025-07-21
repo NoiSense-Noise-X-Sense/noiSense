@@ -5,6 +5,7 @@ import com.dosion.noisense.module.geodata.enums.GeometryFormat;
 import com.dosion.noisense.module.geodata.enums.GeometryType;
 import com.dosion.noisense.module.sensor.enums.BoundaryType;
 import com.dosion.noisense.web.district.dto.DistrictDto;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -28,15 +29,14 @@ public class BoundaryPolygonDto {
     this.geometry = geometry;
   }
 
-
   @Builder
   @Getter
   public static class Geometry {
     private GeometryType geometryType;
-    private String coordinates;
+    private JsonNode coordinates;
 
     @Builder
-    public Geometry(GeometryType geometryType, String coordinates) {
+    public Geometry(GeometryType geometryType, JsonNode coordinates) {
       this.geometryType = geometryType;
       this.coordinates = coordinates;
     }

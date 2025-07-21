@@ -29,14 +29,15 @@ public class InsertPolygonRunnerTest {
   @DisplayName("자치구 경계 좌표를 저장한다")
   @Test
   void insertGuTest() throws IOException {
-    var inputStream = InsertPolygonRunnerTest.class.getClassLoader().getResourceAsStream("센서스경계_시군구_좌표.geojson");
+//    var inputStream = InsertPolygonRunnerTest.class.getClassLoader().getResourceAsStream("센서스경계_시군구_좌표.geojson");
+    var inputStream = InsertPolygonRunnerTest.class.getClassLoader().getResourceAsStream("센서스_시군구_wgs84.geojson");
     var root = objectMapper.readTree(inputStream);
     var features = root.get("features");
 
     try (var conn = getConnection()) {
       for (JsonNode feature : features) {
         var autonomousDistrictCode = feature.get("properties").get("SIGUNGU_CD").asText();
-        var boundaryType = "autonomousDistrict";
+        var boundaryType = "AUTONOMOUS_DISTRICT";
         var geometryType = feature.get("geometry").get("type").asText();
 
         var coordinatesNode = feature.get("geometry").get("coordinates");
@@ -86,7 +87,7 @@ public class InsertPolygonRunnerTest {
   @DisplayName("행정동 경계 좌표를 저장한다")
   @Test
   void insertDongTest() throws IOException {
-    var inputStream = InsertPolygonRunnerTest.class.getClassLoader().getResourceAsStream("센서스경계_읍면동_좌표.geojson");
+    var inputStream = InsertPolygonRunnerTest.class.getClassLoader().getResourceAsStream("센서스_읍면동_wgs84.geojson");
     var root = objectMapper.readTree(inputStream);
     var features = root.get("features");
 
@@ -99,7 +100,7 @@ public class InsertPolygonRunnerTest {
 
         var autonomousDistrictCode = administrativeDistrictCode.substring(0, 5);
 
-        var boundaryType = "administrativeDistrict";
+        var boundaryType = "ADMINISTRATIVE_DISTRICT";
         var geometryType = feature.get("geometry").get("type").asText();
 
         var coordinatesNode = feature.get("geometry").get("coordinates");
