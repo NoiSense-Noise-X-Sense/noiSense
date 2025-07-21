@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local # 기본 활성 프로파일
+    active: dev # 기본 활성 프로파일
 ---
 
 # 공통 설정 (local, dev, prod 모두 공통)

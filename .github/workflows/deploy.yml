@@ -173,8 +173,6 @@ jobs:
             echo "jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisensedb?currentSchema=noisense"
             echo "=== 유저명 ==="
             echo $SPRING_DATASOURCE_USERNAME
-            echo "=== 패스워드 ==="
-            echo $SPRING_DATASOURCE_PASSWORD
 
             echo "======== 자바 실행 ========="
             env nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
