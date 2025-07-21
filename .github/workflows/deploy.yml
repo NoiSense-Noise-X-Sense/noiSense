@@ -19,7 +19,7 @@ jobs:
 
       - name: Install and Build Frontend
         run: |
-          echo "========= Build Front ================="
+          echo "========== Build Front ================="
           cd frontend
           npm ci
           npm run build
