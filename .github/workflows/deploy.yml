@@ -20,11 +20,11 @@ jobs:
       - name: Install and Build Frontend
         run: |
           echo "========= Build Front ================"
-          pwd
-          ls -al
           cd frontend
           npm ci
           npm run build
+          ls -al
+
           tar czf nextjs_build.tar.gz \
            .next package.json package-lock.json next.config.mjs \
            public styles components hooks lib app \
@@ -48,7 +48,7 @@ jobs:
           script: |
             mkdir -p /home/ec2-user/app/nextjs
             cd /home/ec2-user/app/nextjs
-            tar xzf ../nextjs_build.tar.gz
+            tar xzf ../frontend/nextjs_build.tar.gz
             npm ci || npm install
             pm2 delete nextjs-app || true
             pm2 start npm --name "nextjs-app" -- start
@@ -57,6 +57,7 @@ jobs:
 
   backend-build-and-deploy:
     runs-on: ubuntu-latest
+    needs: frontend-build-and-deploy
 
     env:
       GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
@@ -151,7 +152,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user/app
+            cd /home/ec2-user/app/backend/build/libs
 
             echo "======== JAR 파일 확인 ========"
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
