@@ -163,6 +163,19 @@ jobs:
             echo "======== JAR 파일 확인 ========"
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
 
+
+
+
+            echo "=== 환경 변수 확인 ==="
+            env | grep SPRING
+            echo "=== 실행 직전 jdbcUrl 조합 ==="
+            echo "jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisensedb?currentSchema=noisense"
+            echo "=== 유저명 ==="
+            echo $SPRING_DATASOURCE_USERNAME
+            echo "=== 패스워드 ==="
+            echo $SPRING_DATASOURCE_PASSWORD
+
+
             echo "======== 자바 실행 ========="
             nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
             sleep 5
