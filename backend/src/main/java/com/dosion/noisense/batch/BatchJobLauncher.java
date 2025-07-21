@@ -13,11 +13,6 @@ public class BatchJobLauncher implements CommandLineRunner {
 
   @Override
   public void run(String... args) {
-    try {
-      hourlyNoiseJobScheduler.run();
-    } finally {
-      // 배치 완료 후 명시적으로 앱 종료!
-      System.exit(0);
-    }
+    hourlyNoiseJobScheduler.run();
   }
 }
