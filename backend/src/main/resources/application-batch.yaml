@@ -28,8 +28,12 @@ spring:
 
   # batch
   batch:
+    jdbc:
+      initialize-schema: never
     job:
       enabled: false
+
+
 
 # 로깅
 logging:
