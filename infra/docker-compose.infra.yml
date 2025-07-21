@@ -1,0 +1,30 @@
+# AWS 용 docker-compose
+
+services:
+
+  redis:
+    container_name: redis_noise
+    image: redis:7
+    ports:
+      - "6379:6379"
+    networks:
+      - prod_server
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.29
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - prod_server
+
+
+
+networks:
+  prod_server:
+    external: true
+

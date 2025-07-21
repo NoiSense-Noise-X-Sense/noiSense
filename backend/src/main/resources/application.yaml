@@ -11,19 +11,8 @@ spring:
     ansi:
       enabled: always
 
-#  docker:
-#    compose:
-#      file: ../Data/docker-compose.data.yml
-
   # Jackson Lib
   jackson:
-#    property-naming-strategy: SNAKE_CASE
-#    date-format: yyyy-MM-dd'T'HH:mm:ss
+    #    property-naming-strategy: SNAKE_CASE
+    #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
-
-
-api:
-  sdot:
-    key: ${API_SDOT_KEY}
-    uri: "http://openapi.seoul.go.kr:8088"
-    service-name: ${API_SDOT_SERVICENAME}
