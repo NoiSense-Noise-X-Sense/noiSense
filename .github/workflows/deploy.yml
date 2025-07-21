@@ -47,11 +47,17 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             mkdir -p /home/ec2-user/app/nextjs
+
             cd /home/ec2-user/app/nextjs
+            echo "========= 2 ============"
             tar xzf ../frontend/nextjs_build.tar.gz
+            echo "========= 3 ============"
             npm ci || npm install
+            echo "========= 4 ============"
             pm2 delete nextjs-app || true
+            echo "========= 5 ============"
             pm2 start npm --name "nextjs-app" -- start
+            echo "========= 6 ============"
             pm2 save
 
 
