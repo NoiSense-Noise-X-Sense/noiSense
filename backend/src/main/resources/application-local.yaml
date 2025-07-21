@@ -3,6 +3,9 @@ spring:
   config:
     activate:
       on-profile: local
+  docker:
+    compose:
+      enabled: false
 
   datasource:
     url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
@@ -33,6 +36,13 @@ spring:
           batch_size: 500
     show_sql: true
 
+
+  # batch
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
 
 # 로깅
 logging:
