@@ -38,8 +38,9 @@ spring:
     show_sql: true
 
 
-  # batch
   batch:
+    jdbc:
+      initialize-schema: never
     job:
       enabled: false
 
