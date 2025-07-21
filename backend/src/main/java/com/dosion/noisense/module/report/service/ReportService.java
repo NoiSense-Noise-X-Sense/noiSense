@@ -57,7 +57,7 @@ public class ReportService {
     // 지역 평균 소음
     Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
 
-    // 최다 소음 정보(지역과 시간대)
+    // 최다 소음 정보(지역과 시간)
     Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
 
     // 체감 소음
@@ -79,8 +79,7 @@ public class ReportService {
       perceivedNoise == null ||
       topRankDtoList == null ||
       bottomRankDtoList == null ||
-      deviationRankDtoList == null)
-    {
+      deviationRankDtoList == null) {
       throw new NullPointerException("데이터 부족");
     }
 
@@ -90,7 +89,7 @@ public class ReportService {
     log.info(maxDataByAutonomousDistrict.toString());
     log.info("maxNoiseReginEng : {}", maxNosieReginEng);
     log.info("maxNoiseRegion : {}", maxNoiseRegion);
-    String maxNoiseTime = getMaxTimeSlot(maxDataByAutonomousDistrict.get(sensorData.sensingTime.hour())); // 최다 소음 발생 시간대
+    LocalDateTime maxNoiseTime = maxDataByAutonomousDistrict.get(sensorData.sensingTime); // 최다 소음 발생 시간
 
     // top3, bottom3 그래프 요청할 지역들을 담은 set
     Set<String> trendPointRegionList = new HashSet<>();
@@ -176,6 +175,7 @@ public class ReportService {
   }
 
   // 최대 소음 발생 시간대
+  /*
   private String getMaxTimeSlot(Integer hour) {
     if (hour < 0 || hour > 23) {
       throw new IllegalArgumentException("Hour must be between 0 and 23");
@@ -188,6 +188,38 @@ public class ReportService {
 
     // String.format을 사용해 "06:00 ~ 09:00" 같은 형식으로 만듦
     return String.format("%02d:00 ~ %02d:00", startHour, endHour);
+  }
+  */
+
+  public List<MapDto> getMapData(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String administrativeDistrict, String region) {
+    log.info("getMapData");
+
+    List<MapDto> result = new ArrayList<>();
+
+    // 들어온 변수(한글명)을 센서데이터의 영문으로 변환
+    String auEng = RegionConverter.toEnglish(autonomousDistrict);
+    String adEng = RegionConverter.toEnglish(administrativeDistrict);
+    //log.info("auEng : {}, adEng : {}", auEng, adEng);
+
+    List<AvgNoiseRegionDto> avgNoiseRegionDtoList = reportRepository.findAverageNoiseByRegion(startDate, endDate, auEng, adEng);
+    //log.info("avgNoiseRegionDtoList : {}", avgNoiseRegionDtoList);
+
+    for (AvgNoiseRegionDto dto : avgNoiseRegionDtoList) {
+      //log.info("dto : {}", dto);
+      Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(dto.getAvgNoise(), startDate, endDate, dto.getAutonomousDistrict_kor(), dto.getAdministrativeDistrict_kor());
+      result.add(MapDto.builder()
+        .avgNoise(dto.getAvgNoise())
+        .perceivedNoise(perceivedNoise)
+        .autonomousDistrict_Code(dto.getAutonomousDistrict_Code())
+        .autonomousDistrict_kor(dto.getAutonomousDistrict_kor())
+        .autonomousDistrict_english(dto.getAutonomousDistrict_english())
+        .administrativeDistrict_Code(dto.getAdministrativeDistrict_Code())
+        .administrativeDistrict_kor(dto.getAdministrativeDistrict_kor())
+        .administrativeDistrict_english(dto.getAdministrativeDistrict_english())
+        .build());
+    }
+
+    return result;
   }
 
 }

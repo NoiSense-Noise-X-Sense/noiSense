@@ -2,6 +2,7 @@ package com.dosion.noisense.web.report.controller;
 
 
 import com.dosion.noisense.module.report.service.ReportService;
+import com.dosion.noisense.web.report.dto.MapDto;
 import com.dosion.noisense.web.report.dto.ReportDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Tag(name = "Noise-Report-Controller", description = "소음 리포트")
 @RestController
@@ -36,6 +39,23 @@ public class ReportController {
     , @Parameter(example = "2025-07-30") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
     , @Parameter(example = "전체") String autonomousDistrict) {
     return ResponseEntity.ok(reportService.getReport(startDate, endDate, autonomousDistrict));
+  }
+
+  @Operation(summary = "지도 호출", description = "기간별, 지역별")
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공"
+    //content = @Content(schema = @Schema(implementation = ReportDto.class))
+  )
+  @GetMapping("/getMap")
+  public ResponseEntity<List<MapDto>> getMap(
+    @Parameter(example = "2024-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate,
+    @Parameter(example = "2025-07-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate,
+    @Parameter(example = "강남구") String autonomousDistrict,
+    @Parameter(example = "전체") String administrativeDistrict,
+    @Parameter(example = "aa") String region) {
+//    return null;
+    return ResponseEntity.ok(reportService.getMapData(startDate, endDate, autonomousDistrict, administrativeDistrict, region));
   }
 
 }

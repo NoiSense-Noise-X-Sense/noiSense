@@ -1,12 +1,10 @@
 package com.dosion.noisense.module.report.repository;
 
-import com.dosion.noisense.web.report.dto.ComparisonChartDto;
-import com.dosion.noisense.web.report.dto.DeviationDto;
-import com.dosion.noisense.web.report.dto.OverallChartDto;
-import com.dosion.noisense.web.report.dto.RankDto;
+import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.Tuple;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 // queryDsl 사용할 메서드
@@ -37,6 +35,7 @@ public interface ReportRepositoryCustom {
    */
   List<RankDto> getAvgNoiseRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit);
 
+
   /*
     해당 지역의 편차 랭크 조회
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
@@ -64,5 +63,12 @@ public interface ReportRepositoryCustom {
                                 all이 아니면 행정동 목록 -> 행정구의 행정동 끼리 비교
   */
   List<ComparisonChartDto> getTrendPointAvgData(String type, LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomous);
+
+
+  /*
+    지도에서 평균소음과 지역 정보 데이터 조회
+    행정구, 행정동이 전체면 all
+   */
+  List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng);
 
 }
