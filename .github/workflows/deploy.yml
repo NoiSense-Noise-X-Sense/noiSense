@@ -163,8 +163,9 @@ jobs:
             echo "======== JAR 파일 확인 ========"
             ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
 
-
-
+            set -a
+            source .env
+            set +a
 
             echo "=== 환경 변수 확인 ==="
             env | grep SPRING
