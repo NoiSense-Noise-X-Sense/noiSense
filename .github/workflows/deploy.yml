@@ -176,9 +176,10 @@ jobs:
             echo "=== 패스워드 ==="
             echo $SPRING_DATASOURCE_PASSWORD
 
+            env | grep SPRING
 
             echo "======== 자바 실행 ========="
-            nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
+            env nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
             sleep 5
 
             echo "========= 자바 로그 출력 ========"
