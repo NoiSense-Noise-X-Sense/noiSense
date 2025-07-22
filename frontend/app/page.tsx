@@ -41,6 +41,7 @@ export default function NoiSenseDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,13 +54,17 @@ export default function NoiSenseDashboard() {
         });
         if (!res.ok) {
           console.log('인증 실패');
+          setIsLoggedIn(false);
           return;
         }
         const data = await res.json();
+        setIsLoggedIn(true);
+        setUser(data);
         //User.name=data.nickname;
         console.log("nickname :", data.nickname);
         // 여기서 상태로 유저 정보 저장하거나, 페이지 이동 등 처리 가능
       } catch (err) {
+        setIsLoggedIn(false);
         console.error('유저 정보 요청 실패:', err);
       }
     };
@@ -211,8 +216,9 @@ export default function NoiSenseDashboard() {
             </div>
             {/* Login/Logout Button */}
             {isLoggedIn ? (
+               
               <Button onClick={handleLogout} variant="outline" size="sm">
-                로그아웃
+                {user?.nickname || "게스트"}님 로그아웃
               </Button>
             ) : (
               <Button onClick={() => setCurrentPage("login")} variant="outline" size="sm">
