@@ -1,63 +1,17 @@
-// app/page.tsx (NoiseReport)
-
 "use client"
 
-import { useState, useEffect } from "react"
-import FilterControls from "@/components/analysisreport/FilterControls"
-import KpiCards from "@/components/analysisreport/KpiCards"
-import RankingLists from "@/components/analysisreport/RankingLists"
-import MainChart from "@/components/analysisreport/MainChart"
-import CombinedHourlyChart from "@/components/analysisreport/CombinedHourlyChart"
-import CombinedDailyChart from "@/components/analysisreport/CombinedDailyChart"
+import { useState, useEffect, useRef } from "react"
+import { format } from "date-fns"
 
-// ✅ 여기에 목업 데이터가 있습니다.
-const mockReportDataForAll = {
-    avgNoise: 55.8,
-    perceivedNoise: 65.2,
-    maxNoiseRegion: "강남구",
-    maxNoiseTime: "2024-07-19 22:35:00",
-    maxNoiseTimeValue: 78.5,
-    topRankDtoList: [
-        { region: "강남구", avgNoise: 70.1, deviation: 15.2 },
-        { region: "서초구", avgNoise: 68.5, deviation: 12.1 },
-        { region: "송파구", avgNoise: 67.2, deviation: 10.5 },
-    ],
-    bottomRankDtoList: [
-        { region: "도봉구", avgNoise: 40.2, deviation: 5.1 },
-        { region: "강북구", avgNoise: 42.1, deviation: 6.3 },
-        { region: "중랑구", avgNoise: 43.5, deviation: 7.0 },
-    ],
-    deviationRankDtoList: [
-        { region: "강남구", avgNoise: 70.1, deviation: 15.2 },
-        { region: "영등포구", avgNoise: 60.1, deviation: 14.8 },
-        { region: "관악구", avgNoise: 58.7, deviation: 13.9 },
-    ]
-};
+import FilterControls from "./analysisreport/FilterControls"
+import KpiCards from "./analysisreport/KpiCards"
+import RankingLists from "./analysisreport/RankingLists"
+import MainChart from "./analysisreport/MainChart"
+import CombinedHourlyChart from "./analysisreport/CombinedHourlyChart"
+import CombinedDailyChart from "./analysisreport/CombinedDailyChart"
 
-const mockReportDataForDistrict = {
-    avgNoise: 68.1,
-    perceivedNoise: 72.4,
-    maxNoiseRegion: "역삼동",
-    maxNoiseTime: "2024-07-20 08:15:00",
-    maxNoiseTimeValue: 85.2,
-    topRankDtoList: [
-        { region: "역삼동", avgNoise: 70.1, deviation: 15.2 },
-        { region: "대치동", avgNoise: 68.5, deviation: 12.1 },
-        { region: "삼성동", avgNoise: 67.0, deviation: 11.3 },
-    ],
-    bottomRankDtoList: [
-        { region: "개포동", avgNoise: 40.2, deviation: 5.1 },
-        { region: "수서동", avgNoise: 42.1, deviation: 6.3 },
-        { region: "일원동", avgNoise: 43.0, deviation: 6.8 },
-    ],
-    deviationRankDtoList: [
-        { region: "역삼동", avgNoise: 70.1, deviation: 15.2 },
-        { region: "도곡동", avgNoise: 60.1, deviation: 14.8 },
-        { region: "대치동", avgNoise: 58.9, deviation: 13.2 },
-    ]
-};
-
-export default function NoiseReport() {
+export default function AnalysisReport() {
+  // 상태 관리 (이전과 동일)
   const endDate = new Date();
   const startDate = new Date();
   startDate.setMonth(endDate.getMonth() - 1);
@@ -69,49 +23,89 @@ export default function NoiseReport() {
   });
 
   const [reportData, setReportData] = useState<any | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
+  // 데이터 로딩 로직 (이전과 동일)
   useEffect(() => {
-    console.log(`필터 변경: ${filters.district}. 데이터 다시 로드.`);
-    if (filters.district === "all") {
-        setReportData(mockReportDataForAll);
-    } else {
-        setReportData(mockReportDataForDistrict);
-    }
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    setIsLoading(true);
+    setError(null);
+    debounceTimeout.current = setTimeout(() => {
+      const fetchReportData = async () => {
+        if (!filters.startDate || !filters.endDate) {
+          setError("날짜를 올바르게 선택해주세요.");
+          setIsLoading(false);
+          return;
+        }
+        const params = new URLSearchParams();
+        params.append("startDate", format(filters.startDate, "yyyy-MM-dd"));
+        params.append("endDate", format(filters.endDate, "yyyy-MM-dd"));
+        params.append("autonomousDistrict", filters.district);
+
+        try {
+          const response = await fetch(`http://localhost:8080/api/report/getReport?${params.toString()}`);
+          if (!response.ok) {
+            throw new Error(`서버 응답 오류: ${response.status}`);
+          }
+          const data = await response.json();
+          setReportData(data);
+        } catch (e: any) {
+          setError(e.message || "데이터를 불러오는 데 실패했습니다.");
+          setReportData(null);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchReportData();
+    }, 300);
+    return () => {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    };
   }, [filters]);
 
+  // UI 렌더링
   return (
     <div className="min-h-screen bg-gray-50 p-6 select-none">
       <div className="max-w-7xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold text-gray-900 text-center">소음 데이터 리포트</h1>
-
-        {/* PDF로 변환할 모든 컨텐츠를 이 div로 감쌉니다. */}
         <div id="pdf-content">
           <FilterControls filters={filters} setFilters={setFilters} />
+          <div className="space-y-6 mt-6">
+            {isLoading ? (
+              <div className="text-center py-20 text-gray-500">데이터를 불러오는 중입니다...</div>
+            ) : error ? (
+              <div className="text-center py-20 text-red-500 bg-red-50 rounded-lg p-4">오류: {error}</div>
+            ) : reportData ? (
+              <>
+                <KpiCards
+                  avgNoise={reportData.avgNoise}
+                  perceivedNoise={reportData.perceivedNoise}
+                  maxNoiseRegion={reportData.maxNoiseRegion}
+                  maxNoiseTime={reportData.maxNoiseTime}
+                  maxNoiseTimeValue={reportData.maxNoiseTimeValue}
+                  selectedDistrict={filters.district}
+                />
+                {/* 데이터가 없을 경우를 대비해 || [] (기본값) 추가 */}
+                <RankingLists
+                  topRankDtoList={reportData.topRankDtoList || []}
+                  bottomRankDtoList={reportData.bottomRankDtoList || []}
+                  deviationRankDtoList={reportData.deviationRankDtoList || []}
+                />
 
-          {reportData ? (
-            <div className="space-y-6 mt-6">
-              <KpiCards
-                avgNoise={reportData.avgNoise}
-                perceivedNoise={reportData.perceivedNoise}
-                maxNoiseRegion={reportData.maxNoiseRegion}
-                maxNoiseTime={reportData.maxNoiseTime}
-                maxNoiseTimeValue={reportData.maxNoiseTimeValue}
-                selectedDistrict={filters.district}
-              />
-              <RankingLists
-                topRankDtoList={reportData.topRankDtoList}
-                bottomRankDtoList={reportData.bottomRankDtoList}
-                deviationRankDtoList={reportData.deviationRankDtoList}
-              />
-              <MainChart />
-              <CombinedHourlyChart />
-              <CombinedDailyChart />
-            </div>
-          ) : (
-            <div className="text-center py-10">Loading...</div>
-          )}
+                {/* ✅ 데이터 접근 경로를 백엔드 DTO 구조에 정확하게 맞췄습니다. */}
+                {/* ✅ Optional Chaining(?.)을 사용하여 reportData.totalChartDto가 null일 때 에러 방지 */}
+                <MainChart data={reportData.totalChartDto?.overallDayAvgNoiseData || []} />
+                <CombinedHourlyChart data={reportData.totalChartDto?.overallHourAvgNoiseData || []} />
+                <CombinedDailyChart data={reportData.totalChartDto?.TrendPointDayOfWeekAvgNoiseData || []} />
+              </>
+            ) : (
+              <div className="text-center py-20 text-gray-500">표시할 데이터가 없습니다.</div>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

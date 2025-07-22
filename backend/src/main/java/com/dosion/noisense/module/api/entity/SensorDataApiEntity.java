@@ -66,7 +66,7 @@ public class SensorDataApiEntity {
   @Column(name = "min_humi")
   private Double minHumi;
 
-  // 배치 시간
+  // 배치한(업데이트) 시간
   @Column(name = "batch_time")
   private LocalDateTime batchTime;
 

@@ -25,7 +25,7 @@ public class SensorDataRepositoryImpl implements SensorDataRepositoryCustom {
       "(sensing_time, region, autonomous_district, administrative_district, " +
       "max_noise, avg_noise, min_noise, max_temp, avg_temp, min_temp, " +
       "max_humi, avg_humi, min_humi, batch_time) " +
-      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "VALUES (?, ?::region_type, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
       @Override
