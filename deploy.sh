@@ -14,7 +14,7 @@ trap cleanup SIGINT SIGTERM
 
 # 백엔드(Spring Boot) 실행
 cd backend
-./gradlew bootRun &
+SPRING_PROFILES_ACTIVE=api ./gradlew bootRun &
 BACK_PID=$!
 cd ..
 

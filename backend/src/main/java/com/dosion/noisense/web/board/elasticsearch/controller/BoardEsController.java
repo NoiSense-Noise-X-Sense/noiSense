@@ -40,7 +40,7 @@ public class BoardEsController {
 
   /**
    * getFrequentWords(...) 테스트용 코드 대시보드와 연결 후 삭제
-   */
+   **/
   @GetMapping("/frequent-words")
   public ResponseEntity<Map<String, Long>> getFrequentWords(
     @RequestParam(required = false) String autonomousDistrict,
@@ -51,5 +51,6 @@ public class BoardEsController {
     Map<String, Long> result = boardEsService.getFrequentWords(autonomousDistrict, startDate, endDate, size);
     return ResponseEntity.ok(result);
   }
+
 
 }

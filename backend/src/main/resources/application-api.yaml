@@ -2,24 +2,22 @@
 spring:
   config:
     activate:
-      on-profile: local
+      on-profile: api
   docker:
     compose:
       enabled: false
 
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense?currentSchema=noisense
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   data:
     redis:
-      host:  ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:localhost}
       port: 6379
 
-  elasticsearch:
-    uris: http://localhost:9200
 
   # JPA
   jpa:
@@ -28,6 +26,7 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
+        default_schema: noisense
         naming:
           physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         format_sql: true
@@ -38,12 +37,6 @@ spring:
           batch_size: 500
     show_sql: true
 
-
-  # batch
-  batch:
-    job:
-      enabled: false
-
 # 로깅
 logging:
   level:
@@ -51,9 +44,6 @@ logging:
     org.springframework.web: DEBUG
 
 ---
-
-
-
 
 jwt:
   accessTokenExpirationTime: 1000000

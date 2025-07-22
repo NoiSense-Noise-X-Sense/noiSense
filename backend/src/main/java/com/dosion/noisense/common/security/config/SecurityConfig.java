@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,10 @@ import org.springframework.security.oauth2.client.web.AuthorizationRequestReposi
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import java.util.Arrays;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
@@ -41,6 +46,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
+      .cors(Customizer.withDefaults()) // CORS 설정
       .cors(withDefaults())
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth -> auth
@@ -59,7 +65,9 @@ public class SecurityConfig {
           "/oauth2/**",
           "/login/**",
           "/actuator/prometheus",
-          "/api/batch/run-initial-load"
+          "/api/batch/run-initial-load",
+          "/api/dashboard/**",
+          "/api/es/board/frequent-words"
         ).permitAll()
 
         .requestMatchers("/api/**").authenticated()
@@ -93,5 +101,20 @@ public class SecurityConfig {
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
       .build();
+  }
+
+  // ✅ CORS Filter 설정
+  @Bean
+  public CorsFilter corsFilter() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowCredentials(true);
+    config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트 주소
+    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(Arrays.asList("*"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+
+    return new CorsFilter(source);
   }
 }

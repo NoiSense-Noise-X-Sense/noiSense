@@ -21,16 +21,18 @@ public class HourlyNoiseJobScheduler {
 
   public void run() {
     try{
+      String uuid = UUID.randomUUID().toString();
+
       JobParameters params = new JobParametersBuilder()
         // JobParameters가 동일하면 JobInstance 중복 오류 발생하므로 고유한 값으로 생성
-        .addString("run.id", UUID.randomUUID().toString())
+        .addString("run.id", uuid)
         .toJobParameters();
 
-      log.info("🚀 hourlyNoiseJob 배치 실행 시작");
+      log.info("[HourlyNoiseJobScheduler][True] hourlyNoiseJob 배치 실행 시작");
       jobLauncher.run(hourlyNoiseJob, params);  // ✅ 실제 실행 호출
 
     }catch (Exception e){
-      log.error("❌ hourlyNoiseJob 실행 실패", e);
+      log.error("[HourlyNoiseJobScheduler][Fail] hourlyNoiseJob 실행 실패", e);
     }
   }
 }
