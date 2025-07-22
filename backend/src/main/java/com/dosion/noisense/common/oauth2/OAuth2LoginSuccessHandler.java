@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,6 +20,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
+
+  @Value("${aws.awsip}")
+  private String awsEc2IP;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request,
@@ -59,7 +63,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
     // 로그인 성공
-    String redirectUrl = String.format("http://localhost:3000/");
+    String redirectUrl = String.format( "http://" + awsEc2IP + ":3000/");
     response.sendRedirect(redirectUrl);
   }
 }

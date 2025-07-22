@@ -59,6 +59,8 @@ api:
     uri: "http://openapi.seoul.go.kr:8088"
     service-name: ${API_SDOT_SERVICENAME}
 
+aws:
+  awsip: "172.31.39.164"
 
 
 
