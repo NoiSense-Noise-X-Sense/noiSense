@@ -18,6 +18,8 @@ spring:
       host:  ${REDIS_HOST:localhost}
       port: 6379
 
+  elasticsearch:
+    uris: http://localhost:9200
 
   # JPA
   jpa:
