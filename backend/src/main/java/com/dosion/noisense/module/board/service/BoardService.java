@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.board.service;
 
+import com.dosion.noisense.common.ai.service.EmotionScoreService;
 import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.entity.BoardEmpathy;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+
 import java.util.Optional;
 
 @Service
@@ -25,16 +26,19 @@ public class BoardService {
   private final BoardRepository boardRepository;
   private final BoardEmpathyRepository boardEmpathyRepository;
   private final BoardEsService boardEsService;
+  private final EmotionScoreService emotionScoreService;
 
   /** 게시글 작성 **/
   @Transactional
   public BoardDto createBoard(BoardDto boardDto) {
+    //AI 감정점수 분석
+    int score = emotionScoreService.evaluateEmotionScore(boardDto.getContent());
     Board board = Board.builder()
       .userId(boardDto.getUserId())
       .nickname(boardDto.getNickname())
       .title(boardDto.getTitle())
       .content(boardDto.getContent())
-      .emotionalScore(boardDto.getEmotionalScore())
+      .emotionalScore((long) score)
       .empathyCount(boardDto.getEmpathyCount())
       .viewCount(boardDto.getViewCount() != null ? boardDto.getViewCount() : 0L)
       .autonomousDistrict(boardDto.getAutonomousDistrict())
@@ -102,7 +106,11 @@ public class BoardService {
 
     board.setTitle(boardDto.getTitle());
     board.setContent(boardDto.getContent());
-    board.setEmotionalScore(boardDto.getEmotionalScore());
+
+    //감정점수 다시 평가 (수정된 content 기준)
+    int score = emotionScoreService.evaluateEmotionScore(boardDto.getContent());
+    board.setEmotionalScore((long) score);
+
     board.setEmpathyCount(boardDto.getEmpathyCount());
     board.setViewCount(boardDto.getViewCount());
     board.setAutonomousDistrict(boardDto.getAutonomousDistrict());
