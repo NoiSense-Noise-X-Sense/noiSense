@@ -158,26 +158,6 @@ export default function FilterSidebar() {
         </Select>
       </div>
 
-      {/* 소음 값 슬라이더 */}
-      <div className="mb-4">
-        <Label className="block text-sm font-medium text-gray-700 mb-1">
-          소음 dB 범위 ({noiseRange[0]} ~ {noiseRange[1]} dB)
-        </Label>
-        <Slider
-          value={noiseRange}
-          onValueChange={setNoiseRange}
-          min={40}
-          max={100}
-          step={5}
-          className="w-full mt-2"
-        />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
-          <span>40 dB</span>
-          <span>70 dB</span>
-          <span>100 dB</span>
-        </div>
-      </div>
-
       {/* 지역 유형 */}
       <div className="mb-6">
         <Label className="block text-sm font-medium text-gray-700 mb-2">지역 유형</Label>
