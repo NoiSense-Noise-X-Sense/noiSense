@@ -1,7 +1,7 @@
 package com.dosion.noisense.module.report.service;
 
-import com.dosion.noisense.module.report.RegionConverter;
 import com.dosion.noisense.module.report.repository.ReportRepository;
+import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.StringPath;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
@@ -20,7 +21,10 @@ import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
 public class ReportService {
 
   private final ReportRepository reportRepository;
-  // private final PerceivedNoiseCalculator perceivedNoiseCalculator;
+
+  private final PerceivedNoiseCalculator perceivedNoiseCalculator;
+
+  private final RegionConverter regionConverter;
 
       /*
       응답 데이터 목록
@@ -39,34 +43,40 @@ public class ReportService {
         요일 별 Top 3/Bottom 3 소음 지역 그래프 ->  x축 스트링(요일)
     */
 
-  public ReportDto getReport(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
+  public ReportDto getReport(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode) {
     log.info("getReport");
-
+    log.info("startDate : {}, endDate : {}, autonomousDistrictCode : {}", startDate, endDate, autonomousDistrictCode);
     // startDate endDate 유효성 검사
     if (startDate.isAfter(endDate)) {
       throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다. 시작일 : " + startDate + ", 종료일 : " + endDate);
     }
 
-    String englishAutonomousDistrict = RegionConverter.toEnglish(autonomousDistrict);
+    String autonomousDistrictEng = "all".equalsIgnoreCase(autonomousDistrictCode) ? "all" : regionConverter.toENG(autonomousDistrictCode);
+
+    LocalDateTime startDateTime = startDate.atStartOfDay();
+
+    //String englishAutonomousDistrict = RegionConverter.toEnglish(autonomousDistrict);
+    // englishAutonomousDistrict = englishAutonomousDistrict.equals("all") ? null : englishAutonomousDistrict;
 
     // 지역 평균 소음
-    Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
+    Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, autonomousDistrictEng);
 
-    // 최다 소음 정보(지역과 시간대)
-    Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, englishAutonomousDistrict);
+    // 최다 소음 정보(지역과 시간)
+    Tuple maxDataByAutonomousDistrict = reportRepository.getMaxDataByAutonomousDistrict(startDate, endDate, autonomousDistrictEng);
 
     // 체감 소음
+    String auton = autonomousDistrictEng.equals("all") ? null : autonomousDistrictEng;
     Double perceivedNoise = avgNoise;
-    // Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate, endDate, englishAutonomousDistrict);
+    //Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), auton, null);
 
     /* 랭킹 데이터
     시끄러운 지역(Top 3) -> String, Double
     조용한 지역(Top3) -> String, Double
     소음 편차가 큰 지역(Top3) -> String, Double
     */
-    List<RankDto> topRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, englishAutonomousDistrict, "top", 3);
-    List<RankDto> bottomRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, englishAutonomousDistrict, "bottom", 3);
-    List<DeviationDto> deviationRankDtoList = reportRepository.getDeviationRankByRegion(startDate, endDate, englishAutonomousDistrict, "top", 3);
+    List<RankDto> topRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictEng, "top", 3);
+    List<RankDto> bottomRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictEng, "bottom", 3);
+    List<DeviationDto> deviationRankDtoList = reportRepository.getDeviationRankByRegion(startDate, endDate, autonomousDistrictEng, "top", 3);
 
     // 데이터 유효성 검증
     if (avgNoise == null ||
@@ -74,36 +84,55 @@ public class ReportService {
       perceivedNoise == null ||
       topRankDtoList == null ||
       bottomRankDtoList == null ||
-      deviationRankDtoList == null)
-    {
+      deviationRankDtoList == null) {
       throw new NullPointerException("데이터 부족");
     }
 
-    StringPath region = englishAutonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
-    String maxNosieReginEng = maxDataByAutonomousDistrict.get(region);
-    String maxNoiseRegion = RegionConverter.toKorean(maxNosieReginEng);// 최다 소음 행정동
+    StringPath regionPath;
+    String maxNosieReginEng;
+    String maxNoiseRegionCode;
+    String maxNoiseRegion;
+
+    if (autonomousDistrictEng.equals("all")) {
+      regionPath = sensorData.autonomousDistrict;
+    } else {
+      regionPath = sensorData.administrativeDistrict;
+    }
+    maxNosieReginEng = maxDataByAutonomousDistrict.get(regionPath);
+    maxNoiseRegionCode = regionConverter.toCode(maxNosieReginEng);
+    maxNoiseRegion = getKorByCode(regionPath, maxNoiseRegionCode);
+
     log.info(maxDataByAutonomousDistrict.toString());
     log.info("maxNoiseReginEng : {}", maxNosieReginEng);
+    log.info("maxNoiseRegionCode : {}", maxNoiseRegionCode);
     log.info("maxNoiseRegion : {}", maxNoiseRegion);
-    String maxNoiseTime = getMaxTimeSlot(maxDataByAutonomousDistrict.get(sensorData.sensingTime.hour())); // 최다 소음 발생 시간대
+    LocalDateTime maxNoiseTime = maxDataByAutonomousDistrict.get(sensorData.sensingTime); // 최다 소음 발생 시간
+
 
     // top3, bottom3 그래프 요청할 지역들을 담은 set
     Set<String> trendPointRegionList = new HashSet<>();
+
     for (RankDto rankDto : topRankDtoList) {
       trendPointRegionList.add(rankDto.getRegion());
     }
     for (RankDto rankDto : bottomRankDtoList) {
       trendPointRegionList.add(rankDto.getRegion());
     }
+
+    Map<String, String> engToKorMap = createEngToKorMap(regionPath, topRankDtoList, bottomRankDtoList, deviationRankDtoList);
+
+
     log.info("trendPointRegionList : {}", trendPointRegionList);
+    log.info("engToKorMap : {}", engToKorMap);
 
     // 랭킹 데이터의 영어 지역 한글로 변환
-    List<RankDto> finalTopRankList = topRankDtoList.stream().map(dto -> new RankDto(RegionConverter.toKorean(dto.getRegion()), dto.getAvgNoise())).toList();
-    List<RankDto> finalBottomRankList = bottomRankDtoList.stream().map(dto -> new RankDto(RegionConverter.toKorean(dto.getRegion()), dto.getAvgNoise())).toList();
-    List<DeviationDto> finalDeviationRankList = deviationRankDtoList.stream().map(dto -> new DeviationDto(RegionConverter.toKorean(dto.getRegion()), dto.getAvgNoise(), dto.getMaxNoise(), dto.getMinNoise(), dto.getDeviation())).toList();
+    List<RankDto> finalTopRankList = topRankDtoList.stream().map(dto -> new RankDto(engToKorMap.get(dto.getRegion()), dto.getAvgNoise())).toList();
+    List<RankDto> finalBottomRankList = bottomRankDtoList.stream().map(dto -> new RankDto(engToKorMap.get(dto.getRegion()), dto.getAvgNoise())).toList();
+    List<DeviationDto> finalDeviationRankList = deviationRankDtoList.stream().map(dto -> new DeviationDto(engToKorMap.get(dto.getRegion()), dto.getAvgNoise(), dto.getMaxNoise(), dto.getMinNoise(), dto.getDeviation())).toList();
+
 
     // 차트 데이터 요청
-    TotalChartDto totalChartDto = getChartData(startDate, endDate, new ArrayList<>(trendPointRegionList), englishAutonomousDistrict);
+    TotalChartDto totalChartDto = getChartData(startDate, endDate, new ArrayList<>(trendPointRegionList), autonomousDistrictEng, engToKorMap);
 
     return ReportDto.builder()
       .avgNoise(avgNoise)
@@ -117,9 +146,36 @@ public class ReportService {
       .build();
   }
 
+  private Map<String, String> createEngToKorMap(StringPath regionPath, List<?>... lists) {
+    Map<String, String> engToKorMap = new HashMap<>();
+    for (List<?> list : lists) {
+      for (Object dto : list) {
+        String regionEng = "";
+        String regionCode = "";
+        if (dto.getClass().equals(RankDto.class)) {
+          regionEng = ((RankDto) dto).getRegion();
+        } else if (dto.getClass().equals(DeviationDto.class)) {
+          regionEng = ((DeviationDto) dto).getRegion();
+        }
+        regionCode = regionConverter.toCode(regionEng);
+        String regionKor = getKorByCode(regionPath, regionCode);
+        engToKorMap.put(regionEng, regionKor);
+      }
+    }
+    return engToKorMap;
+  }
+
+  private String getKorByCode(StringPath region, String regionCode) {
+    if (region.equals(sensorData.autonomousDistrict)) {
+      return reportRepository.findAutonomousByCode(regionCode);
+    } else {
+      return reportRepository.findAdministrativeByCode(regionCode);
+    }
+  }
+
 
   // 차트 데이터 가져오기
-  private TotalChartDto getChartData(LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrict) {
+  private TotalChartDto getChartData(LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrict, Map<String, String> engToKorMap) {
     log.info("getChartData");
     // 1. 시간대 별 평균 소음
     List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomousDistrict);
@@ -136,14 +192,14 @@ public class ReportService {
     return TotalChartDto.builder()
       .overallHourAvgNoiseData(overallHourAvgNoiseData)
       .overallDayAvgNoiseData(overallDayAvgNoiseData)
-      .TrendPointHourAvgNoiseData(transformToTrendPoint(trendPointHourAvgNoiseData))
-      .TrendPointDayOfWeekAvgNoiseData(transformToTrendPoint(trendPointDayOfWeekAvgNoiseData))
+      .TrendPointHourAvgNoiseData(transformToTrendPoint(trendPointHourAvgNoiseData, engToKorMap))
+      .TrendPointDayOfWeekAvgNoiseData(transformToTrendPoint(trendPointDayOfWeekAvgNoiseData, engToKorMap))
       .build();
   }
 
 
   // ComparsionChartDto로 가져온 데이터를 X축 기준으로 묶어서 변환
-  private List<TrendPointChartDto> transformToTrendPoint(List<ComparisonChartDto> comparisonChartDtoList) {
+  private List<TrendPointChartDto> transformToTrendPoint(List<ComparisonChartDto> comparisonChartDtoList, Map<String, String> engToKorMap) {
 
     List<TrendPointChartDto> result = new ArrayList<>();
 
@@ -161,7 +217,7 @@ public class ReportService {
 
       Map<String, Double> avgNoiseByRegion = new HashMap<>();
       for (ComparisonChartDto dto : entry.getValue()) {
-        avgNoiseByRegion.put(RegionConverter.toKorean(dto.getLegion()), dto.getAvgNoise());
+        avgNoiseByRegion.put(engToKorMap.get(dto.getLegion()), dto.getAvgNoise());
       }
 
       result.add(new TrendPointChartDto(entry.getKey(), avgNoiseByRegion));
@@ -171,6 +227,7 @@ public class ReportService {
   }
 
   // 최대 소음 발생 시간대
+  /*
   private String getMaxTimeSlot(Integer hour) {
     if (hour < 0 || hour > 23) {
       throw new IllegalArgumentException("Hour must be between 0 and 23");
@@ -183,6 +240,47 @@ public class ReportService {
 
     // String.format을 사용해 "06:00 ~ 09:00" 같은 형식으로 만듦
     return String.format("%02d:00 ~ %02d:00", startHour, endHour);
+  }
+  */
+
+  public List<MapDto> getMapData(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<String> regionList) {
+    log.info("getMapData");
+
+    List<Region> regionTypeList = new ArrayList<>();
+    for (String region : regionList) {
+      regionTypeList.add(Region.fromNameEn(region));
+    }
+
+    log.info("regionTypeList : {}", regionTypeList);
+
+
+    List<MapDto> result = new ArrayList<>();
+
+    // 들어온 변수(한글명)을 센서데이터의 영문으로 변환
+    String auEng = regionConverter.toENG(autonomousDistrictCode);
+    String adEng = regionConverter.toENG(administrativeDistrictCode);
+    log.info("auEng : {}, adEng : {}", auEng, adEng);
+
+    List<AvgNoiseRegionDto> avgNoiseRegionDtoList = reportRepository.findAverageNoiseByRegion(startDate, endDate, auEng, adEng, regionTypeList);
+    log.info("avgNoiseRegionDtoList : {}", avgNoiseRegionDtoList);
+
+    for (AvgNoiseRegionDto dto : avgNoiseRegionDtoList) {
+      //log.info("dto : {}", dto);
+      Double perceivedNoise = 0.0;
+      //Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(dto.getAvgNoise(), startDate, endDate, dto.getAutonomousDistrict_kor(), dto.getAdministrativeDistrict_kor());
+      result.add(MapDto.builder()
+        .avgNoise(dto.getAvgNoise())
+        .perceivedNoise(perceivedNoise)
+        .autonomousDistrictCode(dto.getAutonomousDistrictCode())
+        .autonomousDistrictKor(dto.getAutonomousDistrictKor())
+        .autonomousDistrictEng(dto.getAutonomousDistrictEng())
+        .administrativeDistrictCode(dto.getAdministrativeDistrictCode())
+        .administrativeDistrictKor(dto.getAdministrativeDistrictKor())
+        .administrativeDistrictEng(dto.getAdministrativeDistrictEng())
+        .build());
+    }
+
+    return result;
   }
 
 }

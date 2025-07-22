@@ -1,0 +1,1759 @@
+[
+  {
+    "districtEnglish": "Sajik-dong",
+    "districtCode": "11010530"
+  },
+  {
+    "districtEnglish": "Samcheong-dong",
+    "districtCode": "11010540"
+  },
+  {
+    "districtEnglish": "Buam-dong",
+    "districtCode": "11010550"
+  },
+  {
+    "districtEnglish": "Pyeongchang-dong",
+    "districtCode": "11010560"
+  },
+  {
+    "districtEnglish": "Muak-dong",
+    "districtCode": "11010570"
+  },
+  {
+    "districtEnglish": "Gyonam-dong",
+    "districtCode": "11010580"
+  },
+  {
+    "districtEnglish": "Gahoe-dong",
+    "districtCode": "11010600"
+  },
+  {
+    "districtEnglish": "Jong-ro1(il).2(i).3(sam",
+    "districtCode": "11010610"
+  },
+  {
+    "districtEnglish": "Jong-ro5(o).6(yuk)-ga-d",
+    "districtCode": "11010630"
+  },
+  {
+    "districtEnglish": "Ihwa-dong",
+    "districtCode": "11010640"
+  },
+  {
+    "districtEnglish": "Changsin1(il)-dong",
+    "districtCode": "11010670"
+  },
+  {
+    "districtEnglish": "Changsin2(i)-dong",
+    "districtCode": "11010680"
+  },
+  {
+    "districtEnglish": "Sungin1(il)-dong",
+    "districtCode": "11010700"
+  },
+  {
+    "districtEnglish": "Sungin2(i)-dong",
+    "districtCode": "11010710"
+  },
+  {
+    "districtEnglish": "CheongwoonHyoja-dong",
+    "districtCode": "11010720"
+  },
+  {
+    "districtEnglish": "Hyehwa-dong",
+    "districtCode": "11010730"
+  },
+  {
+    "districtEnglish": "Sogong-dong",
+    "districtCode": "11020520"
+  },
+  {
+    "districtEnglish": "Hoehyeon-dong",
+    "districtCode": "11020540"
+  },
+  {
+    "districtEnglish": "Myeong-dong",
+    "districtCode": "11020550"
+  },
+  {
+    "districtEnglish": "Pil-dong",
+    "districtCode": "11020570"
+  },
+  {
+    "districtEnglish": "Jangchung-dong",
+    "districtCode": "11020580"
+  },
+  {
+    "districtEnglish": "Gwanghui-dong",
+    "districtCode": "11020590"
+  },
+  {
+    "districtEnglish": "Eulji-ro-dong",
+    "districtCode": "11020600"
+  },
+  {
+    "districtEnglish": "Sindang5(o)-dong",
+    "districtCode": "11020650"
+  },
+  {
+    "districtEnglish": "Hwanghak-dong",
+    "districtCode": "11020670"
+  },
+  {
+    "districtEnglish": "Jungnim-dong",
+    "districtCode": "11020680"
+  },
+  {
+    "districtEnglish": "Sindang-dong",
+    "districtCode": "11020690"
+  },
+  {
+    "districtEnglish": "Dasan-dong",
+    "districtCode": "11020700"
+  },
+  {
+    "districtEnglish": "Yaksu-dong",
+    "districtCode": "11020710"
+  },
+  {
+    "districtEnglish": "Cheonggu-dong",
+    "districtCode": "11020720"
+  },
+  {
+    "districtEnglish": "Donghwa-dong",
+    "districtCode": "11020730"
+  },
+  {
+    "districtEnglish": "Huam-dong",
+    "districtCode": "11030510"
+  },
+  {
+    "districtEnglish": "Yongsan2(i)-dong",
+    "districtCode": "11030520"
+  },
+  {
+    "districtEnglish": "Wonhyo-ro-2(i)-dong",
+    "districtCode": "11030570"
+  },
+  {
+    "districtEnglish": "Hyochang-dong",
+    "districtCode": "11030580"
+  },
+  {
+    "districtEnglish": "Yongmun-dong",
+    "districtCode": "11030590"
+  },
+  {
+    "districtEnglish": "Ichon1(il)-dong",
+    "districtCode": "11030630"
+  },
+  {
+    "districtEnglish": "Ichon2(i)-dong",
+    "districtCode": "11030640"
+  },
+  {
+    "districtEnglish": "Itaewon1(il)-dong",
+    "districtCode": "11030650"
+  },
+  {
+    "districtEnglish": "Itaewon2(i)-dong",
+    "districtCode": "11030660"
+  },
+  {
+    "districtEnglish": "Seobinggo-dong",
+    "districtCode": "11030690"
+  },
+  {
+    "districtEnglish": "Bogwang-dong",
+    "districtCode": "11030700"
+  },
+  {
+    "districtEnglish": "Cheongpa-dong",
+    "districtCode": "11030710"
+  },
+  {
+    "districtEnglish": "Wonhyo-ro-1(il)-dong",
+    "districtCode": "11030720"
+  },
+  {
+    "districtEnglish": "Hangang-ro-dong",
+    "districtCode": "11030730"
+  },
+  {
+    "districtEnglish": "Hannam-dong",
+    "districtCode": "11030740"
+  },
+  {
+    "districtEnglish": "Wangsimni2(i)-dong",
+    "districtCode": "11040520"
+  },
+  {
+    "districtEnglish": "Majang-dong",
+    "districtCode": "11040540"
+  },
+  {
+    "districtEnglish": "Sageun-dong",
+    "districtCode": "11040550"
+  },
+  {
+    "districtEnglish": "Haengdang1(il)-dong",
+    "districtCode": "11040560"
+  },
+  {
+    "districtEnglish": "Haengdang2(i)-dong",
+    "districtCode": "11040570"
+  },
+  {
+    "districtEnglish": "Eungbong-dong",
+    "districtCode": "11040580"
+  },
+  {
+    "districtEnglish": "Geumho-1(il)-dong",
+    "districtCode": "11040590"
+  },
+  {
+    "districtEnglish": "Geumho4(sa)-dong",
+    "districtCode": "11040620"
+  },
+  {
+    "districtEnglish": "Seongsu1ga1(il)-dong",
+    "districtCode": "11040650"
+  },
+  {
+    "districtEnglish": "Seongsu1ga2(i)-dong",
+    "districtCode": "11040660"
+  },
+  {
+    "districtEnglish": "Seongsu2ga1(il)-dong",
+    "districtCode": "11040670"
+  },
+  {
+    "districtEnglish": "Seongsu2ga3(sam)-dong",
+    "districtCode": "11040680"
+  },
+  {
+    "districtEnglish": "Songjeong-dong",
+    "districtCode": "11040690"
+  },
+  {
+    "districtEnglish": "Yongdap-dong",
+    "districtCode": "11040700"
+  },
+  {
+    "districtEnglish": "Wangsimni-doSeondong",
+    "districtCode": "11040710"
+  },
+  {
+    "districtEnglish": "Oksu-dong",
+    "districtCode": "11040730"
+  },
+  {
+    "districtEnglish": "Hwayang-dong",
+    "districtCode": "11050530"
+  },
+  {
+    "districtEnglish": "Gunja-dong",
+    "districtCode": "11050540"
+  },
+  {
+    "districtEnglish": "Junggok1(il)-dong",
+    "districtCode": "11050550"
+  },
+  {
+    "districtEnglish": "Junggok2(i)-dong",
+    "districtCode": "11050560"
+  },
+  {
+    "districtEnglish": "Junggok3(sam)-dong",
+    "districtCode": "11050570"
+  },
+  {
+    "districtEnglish": "Junggok4(sa)-dong",
+    "districtCode": "11050580"
+  },
+  {
+    "districtEnglish": "Neung-dong",
+    "districtCode": "11050590"
+  },
+  {
+    "districtEnglish": "Guui1(il)-dong",
+    "districtCode": "11050600"
+  },
+  {
+    "districtEnglish": "Guui2(i)-dong",
+    "districtCode": "11050610"
+  },
+  {
+    "districtEnglish": "Guui3(sam)-dong",
+    "districtCode": "11050620"
+  },
+  {
+    "districtEnglish": "Gwangjang-dong",
+    "districtCode": "11050630"
+  },
+  {
+    "districtEnglish": "Jayang1(il)-dong",
+    "districtCode": "11050640"
+  },
+  {
+    "districtEnglish": "Jayang2(i)-dong",
+    "districtCode": "11050650"
+  },
+  {
+    "districtEnglish": "Jayang3(sam)-dong",
+    "districtCode": "11050660"
+  },
+  {
+    "districtEnglish": "Jayang4(sa)-dong",
+    "districtCode": "11050670"
+  },
+  {
+    "districtEnglish": "Hoegi-dong",
+    "districtCode": "11060710"
+  },
+  {
+    "districtEnglish": "Hwigyeong1(il)-dong",
+    "districtCode": "11060720"
+  },
+  {
+    "districtEnglish": "Hwigyeong2(i)-dong",
+    "districtCode": "11060730"
+  },
+  {
+    "districtEnglish": "Cheongnyangni-dong",
+    "districtCode": "11060800"
+  },
+  {
+    "districtEnglish": "Yongshin-dong",
+    "districtCode": "11060810"
+  },
+  {
+    "districtEnglish": "Jegi-dong",
+    "districtCode": "11060820"
+  },
+  {
+    "districtEnglish": "Jeonnong1(il)-dong",
+    "districtCode": "11060830"
+  },
+  {
+    "districtEnglish": "Jeonnong2(i)-dong",
+    "districtCode": "11060840"
+  },
+  {
+    "districtEnglish": "Jeonnong3(sam)-dong",
+    "districtCode": "11060840"
+  },
+  {
+    "districtEnglish": "Dapsip-ri2(i)-dong",
+    "districtCode": "11060860"
+  },
+  {
+    "districtEnglish": "Jangan1(il)-dong",
+    "districtCode": "11060870"
+  },
+  {
+    "districtEnglish": "Jangan2(i)-dong",
+    "districtCode": "11060880"
+  },
+  {
+    "districtEnglish": "Imun1(il)-dong",
+    "districtCode": "11060890"
+  },
+  {
+    "districtEnglish": "Imun2(i)-dong",
+    "districtCode": "11060900"
+  },
+  {
+    "districtEnglish": "Dapsip-ri1(il)-dong",
+    "districtCode": "11060910"
+  },
+  {
+    "districtEnglish": "Myeonmok2(i)-dong",
+    "districtCode": "11070520"
+  },
+  {
+    "districtEnglish": "Myeonmok4(sa)-dong",
+    "districtCode": "11070540"
+  },
+  {
+    "districtEnglish": "Myeonmok5(o)-dong",
+    "districtCode": "11070550"
+  },
+  {
+    "districtEnglish": "Myeonmok7(chil)-dong",
+    "districtCode": "11070570"
+  },
+  {
+    "districtEnglish": "Sangbong1(il)-dong",
+    "districtCode": "11070590"
+  },
+  {
+    "districtEnglish": "Sangbong2(i)-dong",
+    "districtCode": "11070600"
+  },
+  {
+    "districtEnglish": "Junghwa1(il)-dong",
+    "districtCode": "11070610"
+  },
+  {
+    "districtEnglish": "Junghwa2(i)-dong",
+    "districtCode": "11070620"
+  },
+  {
+    "districtEnglish": "Muk1(il)-dong",
+    "districtCode": "11070640"
+  },
+  {
+    "districtEnglish": "Muk2(i)-dong",
+    "districtCode": "11070650"
+  },
+  {
+    "districtEnglish": "Man-gu3(sam)-dong",
+    "districtCode": "11070680"
+  },
+  {
+    "districtEnglish": "Sinnae1(il)-dong",
+    "districtCode": "11070690"
+  },
+  {
+    "districtEnglish": "Sinnae2(i)-dong",
+    "districtCode": "11070700"
+  },
+  {
+    "districtEnglish": "Myeonmokbon-dong",
+    "districtCode": "11070710"
+  },
+  {
+    "districtEnglish": "Myeonmok3(sam).8(pal)-d",
+    "districtCode": "11070720"
+  },
+  {
+    "districtEnglish": "Mangubon-dong",
+    "districtCode": "11070730"
+  },
+  {
+    "districtEnglish": "Donam1(il)-dong",
+    "districtCode": "11080580"
+  },
+  {
+    "districtEnglish": "Donam2(i)-dong",
+    "districtCode": "11080590"
+  },
+  {
+    "districtEnglish": "Anam-dong",
+    "districtCode": "11080600"
+  },
+  {
+    "districtEnglish": "Bomun-dong",
+    "districtCode": "11080610"
+  },
+  {
+    "districtEnglish": "Jeongneung1(il)-dong",
+    "districtCode": "11080620"
+  },
+  {
+    "districtEnglish": "Jeongneung2(i)-dong",
+    "districtCode": "11080630"
+  },
+  {
+    "districtEnglish": "Jeongneung3(sam)-dong",
+    "districtCode": "11080640"
+  },
+  {
+    "districtEnglish": "Jeongneung4(sa)-dong",
+    "districtCode": "11080650"
+  },
+  {
+    "districtEnglish": "Gileum1(il)-dong",
+    "districtCode": "11080660"
+  },
+  {
+    "districtEnglish": "Gileum2(i)-dong",
+    "districtCode": "11080680"
+  },
+  {
+    "districtEnglish": "Wolgok1(il)-dong",
+    "districtCode": "11080710"
+  },
+  {
+    "districtEnglish": "Wolgok2(i)-dong",
+    "districtCode": "11080720"
+  },
+  {
+    "districtEnglish": "Jangwi1(il)-dong",
+    "districtCode": "11080760"
+  },
+  {
+    "districtEnglish": "Jangwi2(i)-dong",
+    "districtCode": "11080770"
+  },
+  {
+    "districtEnglish": "Seongbuk-dong",
+    "districtCode": "11080810"
+  },
+  {
+    "districtEnglish": "Samseon-dong",
+    "districtCode": "11080820"
+  },
+  {
+    "districtEnglish": "Dongseon-dong",
+    "districtCode": "11080830"
+  },
+  {
+    "districtEnglish": "Jongam-dong",
+    "districtCode": "11080840"
+  },
+  {
+    "districtEnglish": "Seokgwan-dong",
+    "districtCode": "11080850"
+  },
+  {
+    "districtEnglish": "Beon1(il)-dong",
+    "districtCode": "11090600"
+  },
+  {
+    "districtEnglish": "Beon2(i)-dong",
+    "districtCode": "11090610"
+  },
+  {
+    "districtEnglish": "Beon3(sam)-dong",
+    "districtCode": "11090620"
+  },
+  {
+    "districtEnglish": "Suyu1(il)-dong",
+    "districtCode": "11090630"
+  },
+  {
+    "districtEnglish": "Suyu2(i)-dong",
+    "districtCode": "11090640"
+  },
+  {
+    "districtEnglish": "Suyu3(sam)-dong",
+    "districtCode": "11090650"
+  },
+  {
+    "districtEnglish": "Samyang-dong",
+    "districtCode": "11090690"
+  },
+  {
+    "districtEnglish": "Mia-dong",
+    "districtCode": "11090700"
+  },
+  {
+    "districtEnglish": "Songjung-dong",
+    "districtCode": "11090710"
+  },
+  {
+    "districtEnglish": "Songcheon-dong",
+    "districtCode": "11090720"
+  },
+  {
+    "districtEnglish": "Samgaksan-dong",
+    "districtCode": "11090730"
+  },
+  {
+    "districtEnglish": "Ui-dong",
+    "districtCode": "11090740"
+  },
+  {
+    "districtEnglish": "Insu-dong",
+    "districtCode": "11090750"
+  },
+  {
+    "districtEnglish": "Ssangmun1(il)-dong",
+    "districtCode": "11100510"
+  },
+  {
+    "districtEnglish": "Ssangmun2(i)-dong",
+    "districtCode": "11100520"
+  },
+  {
+    "districtEnglish": "Ssangmun3(sam)-dong",
+    "districtCode": "11100530"
+  },
+  {
+    "districtEnglish": "Ssangmun4(sa)-dong",
+    "districtCode": "11100540"
+  },
+  {
+    "districtEnglish": "Banghak1(il)-dong",
+    "districtCode": "11100550"
+  },
+  {
+    "districtEnglish": "Banghak2(i)-dong",
+    "districtCode": "11100560"
+  },
+  {
+    "districtEnglish": "Banghak3(sam)-dong",
+    "districtCode": "11100570"
+  },
+  {
+    "districtEnglish": "Chang1(il)-dong",
+    "districtCode": "11100590"
+  },
+  {
+    "districtEnglish": "Chang2(i)-dong",
+    "districtCode": "11100600"
+  },
+  {
+    "districtEnglish": "Chang3(sam)-dong",
+    "districtCode": "11100610"
+  },
+  {
+    "districtEnglish": "Chang4(sa)-dong",
+    "districtCode": "11100620"
+  },
+  {
+    "districtEnglish": "Chang5-dong",
+    "districtCode": "11100630"
+  },
+  {
+    "districtEnglish": "Dobong1(il)-dong",
+    "districtCode": "11100640"
+  },
+  {
+    "districtEnglish": "Dobong2(i)-dong",
+    "districtCode": "11100650"
+  },
+  {
+    "districtEnglish": "Wolgye1(il)-dong",
+    "districtCode": "11110510"
+  },
+  {
+    "districtEnglish": "Wolgye2(i)-dong",
+    "districtCode": "11110520"
+  },
+  {
+    "districtEnglish": "Wolgye3(sam)-dong",
+    "districtCode": "11110530"
+  },
+  {
+    "districtEnglish": "Gongneung2(i)-dong",
+    "districtCode": "11110560"
+  },
+  {
+    "districtEnglish": "Hagye1(il)-dong",
+    "districtCode": "11110580"
+  },
+  {
+    "districtEnglish": "Hagye2(i)-dong",
+    "districtCode": "11110590"
+  },
+  {
+    "districtEnglish": "Junggyebon-dong",
+    "districtCode": "11110600"
+  },
+  {
+    "districtEnglish": "Junggye1(il)-dong",
+    "districtCode": "11110610"
+  },
+  {
+    "districtEnglish": "Junggye4(sa)-dong",
+    "districtCode": "11110640"
+  },
+  {
+    "districtEnglish": "Sanggye1(il)-dong",
+    "districtCode": "11110650"
+  },
+  {
+    "districtEnglish": "Sanggye2(i)-dong",
+    "districtCode": "11110660"
+  },
+  {
+    "districtEnglish": "Sanggye5(o)-dong",
+    "districtCode": "11110690"
+  },
+  {
+    "districtEnglish": "Sanggye8(pal)-dong",
+    "districtCode": "11110720"
+  },
+  {
+    "districtEnglish": "Sanggye9(gu)-dong",
+    "districtCode": "11110730"
+  },
+  {
+    "districtEnglish": "Sanggye10(sip)-dong",
+    "districtCode": "11110740"
+  },
+  {
+    "districtEnglish": "Sanggye3(sam).4(sa)-don",
+    "districtCode": "11110760"
+  },
+  {
+    "districtEnglish": "Sanggye6(yuk).7(chil)-d",
+    "districtCode": "11110770"
+  },
+  {
+    "districtEnglish": "Gongneung1(il)-dong",
+    "districtCode": "11110790"
+  },
+  {
+    "districtEnglish": "Nokbeon-dong",
+    "districtCode": "11120510"
+  },
+  {
+    "districtEnglish": "Bulgwang1(il)-dong",
+    "districtCode": "11120520"
+  },
+  {
+    "districtEnglish": "Galhyeon1(il)-dong",
+    "districtCode": "11120550"
+  },
+  {
+    "districtEnglish": "Galhyeon2(i)-dong",
+    "districtCode": "11120560"
+  },
+  {
+    "districtEnglish": "Gusan-dong",
+    "districtCode": "11120570"
+  },
+  {
+    "districtEnglish": "Daejo-dong",
+    "districtCode": "11120580"
+  },
+  {
+    "districtEnglish": "Eungam1(il)-dong",
+    "districtCode": "11120590"
+  },
+  {
+    "districtEnglish": "Eungam2(i)-dong",
+    "districtCode": "11120600"
+  },
+  {
+    "districtEnglish": "Sinsa1(il)-dong",
+    "districtCode": "11120650"
+  },
+  {
+    "districtEnglish": "Sinsa2(i)-dong",
+    "districtCode": "11120660"
+  },
+  {
+    "districtEnglish": "Jeungsan-dong",
+    "districtCode": "11120670"
+  },
+  {
+    "districtEnglish": "Susaek-dong",
+    "districtCode": "11120680"
+  },
+  {
+    "districtEnglish": "Jingwan-dong",
+    "districtCode": "11120710"
+  },
+  {
+    "districtEnglish": "Bulgwang2(i)-dong",
+    "districtCode": "11120720"
+  },
+  {
+    "districtEnglish": "Eungam3(sam)-dong",
+    "districtCode": "11120730"
+  },
+  {
+    "districtEnglish": "Yeokchon-dong",
+    "districtCode": "11120740"
+  },
+  {
+    "districtEnglish": "Cheonyeon-dong",
+    "districtCode": "11130520"
+  },
+  {
+    "districtEnglish": "Hongje1(il)-dong",
+    "districtCode": "11130620"
+  },
+  {
+    "districtEnglish": "Hongje3(sam)-dong",
+    "districtCode": "11130640"
+  },
+  {
+    "districtEnglish": "Hongje2(i)-dong",
+    "districtCode": "11130650"
+  },
+  {
+    "districtEnglish": "Hongeun1(il)-dong",
+    "districtCode": "11130660"
+  },
+  {
+    "districtEnglish": "Hongeun2(i)-dong",
+    "districtCode": "11130680"
+  },
+  {
+    "districtEnglish": "Namgajwa1(il)-dong",
+    "districtCode": "11130690"
+  },
+  {
+    "districtEnglish": "Namgajwa2(i)-dong",
+    "districtCode": "11130700"
+  },
+  {
+    "districtEnglish": "Bukgajwa1(il)-dong",
+    "districtCode": "11130710"
+  },
+  {
+    "districtEnglish": "Bukgajwa2(i)-dong",
+    "districtCode": "11130720"
+  },
+  {
+    "districtEnglish": "Chunghyeon-dong",
+    "districtCode": "11130730"
+  },
+  {
+    "districtEnglish": "Bukahyeon-dong",
+    "districtCode": "11130740"
+  },
+  {
+    "districtEnglish": "Sinchon-dong",
+    "districtCode": "11130750"
+  },
+  {
+    "districtEnglish": "Yeonhui-dong",
+    "districtCode": "11130760"
+  },
+  {
+    "districtEnglish": "Yonggang-dong",
+    "districtCode": "11140590"
+  },
+  {
+    "districtEnglish": "Daeheung-dong",
+    "districtCode": "11140600"
+  },
+  {
+    "districtEnglish": "Yeomni-dong",
+    "districtCode": "11140610"
+  },
+  {
+    "districtEnglish": "Sinsu-dong",
+    "districtCode": "11140630"
+  },
+  {
+    "districtEnglish": "Seogyo-dong",
+    "districtCode": "11140660"
+  },
+  {
+    "districtEnglish": "Hapjeong-dong",
+    "districtCode": "11140680"
+  },
+  {
+    "districtEnglish": "Mangwon1(il)-dong",
+    "districtCode": "11140690"
+  },
+  {
+    "districtEnglish": "Mangwon2(i)-dong",
+    "districtCode": "11140700"
+  },
+  {
+    "districtEnglish": "Yeonnam-dong",
+    "districtCode": "11140710"
+  },
+  {
+    "districtEnglish": "Seongsan1(il)-dong",
+    "districtCode": "11140720"
+  },
+  {
+    "districtEnglish": "Seongsan2(i)-dong",
+    "districtCode": "11140730"
+  },
+  {
+    "districtEnglish": "Sangam-dong",
+    "districtCode": "11140740"
+  },
+  {
+    "districtEnglish": "Dohwa-dong",
+    "districtCode": "11140750"
+  },
+  {
+    "districtEnglish": "Sogang-dong",
+    "districtCode": "11140760"
+  },
+  {
+    "districtEnglish": "Gongdeok-dong",
+    "districtCode": "11140770"
+  },
+  {
+    "districtEnglish": "Ahyeon-dong",
+    "districtCode": "11140780"
+  },
+  {
+    "districtEnglish": "Mok1(il)-dong",
+    "districtCode": "11150510"
+  },
+  {
+    "districtEnglish": "Mok2(i)-dong",
+    "districtCode": "11150520"
+  },
+  {
+    "districtEnglish": "Mok3(sam)-dong",
+    "districtCode": "11150530"
+  },
+  {
+    "districtEnglish": "Mok4(sa)-dong",
+    "districtCode": "11150540"
+  },
+  {
+    "districtEnglish": "Sinwol1(il)-dong",
+    "districtCode": "11150570"
+  },
+  {
+    "districtEnglish": "Sinwol2(i)-dong",
+    "districtCode": "11150580"
+  },
+  {
+    "districtEnglish": "Sinwol3(sam)-dong",
+    "districtCode": "11150590"
+  },
+  {
+    "districtEnglish": "Sinwol4(sa)-dong",
+    "districtCode": "11150600"
+  },
+  {
+    "districtEnglish": "Sinwol5(o)-dong",
+    "districtCode": "11150610"
+  },
+  {
+    "districtEnglish": "Sinwol6(yuk)-dong",
+    "districtCode": "11150620"
+  },
+  {
+    "districtEnglish": "Sinwol7(chil)-dong",
+    "districtCode": "11150630"
+  },
+  {
+    "districtEnglish": "Sinjeong1(il)-dong",
+    "districtCode": "11150640"
+  },
+  {
+    "districtEnglish": "Sinjeong2(i)-dong",
+    "districtCode": "11150650"
+  },
+  {
+    "districtEnglish": "Sinjeong3(sam)-dong",
+    "districtCode": "11150660"
+  },
+  {
+    "districtEnglish": "Sinjeong6(yuk)-dong",
+    "districtCode": "11150690"
+  },
+  {
+    "districtEnglish": "Sinjeong7(chil)-dong",
+    "districtCode": "11150700"
+  },
+  {
+    "districtEnglish": "Mok5(o)-dong",
+    "districtCode": "11150710"
+  },
+  {
+    "districtEnglish": "Sinjeong4(sa)-dong",
+    "districtCode": "11150720"
+  },
+  {
+    "districtEnglish": "Yeomchang-dong",
+    "districtCode": "11160510"
+  },
+  {
+    "districtEnglish": "Deungchon1(il)-dong",
+    "districtCode": "11160520"
+  },
+  {
+    "districtEnglish": "Deungchon2(i)-dong",
+    "districtCode": "11160530"
+  },
+  {
+    "districtEnglish": "Deungchon3(sam)-dong",
+    "districtCode": "11160540"
+  },
+  {
+    "districtEnglish": "Hwagokbon-dong",
+    "districtCode": "11160550"
+  },
+  {
+    "districtEnglish": "Hwagok2(i)-dong",
+    "districtCode": "11160570"
+  },
+  {
+    "districtEnglish": "Hwagok3(sam)-dong",
+    "districtCode": "11160580"
+  },
+  {
+    "districtEnglish": "Hwagok4(sa)-dong",
+    "districtCode": "11160590"
+  },
+  {
+    "districtEnglish": "Hwagok6(yuk)-dong",
+    "districtCode": "11160610"
+  },
+  {
+    "districtEnglish": "Hwagok8(pal)-dong",
+    "districtCode": "11160630"
+  },
+  {
+    "districtEnglish": "Gayang2(i)-dong",
+    "districtCode": "11160650"
+  },
+  {
+    "districtEnglish": "Gayang3(sam)-dong",
+    "districtCode": "11160660"
+  },
+  {
+    "districtEnglish": "Balsan1(il)-dong",
+    "districtCode": "11160670"
+  },
+  {
+    "districtEnglish": "Gonghang-dong",
+    "districtCode": "11160690"
+  },
+  {
+    "districtEnglish": "Banghwa1(il)-dong",
+    "districtCode": "11160700"
+  },
+  {
+    "districtEnglish": "Banghwa2(i)-dong",
+    "districtCode": "11160710"
+  },
+  {
+    "districtEnglish": "Hwagok1(il)-dong",
+    "districtCode": "11160730"
+  },
+  {
+    "districtEnglish": "Gayang1(il)-dong",
+    "districtCode": "11160751"
+  },
+  {
+    "districtEnglish": "Banghwa3(sam)-dong",
+    "districtCode": "11160761"
+  },
+  {
+    "districtEnglish": "Sindorim-dong",
+    "districtCode": "11170510"
+  },
+  {
+    "districtEnglish": "Gu-ro1(il)-dong",
+    "districtCode": "11170520"
+  },
+  {
+    "districtEnglish": "Gu-ro3(sam)-dong",
+    "districtCode": "11170540"
+  },
+  {
+    "districtEnglish": "Gu-ro4(sa)-dong",
+    "districtCode": "11170550"
+  },
+  {
+    "districtEnglish": "Gu-ro5(o)-dong",
+    "districtCode": "11170560"
+  },
+  {
+    "districtEnglish": "Gocheok1(il)-dong",
+    "districtCode": "11170610"
+  },
+  {
+    "districtEnglish": "Gocheok2(i)-dong",
+    "districtCode": "11170620"
+  },
+  {
+    "districtEnglish": "Gaebong2(i)-dong",
+    "districtCode": "11170640"
+  },
+  {
+    "districtEnglish": "Gaebong3(sam)-dong",
+    "districtCode": "11170650"
+  },
+  {
+    "districtEnglish": "Sugung-dong",
+    "districtCode": "11170690"
+  },
+  {
+    "districtEnglish": "Garibong-dong",
+    "districtCode": "11170700"
+  },
+  {
+    "districtEnglish": "Gu-ro2(i)-dong",
+    "districtCode": "11170710"
+  },
+  {
+    "districtEnglish": "Gaebong1(il)-dong",
+    "districtCode": "11170720"
+  },
+  {
+    "districtEnglish": "Oryu2(i)-dong",
+    "districtCode": "11170730"
+  },
+  {
+    "districtEnglish": "Hang-dong",
+    "districtCode": "11170740"
+  },
+  {
+    "districtEnglish": "Gasan-dong",
+    "districtCode": "11180510"
+  },
+  {
+    "districtEnglish": "Doksan1(il)-dong",
+    "districtCode": "11180520"
+  },
+  {
+    "districtEnglish": "Doksan2(i)-dong",
+    "districtCode": "11180530"
+  },
+  {
+    "districtEnglish": "Doksan3(sam)-dong",
+    "districtCode": "11180540"
+  },
+  {
+    "districtEnglish": "Doksan4(sa)-dong",
+    "districtCode": "11180550"
+  },
+  {
+    "districtEnglish": "Siheung1(il)-dong",
+    "districtCode": "11180570"
+  },
+  {
+    "districtEnglish": "Siheung2(i)-dong",
+    "districtCode": "11180580"
+  },
+  {
+    "districtEnglish": "Siheung3(sam)-dong",
+    "districtCode": "11180590"
+  },
+  {
+    "districtEnglish": "Siheung4(sa)-dong",
+    "districtCode": "11180600"
+  },
+  {
+    "districtEnglish": "Siheung5(o)-dong",
+    "districtCode": "11180610"
+  },
+  {
+    "districtEnglish": "Yeouido-dong",
+    "districtCode": "11190540"
+  },
+  {
+    "districtEnglish": "Dangsan1(il)-dong",
+    "districtCode": "11190550"
+  },
+  {
+    "districtEnglish": "Dangsan2(i)-dong",
+    "districtCode": "11190560"
+  },
+  {
+    "districtEnglish": "Yangpyeong1(il)-dong",
+    "districtCode": "11190610"
+  },
+  {
+    "districtEnglish": "Yangpyeong2(i)-dong",
+    "districtCode": "11190620"
+  },
+  {
+    "districtEnglish": "Sin-gil1(il)-dong",
+    "districtCode": "11190630"
+  },
+  {
+    "districtEnglish": "Sin-gil3(sam)-dong",
+    "districtCode": "11190650"
+  },
+  {
+    "districtEnglish": "Sin-gil5(o)-dong",
+    "districtCode": "11190670"
+  },
+  {
+    "districtEnglish": "Sin-gil6(yuk)-dong",
+    "districtCode": "11190680"
+  },
+  {
+    "districtEnglish": "Sin-gil7(chil)-dong",
+    "districtCode": "11190690"
+  },
+  {
+    "districtEnglish": "Daerim1(il)-dong",
+    "districtCode": "11190700"
+  },
+  {
+    "districtEnglish": "Daerim2(i)-dong",
+    "districtCode": "11190710"
+  },
+  {
+    "districtEnglish": "Daerim3(sam)-dong",
+    "districtCode": "11190720"
+  },
+  {
+    "districtEnglish": "Yeongdeungpo-dong",
+    "districtCode": "11190740"
+  },
+  {
+    "districtEnglish": "Dorim-dong",
+    "districtCode": "11190750"
+  },
+  {
+    "districtEnglish": "Munllae-dong",
+    "districtCode": "11190760"
+  },
+  {
+    "districtEnglish": "Sang-do1(il)-dong",
+    "districtCode": "11200530"
+  },
+  {
+    "districtEnglish": "Sang-do2(i)-dong",
+    "districtCode": "11200540"
+  },
+  {
+    "districtEnglish": "Sang-do3(sam)-dong",
+    "districtCode": "11200550"
+  },
+  {
+    "districtEnglish": "Sang-do4(sa)-dong",
+    "districtCode": "11200560"
+  },
+  {
+    "districtEnglish": "Sadang1(il)-dong",
+    "districtCode": "11200630"
+  },
+  {
+    "districtEnglish": "Sadang3(sam)-dong",
+    "districtCode": "11200650"
+  },
+  {
+    "districtEnglish": "Sadang4(sa)-dong",
+    "districtCode": "11200660"
+  },
+  {
+    "districtEnglish": "Sadang5(o)-dong",
+    "districtCode": "11200670"
+  },
+  {
+    "districtEnglish": "Daebang-dong",
+    "districtCode": "11200680"
+  },
+  {
+    "districtEnglish": "Sindaebang1(il)-dong",
+    "districtCode": "11200690"
+  },
+  {
+    "districtEnglish": "Sindaebang2(i)-dong",
+    "districtCode": "11200700"
+  },
+  {
+    "districtEnglish": "Heukseok-dong",
+    "districtCode": "11200710"
+  },
+  {
+    "districtEnglish": "Noryangjin1(il)-dong",
+    "districtCode": "11200720"
+  },
+  {
+    "districtEnglish": "Sadang2(i)-dong",
+    "districtCode": "11200730"
+  },
+  {
+    "districtEnglish": "Boramae-dong",
+    "districtCode": "11210520"
+  },
+  {
+    "districtEnglish": "Cheongnim-dong",
+    "districtCode": "11210540"
+  },
+  {
+    "districtEnglish": "Haengun-dong",
+    "districtCode": "11210570"
+  },
+  {
+    "districtEnglish": "Nakseongdae-dong",
+    "districtCode": "11210580"
+  },
+  {
+    "districtEnglish": "Jungang-dong",
+    "districtCode": "11210610"
+  },
+  {
+    "districtEnglish": "Inheon-dong",
+    "districtCode": "11210620"
+  },
+  {
+    "districtEnglish": "Namhyeon-dong",
+    "districtCode": "11210630"
+  },
+  {
+    "districtEnglish": "Seowon-dong",
+    "districtCode": "11210640"
+  },
+  {
+    "districtEnglish": "Sinwon-dong",
+    "districtCode": "11210650"
+  },
+  {
+    "districtEnglish": "Seorim-dong",
+    "districtCode": "11210660"
+  },
+  {
+    "districtEnglish": "Sinsa-dong",
+    "districtCode": "11210680"
+  },
+  {
+    "districtEnglish": "Sinllim-dong",
+    "districtCode": "11210690"
+  },
+  {
+    "districtEnglish": "Nanhyang-dong",
+    "districtCode": "11210710"
+  },
+  {
+    "districtEnglish": "Jowon-dong",
+    "districtCode": "11210720"
+  },
+  {
+    "districtEnglish": "Daehak-dong",
+    "districtCode": "11210730"
+  },
+  {
+    "districtEnglish": "Euncheon-dong",
+    "districtCode": "11210780"
+  },
+  {
+    "districtEnglish": "Seonghyeon-dong",
+    "districtCode": "11210790"
+  },
+  {
+    "districtEnglish": "Cheongnyong-dong",
+    "districtCode": "11210800"
+  },
+  {
+    "districtEnglish": "Nangok-dong",
+    "districtCode": "11210810"
+  },
+  {
+    "districtEnglish": "Samseong-dong",
+    "districtCode": "11210820"
+  },
+  {
+    "districtEnglish": "Miseong-dong",
+    "districtCode": "11210830"
+  },
+  {
+    "districtEnglish": "Seocho1(il)-dong",
+    "districtCode": "11220510"
+  },
+  {
+    "districtEnglish": "Seocho2(i)-dong",
+    "districtCode": "11220520"
+  },
+  {
+    "districtEnglish": "Seocho3(sam)-dong",
+    "districtCode": "11220530"
+  },
+  {
+    "districtEnglish": "Seocho4(sa)-dong",
+    "districtCode": "11220540"
+  },
+  {
+    "districtEnglish": "Jamwon-dong",
+    "districtCode": "11220550"
+  },
+  {
+    "districtEnglish": "Banpobon-dong",
+    "districtCode": "11220560"
+  },
+  {
+    "districtEnglish": "Banpo1(il)-dong",
+    "districtCode": "11220570"
+  },
+  {
+    "districtEnglish": "Banpo2(i)-dong",
+    "districtCode": "11220580"
+  },
+  {
+    "districtEnglish": "Banpo3(sam)-dong",
+    "districtCode": "11220590"
+  },
+  {
+    "districtEnglish": "Banpo4(sa)-dong",
+    "districtCode": "11220600"
+  },
+  {
+    "districtEnglish": "Bangbaebon-dong",
+    "districtCode": "11220610"
+  },
+  {
+    "districtEnglish": "Bangbae1(il)-dong",
+    "districtCode": "11220620"
+  },
+  {
+    "districtEnglish": "Bangbae2(i)-dong",
+    "districtCode": "11220630"
+  },
+  {
+    "districtEnglish": "Bangbae3(sam)-dong",
+    "districtCode": "11220640"
+  },
+  {
+    "districtEnglish": "Bangbae4(sa)-dong",
+    "districtCode": "11220650"
+  },
+  {
+    "districtEnglish": "Yangjae1(il)-dong",
+    "districtCode": "11220660"
+  },
+  {
+    "districtEnglish": "Yangjae2(i)-dong",
+    "districtCode": "11220670"
+  },
+  {
+    "districtEnglish": "Naegok-dong",
+    "districtCode": "11220680"
+  },
+  {
+    "districtEnglish": "Sinsa-dong",
+    "districtCode": "11230510"
+  },
+  {
+    "districtEnglish": "Nonhyeon1(il)-dong",
+    "districtCode": "11230520"
+  },
+  {
+    "districtEnglish": "Nonhyeon2(i)-dong",
+    "districtCode": "11230530"
+  },
+  {
+    "districtEnglish": "Samseong1(il)-dong",
+    "districtCode": "11230580"
+  },
+  {
+    "districtEnglish": "Samseong2(i)-dong",
+    "districtCode": "11230590"
+  },
+  {
+    "districtEnglish": "Daechi1(il)-dong",
+    "districtCode": "11230600"
+  },
+  {
+    "districtEnglish": "Daechi4(sa)-dong",
+    "districtCode": "11230630"
+  },
+  {
+    "districtEnglish": "Yeoksam1(il)-dong",
+    "districtCode": "11230640"
+  },
+  {
+    "districtEnglish": "Yeoksam2(i)-dong",
+    "districtCode": "11230650"
+  },
+  {
+    "districtEnglish": "Dogok2(i)-dong",
+    "districtCode": "11230670"
+  },
+  {
+    "districtEnglish": "Gaepo4(sa)-dong",
+    "districtCode": "11230710"
+  },
+  {
+    "districtEnglish": "Ilwonbon-dong",
+    "districtCode": "11230720"
+  },
+  {
+    "districtEnglish": "Ilwon1(il)-dong",
+    "districtCode": "11230730"
+  },
+  {
+    "districtEnglish": "Ilwon2(i)-dong",
+    "districtCode": "11230730"
+  },
+  {
+    "districtEnglish": "Suseo-dong",
+    "districtCode": "11230750"
+  },
+  {
+    "districtEnglish": "Segok-dong",
+    "districtCode": "11230760"
+  },
+  {
+    "districtEnglish": "Apgujeong-dong",
+    "districtCode": "11230770"
+  },
+  {
+    "districtEnglish": "Cheongdam-dong",
+    "districtCode": "11230780"
+  },
+  {
+    "districtEnglish": "Daechi2(i)-dong",
+    "districtCode": "11230790"
+  },
+  {
+    "districtEnglish": "Gaepo2(i)-dong",
+    "districtCode": "11230800"
+  },
+  {
+    "districtEnglish": "Pungnap1(il)-dong",
+    "districtCode": "11240510"
+  },
+  {
+    "districtEnglish": "Pungnap2(i)-dong",
+    "districtCode": "11240520"
+  },
+  {
+    "districtEnglish": "Geoyeo1(il)-dong",
+    "districtCode": "11240530"
+  },
+  {
+    "districtEnglish": "Geoyeo2(i)-dong",
+    "districtCode": "11240540"
+  },
+  {
+    "districtEnglish": "Macheon1(il)-dong",
+    "districtCode": "11240550"
+  },
+  {
+    "districtEnglish": "Macheon2(i)-dong",
+    "districtCode": "11240560"
+  },
+  {
+    "districtEnglish": "Bangi1(il)-dong",
+    "districtCode": "11240570"
+  },
+  {
+    "districtEnglish": "Bangi2(i)-dong",
+    "districtCode": "11240580"
+  },
+  {
+    "districtEnglish": "Oryun-dong",
+    "districtCode": "11240590"
+  },
+  {
+    "districtEnglish": "Ogeum-dong",
+    "districtCode": "11240600"
+  },
+  {
+    "districtEnglish": "Songpa1(il)-dong",
+    "districtCode": "11240610"
+  },
+  {
+    "districtEnglish": "Songpa2(i)-dong",
+    "districtCode": "11240620"
+  },
+  {
+    "districtEnglish": "Seokchon-dong",
+    "districtCode": "11240630"
+  },
+  {
+    "districtEnglish": "Samjeon-dong",
+    "districtCode": "11240640"
+  },
+  {
+    "districtEnglish": "Garakbon-dong",
+    "districtCode": "11240650"
+  },
+  {
+    "districtEnglish": "Garak2(i)-dong",
+    "districtCode": "11240670"
+  },
+  {
+    "districtEnglish": "Munjeong1(il)-dong",
+    "districtCode": "11240680"
+  },
+  {
+    "districtEnglish": "Munjeong2(i)-dong",
+    "districtCode": "11240690"
+  },
+  {
+    "districtEnglish": "Jamsilbon-dong",
+    "districtCode": "11240710"
+  },
+  {
+    "districtEnglish": "Jamsil4(sa)-dong",
+    "districtCode": "11240750"
+  },
+  {
+    "districtEnglish": "Jamsil6(yuk)-dong",
+    "districtCode": "11240770"
+  },
+  {
+    "districtEnglish": "Jamsil7(chil)-dong",
+    "districtCode": "11240780"
+  },
+  {
+    "districtEnglish": "Jamsil2(i)-dong",
+    "districtCode": "11240790"
+  },
+  {
+    "districtEnglish": "Jamsil3(sam)-dong",
+    "districtCode": "11240800"
+  },
+  {
+    "districtEnglish": "Jangji-dong",
+    "districtCode": "11240810"
+  },
+  {
+    "districtEnglish": "Wirye-dong",
+    "districtCode": "11240820"
+  },
+  {
+    "districtEnglish": "Myeon-gil1(il)-dong",
+    "districtCode": "11250530"
+  },
+  {
+    "districtEnglish": "Myeon-gil2(i)-dong",
+    "districtCode": "11250540"
+  },
+  {
+    "districtEnglish": "Godeok1(il)-dong",
+    "districtCode": "11250550"
+  },
+  {
+    "districtEnglish": "Godeok2(i)-dong",
+    "districtCode": "11250560"
+  },
+  {
+    "districtEnglish": "Amsa2(i)-dong",
+    "districtCode": "11250580"
+  },
+  {
+    "districtEnglish": "Amsa3(sam)-dong",
+    "districtCode": "11250590"
+  },
+  {
+    "districtEnglish": "Cheonho1(il)-dong",
+    "districtCode": "11250610"
+  },
+  {
+    "districtEnglish": "Cheonho3(sam)-dong",
+    "districtCode": "11250630"
+  },
+  {
+    "districtEnglish": "Seongnae1(il)-dong",
+    "districtCode": "11250650"
+  },
+  {
+    "districtEnglish": "Seongnae2(i)-dong",
+    "districtCode": "11250660"
+  },
+  {
+    "districtEnglish": "Seongnae3(sam)-dong",
+    "districtCode": "11250670"
+  },
+  {
+    "districtEnglish": "Dunchon1(il)-dong",
+    "districtCode": "11250700"
+  },
+  {
+    "districtEnglish": "Dunchon2(i)-dong",
+    "districtCode": "11250710"
+  },
+  {
+    "districtEnglish": "Amsa1(il)-dong",
+    "districtCode": "11250720"
+  },
+  {
+    "districtEnglish": "Cheonho2(i)-dong",
+    "districtCode": "11250730"
+  },
+  {
+    "districtEnglish": "Gil-dong",
+    "districtCode": "11250740"
+  },
+  {
+    "districtEnglish": "Gangil-dong",
+    "districtCode": "11250750"
+  },
+  {
+    "districtEnglish": "Sangil-dong",
+    "districtCode": "11250760"
+  },
+
+  {
+    "districtEnglish": "Jongno-gu",
+    "districtCode": "11010"
+  },
+  {
+    "districtEnglish": "Jung-gu",
+    "districtCode": "11020"
+  },
+  {
+    "districtEnglish": "Yongsan-gu",
+    "districtCode": "11030"
+  },
+  {
+    "districtEnglish": "Seongdong-gu",
+    "districtCode": "11040"
+  },
+  {
+    "districtEnglish": "Gwangjin-gu",
+    "districtCode": "11050"
+  },
+  {
+    "districtEnglish": "Dongdaemun-gu",
+    "districtCode": "11060"
+  },
+  {
+    "districtEnglish": "Jungnang-gu",
+    "districtCode": "11070"
+  },
+  {
+    "districtEnglish": "Seongbuk-gu",
+    "districtCode": "11080"
+  },
+  {
+    "districtEnglish": "Gangbuk-gu",
+    "districtCode": "11090"
+  },
+  {
+    "districtEnglish": "Dobong-gu",
+    "districtCode": "11100"
+  },
+  {
+    "districtEnglish": "Nowon-gu",
+    "districtCode": "11110"
+  },
+  {
+    "districtEnglish": "Eunpyeong-gu",
+    "districtCode": "11120"
+  },
+  {
+    "districtEnglish": "Seodaemun-gu",
+    "districtCode": "11130"
+  },
+  {
+    "districtEnglish": "Mapo-gu",
+    "districtCode": "11140"
+  },
+  {
+    "districtEnglish": "Yangcheon-gu",
+    "districtCode": "11150"
+  },
+  {
+    "districtEnglish": "Gangseo-gu",
+    "districtCode": "11160"
+  },
+  {
+    "districtEnglish": "Guro-gu",
+    "districtCode": "11170"
+  },
+  {
+    "districtEnglish": "Geumcheon-gu",
+    "districtCode": "11180"
+  },
+  {
+    "districtEnglish": "Yeongdeungpo-gu",
+    "districtCode": "11190"
+  },
+  {
+    "districtEnglish": "Dongjak-gu",
+    "districtCode": "11200"
+  },
+  {
+    "districtEnglish": "Gwanak-gu",
+    "districtCode": "11210"
+  },
+  {
+    "districtEnglish": "Seocho-gu",
+    "districtCode": "11220"
+  },
+  {
+    "districtEnglish": "Gangnam-gu",
+    "districtCode": "11230"
+  },
+  {
+    "districtEnglish": "Songpa-gu",
+    "districtCode": "11240"
+  },
+  {
+    "districtEnglish": "Gangdong-gu",
+    "districtCode": "11250"
+  },
+  {
+    "districtEnglish": "all",
+    "districtCode": "all"
+  }
+]

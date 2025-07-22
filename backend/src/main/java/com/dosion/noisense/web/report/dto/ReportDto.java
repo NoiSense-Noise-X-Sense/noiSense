@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -33,8 +34,8 @@ public class ReportDto {
   @Schema(description = "최대 소음 행정동")
   private String maxNoiseRegion;
 
-  @Schema(description = "최대 소음 발생 시간대")
-  private String maxNoiseTime;
+  @Schema(description = "최대 소음 발생 시간")
+  private LocalDateTime maxNoiseTime;
 
   @Schema(description = "체감 소음")
   private Double perceivedNoise;

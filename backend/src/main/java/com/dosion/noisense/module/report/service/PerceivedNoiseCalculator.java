@@ -1,15 +1,22 @@
 package com.dosion.noisense.module.report.service;
 
+import com.dosion.noisense.module.report.repository.BoardRepository;
+import com.dosion.noisense.web.report.dto.EmotionBoardDto;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
+@AllArgsConstructor
+@Slf4j
 public class PerceivedNoiseCalculator { // 체감 소음 계산
+
+  private final BoardRepository boardRepository;
 
   /*
    * =================================================================
@@ -34,8 +41,16 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
    *  게시판 기능 개발 중이라 그거에 따라 getBoardInfo 수정하여 사용해야 함
    *  행정동까지 필요하면 변수 추가
    * */
-  public Double calcPerceivedNoise(double avgNoise, LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
 
+  public Double calcPerceivedNoise(double avgNoise, LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrict, String administrativeDistrict) {
+    /*
+    log.info("PerceivedNoiseCalculator.calcPerceivedNoise");
+    log.info("avgNoise ====" + avgNoise);
+    log.info("startDate ====" + startDate);
+    log.info("endDate ====" + endDate);
+    log.info("autonomousDistrict ====" + autonomousDistrict);
+    log.info("administrativeDistrict ====" + administrativeDistrict);
+    */
     // 민원 가중치 알파,  추후 값 수정 필요
     final Double ALPHA = 1.2;
 
@@ -53,49 +68,25 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
     timeWeights.put(18, 1.1);
 
     // 게시글
-    List<BoardInfo> boardList = getBoardInfo(startDate, endDate, autonomousDistrict);
+    List<EmotionBoardDto> boardList = null;
+    //List<EmotionBoardDto> boardList = boardRepository.findEmotionScoresByCriteria(startDate, endDate, autonomousDistrict, administrativeDistrict);
+    log.info("boardList ====" + boardList.toString());
 
     // 게시글이 없으면 평균 소음 반환
     if (boardList.isEmpty()) {
+      log.info("boardList is empty -> return avgNoise : " + avgNoise);
       return avgNoise;
     }
 
     Double logValue = Math.log10(boardList.size() + 1) * ALPHA;
 
     Double emotionScoreByTimeWeight = 0.0;
-    for (BoardInfo board : boardList) {
-      Double beta = timeWeights.get((board.getHour() / 6) * 6);
-      emotionScoreByTimeWeight += board.getEmotional_score() * ALPHA * beta;
+    for (EmotionBoardDto emo : boardList) {
+      Double beta = timeWeights.get((emo.getCreatedDate().getHour() / 6) * 6);
+      emotionScoreByTimeWeight += emo.getEmotionalScore() * ALPHA * beta;
     }
 
     return avgNoise + logValue + emotionScoreByTimeWeight;
   }
-
-  private List<BoardInfo> getBoardInfo(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
-    List<BoardInfo> boardList = new ArrayList<>(); // 게시글
-
-    return boardList;
-  }
-
-  // 게시판 정보를 담고 있는 내부 클래스
-  private static class BoardInfo {
-
-    private int hour;
-    private int emotional_score;
-
-    public BoardInfo(int hour, int emotional_score) {
-      this.hour = hour;
-      this.emotional_score = emotional_score;
-    }
-
-    public int getHour() {
-      return hour;
-    }
-
-    public int getEmotional_score() {
-      return emotional_score;
-    }
-  }
-
 
 }
