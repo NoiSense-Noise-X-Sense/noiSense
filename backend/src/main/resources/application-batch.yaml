@@ -1,0 +1,25 @@
+# batch 환경 설정
+spring:
+  config:
+    activate:
+      on-profile: batch
+  docker:
+    compose:
+      enabled: false
+
+  datasource:
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  # batch
+  batch:
+    job:
+      enabled: false
+
+# 로깅
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG

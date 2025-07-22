@@ -10,6 +10,7 @@ import com.dosion.noisense.web.geodata.dto.BoundaryPolygonDto.Geometry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.dosion.noisense.common.util.JsonUtilTest.toJsonNode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -54,10 +55,10 @@ class BoundaryPolygonTest {
           Geometry::getGeometryType,
           Geometry::getCoordinates)
         .contains(GeometryType.MultiPolygon
-          , "[[[[204531.47076072573,555728.2664946103],[204558.03973446076,555697.8914101887],[204558.05276319708,555697.8766260077]" +
+          , toJsonNode("[[[[204531.47076072573,555728.2664946103],[204558.03973446076,555697.8914101887],[204558.05276319708,555697.8766260077]" +
             ",[204567.01469351168,555687.6309262416],[204572.4370195482,555665.2014242801],[204573.6641217806,555660.1254498911]" +
             ",[204600.75054789186,555620.4223300604],[204594.93240312062,555618.8151275992],[204601.6614379808,555609.2753732953]" +
-            ",[204606.16114361628,555602.7999378574]]]]"
+            ",[204606.16114361628,555602.7999378574]]]]")
         )
     );
 
@@ -72,10 +73,10 @@ class BoundaryPolygonTest {
       .geometryFormat(GeometryFormat.GeoJSON)
       .boundaryType(BoundaryType.AUTONOMOUS_DISTRICT)
       .geometryType(GeometryType.MultiPolygon)
-      .coordinate("[[[[204531.47076072573,555728.2664946103],[204558.03973446076,555697.8914101887],[204558.05276319708,555697.8766260077]" +
+      .geometryCoordinate(toJsonNode("[[[[204531.47076072573,555728.2664946103],[204558.03973446076,555697.8914101887],[204558.05276319708,555697.8766260077]" +
         ",[204567.01469351168,555687.6309262416],[204572.4370195482,555665.2014242801],[204573.6641217806,555660.1254498911]" +
         ",[204600.75054789186,555620.4223300604],[204594.93240312062,555618.8151275992],[204601.6614379808,555609.2753732953]" +
-        ",[204606.16114361628,555602.7999378574]]]]")
+        ",[204606.16114361628,555602.7999378574]]]]"))
       .build();
   }
 }

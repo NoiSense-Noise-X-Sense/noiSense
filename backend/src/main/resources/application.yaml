@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: local # 기본 활성 프로파일
+    active: api # 기본 활성 프로파일
 ---
 
 # 공통 설정 (local, dev, prod 모두 공통)
@@ -10,6 +10,8 @@ spring:
   output:
     ansi:
       enabled: always
+
+
 
 #  docker:
 #    compose:
@@ -24,6 +26,6 @@ spring:
 
 api:
   sdot:
-    key: ${API_SDOT_KEY}
+    key: ${API_SDOT_KEY:777050586b776b64353266596d5643}
     uri: "http://openapi.seoul.go.kr:8088"
-    service-name: ${API_SDOT_SERVICENAME}
+    service-name: ${API_SDOT_SERVICENAME:IotVdata017}
