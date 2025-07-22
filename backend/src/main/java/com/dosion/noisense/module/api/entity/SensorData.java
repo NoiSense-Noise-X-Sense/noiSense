@@ -1,6 +1,7 @@
 package com.dosion.noisense.module.api.entity;
 
 
+import com.dosion.noisense.module.sensor.enums.Region;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,8 +25,9 @@ public class SensorData {
   private LocalDateTime sensingTime;
 
   // 지역 데이터
+  @Enumerated(EnumType.STRING)
   @Column(name = "region", nullable = false)
-  private String region;
+  private Region region;
 
   // 자치구
   @Column(name = "autonomous_district", nullable = false)
@@ -70,7 +72,7 @@ public class SensorData {
   private LocalDateTime batchTime;
 
   @Builder
-  public SensorData(LocalDateTime sensingTime, String region , String autonomousDistrict, String administrativeDistrict,
+  public SensorData(LocalDateTime sensingTime, Region region , String autonomousDistrict, String administrativeDistrict,
                     Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
                     Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
     this.sensingTime = sensingTime;

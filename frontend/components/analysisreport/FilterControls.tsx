@@ -1,7 +1,6 @@
-// components/FilterControls.tsx
-
 "use client"
 
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ReactDatePicker, { registerLocale } from "react-datepicker"
@@ -15,13 +14,10 @@ import html2canvas from "html2canvas"
 
 registerLocale("ko", ko)
 
-const districts = [
-  { value: "all", label: "전체 구" },
-  { value: "강동구", label: "강동구" },
-  { value: "강서구", label: "강서구" },
-  { value: "강남구", label: "강남구" },
-  { value: "강북구", label: "강북구" },
-]
+interface District {
+  districtId: number;
+  districtName: string;
+}
 
 interface FilterControlsProps {
   filters: {
@@ -33,38 +29,54 @@ interface FilterControlsProps {
 }
 
 export default function FilterControls({ filters, setFilters }: FilterControlsProps) {
+  const [districts, setDistricts] = useState<District[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      try {
+        // 1. 실제 컨트롤러 주소로 수정
+        const response = await fetch("http://localhost:8080/api/v1/district/autonomousDistrict");
+        if (!response.ok) {
+          throw new Error("자치구 목록을 불러오는 데 실패했습니다.");
+        }
+
+        // 2. ResponseDto 구조에 맞게 데이터 파싱
+        const result = await response.json();
+
+        // 3. success가 true이고 data가 배열일 때만 상태 업데이트
+        if (result.success && Array.isArray(result.data)) {
+          setDistricts(result.data);
+        } else {
+          console.error("API 응답 데이터 형식이 올바르지 않습니다:", result.errorMessage);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDistricts();
+  }, []);
 
   const handlePrintPdf = () => {
+    // PDF 변환 로직 (기존과 동일)
     const element = document.getElementById("pdf-content");
     if (!element) return;
-
-    html2canvas(element, { scale: 2, useCORS: true })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-
-        // ✅ 1. 용지 방향을 가로(landscape)로 변경합니다.
-        const pdf = new jsPDF('l', 'mm', 'a4');
-
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-
-        const imgWidth = canvas.width;
-        const imgHeight = canvas.height;
-
-        // ✅ 2. 이미지의 가로/세로 비율을 유지하면서 PDF 한 페이지에 맞게 크기를 계산합니다.
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const scaledWidth = imgWidth * ratio;
-        const scaledHeight = imgHeight * ratio;
-
-        // ✅ 3. 이미지를 페이지 중앙에 배치하기 위해 여백을 계산합니다.
-        const xOffset = (pdfWidth - scaledWidth) / 2;
-        const yOffset = (pdfHeight - scaledHeight) / 2;
-
-        // ✅ 4. 다중 페이지 로직을 제거하고, 크기가 조절된 이미지를 한 페이지에 추가합니다.
-        pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
-
-        pdf.save(`소음-리포트-${new Date().toLocaleDateString()}.pdf`);
-      });
+    html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const ratio = Math.min(pdfWidth / canvas.width, pdfHeight / canvas.height);
+      const scaledWidth = canvas.width * ratio;
+      const scaledHeight = canvas.height * ratio;
+      const xOffset = (pdfWidth - scaledWidth) / 2;
+      const yOffset = (pdfHeight - scaledHeight) / 2;
+      pdf.addImage(imgData, 'PNG', xOffset, yOffset, scaledWidth, scaledHeight);
+      pdf.save(`소음-리포트-${new Date().toLocaleDateString()}.pdf`);
+    });
   };
 
   return (
@@ -78,7 +90,7 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-        {/* 시작 날짜 선택기 */}
+        {/* 날짜 선택기는 변경 없음 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">시작일</label>
           <ReactDatePicker
@@ -89,14 +101,11 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
             startDate={filters.startDate}
             endDate={filters.endDate}
             dateFormat="yyyy년 MM월 dd일"
-            calendarClassName="custom-calendar"
             customInput={<CustomDatePickerInput placeholder="시작일을 선택하세요" />}
             wrapperClassName="w-full"
             {...(filters.endDate && { maxDate: filters.endDate })}
           />
         </div>
-
-        {/* 종료 날짜 선택기 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">종료일</label>
           <ReactDatePicker
@@ -107,27 +116,28 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
             startDate={filters.startDate}
             endDate={filters.endDate}
             dateFormat="yyyy년 MM월 dd일"
-            calendarClassName="custom-calendar"
             customInput={<CustomDatePickerInput placeholder="종료일을 선택하세요" />}
             wrapperClassName="w-full"
             {...(filters.startDate && { minDate: filters.startDate })}
           />
         </div>
 
-        {/* 구 선택 */}
+        {/* 구 선택 메뉴는 변경 없음 (데이터 소스만 바뀜) */}
         <div>
-         <label className="block text-sm font-medium text-gray-700 mb-2">지역구</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">지역구</label>
           <Select
             value={filters.district}
             onValueChange={(value) => setFilters({ ...filters, district: value })}
+            disabled={isLoading}
           >
-          <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 bg-white">
-            <SelectValue placeholder="구를 선택하세요"/>
-          </SelectTrigger>
+            <SelectTrigger className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 bg-white">
+              <SelectValue placeholder={isLoading ? "불러오는 중..." : "구를 선택하세요"} />
+            </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">전체 구</SelectItem>
               {districts.map((district) => (
-                <SelectItem key={district.value} value={district.value}>
-                  {district.label}
+                <SelectItem key={district.districtId} value={district.districtName}>
+                  {district.districtName}
                 </SelectItem>
               ))}
             </SelectContent>

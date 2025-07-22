@@ -10,6 +10,8 @@ import MainChart from "./analysisreport/MainChart"
 import CombinedHourlyChart from "./analysisreport/CombinedHourlyChart"
 import CombinedDailyChart from "./analysisreport/CombinedDailyChart"
 
+params.append("autonomousDistrict", filters.district);
+
 export default function AnalysisReport() {
   // 상태 관리 (이전과 동일)
   const endDate = new Date();

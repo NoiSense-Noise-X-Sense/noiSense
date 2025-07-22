@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Repository
@@ -15,4 +17,11 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long>, S
   @Query("SELECT MAX(s.sensingTime) FROM SensorData s")
   Set<LocalDateTime> findLatestSensingTime();
 
+  List<Object[]> findDistrictPeakAndCalmHourWithAvg(LocalDateTime startDate, LocalDateTime endDate);
+
+  List<Object[]> findDistrictNoiseHourly(LocalDateTime yesterdayStart, LocalDateTime yesterdayEnd, LocalDateTime weekStart, LocalDateTime batchEnd, LocalDateTime monthStart, LocalDateTime batchEnd1);
+
+  List<Object[]> findYearlyNoiseStats();
+
+  List<Object[]> findZoneNoiseStats(String batchId, LocalDate startDate, LocalDate endDate);
 }

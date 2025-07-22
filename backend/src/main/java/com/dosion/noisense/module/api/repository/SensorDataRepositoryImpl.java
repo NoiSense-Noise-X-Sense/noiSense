@@ -30,7 +30,7 @@ public class SensorDataRepositoryImpl implements SensorDataRepositoryCustom {
       public void setValues(PreparedStatement ps, int i) throws SQLException {
         SensorData entity = entities.get(i);
         ps.setObject(1, entity.getSensingTime());
-        ps.setString(2, entity.getRegion());
+        ps.setString(2, entity.getRegion().name());
         ps.setString(3, entity.getAutonomousDistrict());
         ps.setString(4, entity.getAdministrativeDistrict());
         ps.setObject(5, entity.getMaxNoise());

@@ -1,6 +1,6 @@
 package com.dosion.noisense.module.report.repository;
 
-import com.dosion.noisense.module.report.entity.SensorData;
+import com.dosion.noisense.module.api.entity.SensorData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 import static com.dosion.noisense.module.district.entity.QAdministrativeDistrict.administrativeDistrict;
 import static com.dosion.noisense.module.district.entity.QAutonomousDistrict.autonomousDistrict;
-import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
+import static com.dosion.noisense.module.api.entity.QSensorData.sensorData;
 import static com.dosion.noisense.module.report.entity.QSensorDistrictMapping.sensorDistrictMapping;
 
 @Repository

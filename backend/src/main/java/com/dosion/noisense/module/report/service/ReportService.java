@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
+import static com.dosion.noisense.module.api.entity.QSensorData.sensorData;
 
 @Service
 @Slf4j

@@ -3,6 +3,7 @@ package com.dosion.noisense.module.api.service;
 import com.dosion.noisense.module.api.entity.SensorData;
 import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
+import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.api.controller.SensorDataApiReader;
 import com.dosion.noisense.web.api.dto.SensorDataApiDto;
 import com.dosion.noisense.module.api.repository.SensorDataRepository;
@@ -326,7 +327,7 @@ public class SensorDataApiService {
 
     return com.dosion.noisense.module.api.entity.SensorData.builder()
       .sensingTime(sensorDataApiDTO.getSensingTime())
-      .region(sensorDataApiDTO.getRegion())
+      .region(Region.valueOf(sensorDataApiDTO.getRegion()))
       .autonomousDistrict(sensorDataApiDTO.getAutonomousDistrict())
       .administrativeDistrict(sensorDataApiDTO.getAdministrativeDistrict())
       .maxNoise(sensorDataApiDTO.getMaxNoise())
