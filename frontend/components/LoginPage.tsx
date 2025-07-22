@@ -16,9 +16,11 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
     }
   }, [onLogin]);
 
+  const BASE_URL = "http://43.201.183.161";
+  
   const OAUTH_URLS: Record<string, string> = {
-    Kakao: "http://localhost:8080/oauth2/authorization/kakao",
-    Google: "http://localhost:8080/oauth2/authorization/google",
+    Kakao: BASE_URL + "/oauth2/authorization/kakao",
+    Google: BASE_URL + "/oauth2/authorization/google",
   };
 
 
