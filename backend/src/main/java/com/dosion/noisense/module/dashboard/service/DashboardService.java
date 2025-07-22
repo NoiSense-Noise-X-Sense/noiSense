@@ -87,13 +87,11 @@ public class DashboardService {
     int fromYear = thisYear - 4;
 
     String cityKey = "seoul-si";
-    String districtKey = districtCode;
-    //String districtKey = convertToDbRegionName(district); // 예: "금천구" → "geumcheon-gu"
 
     List<DashboardDistrictNoiseYearly> list =
       yearlyRepository.findByRegionTypeInAndAutonomousDistrictCodeInAndYearBetweenOrderByYearAsc(
         List.of("city", "district"),
-        List.of(cityKey, districtKey),
+        List.of(cityKey, districtCode),
         fromYear,
         thisYear
       );
