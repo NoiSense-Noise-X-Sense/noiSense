@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -35,10 +36,10 @@ public class ReportController {
   )
   @GetMapping("/getReport") // @Parameter example : swagger 기본값 설정
   public ResponseEntity<ReportDto> getReport(
-    @Parameter(example = "2024-06-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate
-    , @Parameter(example = "2025-07-30") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
-    , @Parameter(example = "전체") String autonomousDistrict) {
-    return ResponseEntity.ok(reportService.getReport(startDate, endDate, autonomousDistrict));
+    @RequestParam @Parameter(example = "2024-06-01") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate
+    , @RequestParam @Parameter(example = "2025-07-30") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+    , @RequestParam @Parameter(example = "all") String autonomousDistrictCode) {
+    return ResponseEntity.ok(reportService.getReport(startDate, endDate, autonomousDistrictCode));
   }
 
   @Operation(summary = "지도 호출", description = "기간별, 지역별")
@@ -49,13 +50,12 @@ public class ReportController {
   )
   @GetMapping("/getMap")
   public ResponseEntity<List<MapDto>> getMap(
-    @Parameter(example = "2024-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate,
-    @Parameter(example = "2025-07-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate,
-    @Parameter(example = "강남구") String autonomousDistrict,
-    @Parameter(example = "전체") String administrativeDistrict,
-    @Parameter(example = "aa") String region) {
-//    return null;
-    return ResponseEntity.ok(reportService.getMapData(startDate, endDate, autonomousDistrict, administrativeDistrict, region));
+    @RequestParam @Parameter(example = "2024-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate,
+    @RequestParam @Parameter(example = "2025-07-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate,
+    @RequestParam @Parameter(example = "강남구") String autonomousDistrictKor,
+    @RequestParam @Parameter(example = "전체") String administrativeDistrictKor,
+    @RequestParam @Parameter(example = "RESIDENTIAL_AREA,INDUSTRIAL_AREA,PARKS")  List<String >regionList) {
+    return ResponseEntity.ok(reportService.getMapData(startDate, endDate, autonomousDistrictKor, administrativeDistrictKor, regionList));
   }
 
 }

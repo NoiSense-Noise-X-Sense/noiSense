@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.report.repository;
 
+import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.Tuple;
 
@@ -69,6 +70,6 @@ public interface ReportRepositoryCustom {
     지도에서 평균소음과 지역 정보 데이터 조회
     행정구, 행정동이 전체면 all
    */
-  List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng);
+  List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng, List<Region> regionList);
 
 }

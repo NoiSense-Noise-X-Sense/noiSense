@@ -14,22 +14,22 @@ public class MapDto {
   private Double avgNoise;
 
   @Schema(description = "행정구")
-  private String autonomousDistrict_Code;
+  private String autonomousDistrictCode;
 
   @Schema(description = "행정구_ENG")
-  private String autonomousDistrict_english;
+  private String autonomousDistrictEng;
 
   @Schema(description = "행정구_KOR")
-  private String autonomousDistrict_kor;
+  private String autonomousDistrictKor;
 
   @Schema(description = "행정동")
-  private String administrativeDistrict_Code;
+  private String administrativeDistrictCode;
 
   @Schema(description = "행정동_ENG")
-  private String administrativeDistrict_english;
+  private String administrativeDistrictEng;
 
   @Schema(description = "행정동_KOR")
-  private String administrativeDistrict_kor;
+  private String administrativeDistrictKor;
 
   @Schema(description = "체감 소음")
   private Double perceivedNoise;

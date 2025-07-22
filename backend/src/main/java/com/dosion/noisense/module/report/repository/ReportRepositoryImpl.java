@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.report.repository;
 
+import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
@@ -16,9 +17,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.dosion.noisense.module.report.entity.QAdministrativeDistrict.administrativeDistrict;
-import static com.dosion.noisense.module.report.entity.QAutonomousDistrict.autonomousDistrict;
+import static com.dosion.noisense.module.district.entity.QAdministrativeDistrict.administrativeDistrict;
+import static com.dosion.noisense.module.district.entity.QAutonomousDistrict.autonomousDistrict;
 import static com.dosion.noisense.module.report.entity.QSensorData.sensorData;
 import static com.dosion.noisense.module.report.entity.QSensorDistrictMapping.sensorDistrictMapping;
 
@@ -195,7 +197,11 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   }
 
   @Override
-  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng) {
+  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng, List<Region> regionList) {
+
+    List<String> regionAsString = regionList.stream()
+      .map( e -> e.getNameEn())
+      .collect(Collectors.toList());
 
     return jpaQueryFactory
       .select(Projections.constructor(AvgNoiseRegionDto.class,
@@ -208,7 +214,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
         administrativeDistrict.nameKo
       ))
       .from(sensorData)
-      // JOIN  sensorData -> sensorDistrictMapping -> administrativeDistrict -> autonomousDistrict
+      // 1. SensorData -> Mapping
       .join(sensorDistrictMapping).on(
         sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
           .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
@@ -216,13 +222,22 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       .join(administrativeDistrict).on(
         sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
       )
+      // 3. AdministrativeDistrict -> AutonomousDistrict (코드로 조인)
       .join(autonomousDistrict).on(
-        administrativeDistrict.autonomousDistrict.eq(autonomousDistrict.code)
+        administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
       )
       .where(
+        // --- JOIN 조건들을 WHERE 절로 이동 ---
+//        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn),
+//        sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn),
+//        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code),
+//        administrativeDistrict.autonomousDistrict.eq(autonomousDistrict),
+
         sensorData.sensingTime.between(startDate, endDate),
-        eqAutonomousEng(autonomousDistrictEng),
-        eqAdministrativeEng(administrativeDistrictEng)
+//        eqAutonomousEng(autonomousDistrictEng),
+//        eqAdministrativeEng(administrativeDistrictEng),
+        eqAuAdEng(autonomousDistrictEng, administrativeDistrictEng),
+        sensorData.region.stringValue().in(regionAsString)
       )
       .groupBy(
         autonomousDistrict.code,
@@ -273,6 +288,15 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       : administrativeDistrict.nameEn.eq(nameEn);
   }
 
+  private BooleanExpression eqAuAdEng(String autonomousEng, String administrativeEng) {
+    if(autonomousEng == null || "all".equalsIgnoreCase(autonomousEng)) {
+      return null;
+    }else if(administrativeEng == null || "all".equalsIgnoreCase(administrativeEng)) {
+      return autonomousDistrict.nameEn.eq(autonomousEng);
+    }else{
+      return autonomousDistrict.nameEn.eq(autonomousEng).and(administrativeDistrict.nameEn.eq(administrativeEng));
+    }
+  }
 
   // type에 따라 시간 그룹화
   private StringExpression getXAxisExpression(String type) {

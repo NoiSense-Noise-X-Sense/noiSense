@@ -1,6 +1,7 @@
 package com.dosion.noisense.module.report.entity;
 
 
+import com.dosion.noisense.module.sensor.enums.Region;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,68 +15,72 @@ import java.time.LocalDateTime;
 @Table(name = "sensor_data")
 public class SensorData {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sensor_data_id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "sensor_data_id")
+  private Long id;
 
-    @Column(name = "sensing_time", nullable = false)
-    private LocalDateTime sensingTime;
+  @Column(name = "sensing_time", nullable = false)
+  private LocalDateTime sensingTime;
 
-    @Column(name = "autonomous_district", nullable = false)
-    private String autonomousDistrict;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "region", nullable = false)
+  private Region region;
 
-    @Column(name = "administrative_district", nullable = false)
-    private String administrativeDistrict;
+  @Column(name = "autonomous_district", nullable = false)
+  private String autonomousDistrict;
 
-    // 소음 데이터
-    @Column(name = "max_noise")
-    private Double maxNoise;
+  @Column(name = "administrative_district", nullable = false)
+  private String administrativeDistrict;
 
-    @Column(name = "avg_noise")
-    private Double avgNoise;
+  // 소음 데이터
+  @Column(name = "max_noise")
+  private Double maxNoise;
 
-    @Column(name = "min_noise")
-    private Double minNoise;
+  @Column(name = "avg_noise")
+  private Double avgNoise;
 
-    // 온도 데이터
-    @Column(name = "max_temp")
-    private Double maxTemp;
+  @Column(name = "min_noise")
+  private Double minNoise;
 
-    @Column(name = "avg_temp")
-    private Double avgTemp;
+  // 온도 데이터
+  @Column(name = "max_temp")
+  private Double maxTemp;
 
-    @Column(name = "min_temp")
-    private Double minTemp;
+  @Column(name = "avg_temp")
+  private Double avgTemp;
 
-    // 습도 데이터
-    @Column(name = "max_humi")
-    private Double maxHumi;
+  @Column(name = "min_temp")
+  private Double minTemp;
 
-    @Column(name = "avg_humi")
-    private Double avgHumi;
+  // 습도 데이터
+  @Column(name = "max_humi")
+  private Double maxHumi;
 
-    @Column(name = "min_humi")
-    private Double minHumi;
+  @Column(name = "avg_humi")
+  private Double avgHumi;
 
-    @Builder
-    public SensorData(LocalDateTime sensingTime, String autonomousDistrict, String administrativeDistrict,
-                      Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
-                      Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
-        this.sensingTime = sensingTime;
-        this.autonomousDistrict = autonomousDistrict;
-        this.administrativeDistrict = administrativeDistrict;
-        this.maxNoise = maxNoise;
-        this.avgNoise = avgNoise;
-        this.minNoise = minNoise;
-        this.maxTemp = maxTemp;
-        this.avgTemp = avgTemp;
-        this.minTemp = minTemp;
-        this.maxHumi = maxHumi;
-        this.avgHumi = avgHumi;
-        this.minHumi = minHumi;
+  @Column(name = "min_humi")
+  private Double minHumi;
 
-    }
+  @Builder
+  public SensorData(LocalDateTime sensingTime, String autonomousDistrict, String administrativeDistrict,
+                    Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
+                    Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
+    this.sensingTime = sensingTime;
+    this.autonomousDistrict = autonomousDistrict;
+    this.administrativeDistrict = administrativeDistrict;
+    this.maxNoise = maxNoise;
+    this.avgNoise = avgNoise;
+    this.minNoise = minNoise;
+    this.maxTemp = maxTemp;
+    this.avgTemp = avgTemp;
+    this.minTemp = minTemp;
+    this.maxHumi = maxHumi;
+    this.avgHumi = avgHumi;
+    this.minHumi = minHumi;
+
+  }
 
 }
 
