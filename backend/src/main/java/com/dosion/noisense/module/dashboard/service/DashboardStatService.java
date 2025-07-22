@@ -1,6 +1,7 @@
 package com.dosion.noisense.module.dashboard.service;
 
 import com.dosion.noisense.module.api.repository.SensorDataRepository;
+import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import com.dosion.noisense.module.dashboard.entity.*;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseYearlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseHourlyRepository;
@@ -9,6 +10,7 @@ import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseZon
 import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
 import com.dosion.noisense.module.district.service.DistrictService;
+import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ import java.util.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -42,7 +46,8 @@ public class DashboardStatService {
   //private final DashboardDistrictNoiseZoneRepository dashboardDistrictNoiseZoneRepository;
   private final ObjectMapper objectMapper;
   private final RestTemplate restTemplate;
-  private final DistrictService districtService;
+
+  private final BoardEsService boardEsService;
 
   // 여기에 통계별 Repository 주입
 
@@ -110,37 +115,16 @@ public class DashboardStatService {
   }
 
 
-  public List<KeywordCount> fetchTopKeywords(String district, LocalDateTime start, LocalDateTime end, int size) {
+  public List<KeywordCount> fetchTopKeywords(String districtCode, LocalDateTime start, LocalDateTime end, int size) {
 
-    log.info("글자 변환 확인 {} , {} !! : " , district, district);
-    String url = String.format(
-      "http://localhost:8080/api/es/board/frequent-words?autonomousDistrict=%s&startDate=%s&endDate=%s&size=%d",
-      district,
-      start.toString(),
-      end.toString(),
-      size
-    );
-    log.info("url 확인하기!!!!={}", url);
+    Map<String, Long> wordMap = boardEsService.getFrequentWords(districtCode, start, end, size);
 
-    try {
-      ResponseEntity<Map<String, Integer>> response = restTemplate.exchange(
-        url,
-        org.springframework.http.HttpMethod.GET,
-        null,
-        new ParameterizedTypeReference<Map<String, Integer>>() {}
-      );
-      Map<String, Integer> map = response.getBody();
-      if (map == null) return Collections.emptyList();
-      List<KeywordCount> result = new ArrayList<>();
-      for (Map.Entry<String, Integer> entry : map.entrySet()) {
-        result.add(new KeywordCount(entry.getKey(), entry.getValue()));
-      }
-      log.info("!!!!!!!!!result: " + result);
-      return result;
-    } catch (Exception e) {
-      log.warn("키워드 조회 실패: district={}, msg={}", district, e.getMessage());
-      return Collections.emptyList();
-    }
+    // KeywordCount로 변환
+    List<KeywordCount> result = wordMap.entrySet().stream()
+      .map(e -> new KeywordCount(e.getKey(), e.getValue().intValue()))
+      .collect(Collectors.toList());
+
+    return result;
   }
 
   /**
@@ -206,7 +190,7 @@ public class DashboardStatService {
       String district = (String) row[1];
       String districtCode = districtRepository.findByNameEnOrNameKo(district)
         .map(AutonomousDistrict::getCode)
-        .orElse("none");
+        .orElse("seoul-si");
 
       Integer year = ((Number) row[2]).intValue();
       BigDecimal avgNoise = new BigDecimal(row[3].toString());
@@ -276,5 +260,6 @@ public class DashboardStatService {
     log.info("Inserted zone stats !!!: {}", entities);
     dashboardDistrictNoiseZoneRepository.saveAll(entities);
   }*/
+
 
 }
