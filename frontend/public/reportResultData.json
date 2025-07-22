@@ -1,0 +1,127 @@
+{
+  "avgNoise": 5.771428571428571,
+  "maxNoiseRegion": "신사동",
+  "maxNoiseTime": "00:00 ~ 03:00",
+  "perceivedNoise": 5.771428571428571,
+  "topRankDtoList": [
+    {
+      "region": "신사동",
+      "avgNoise": 6
+    },
+    {
+      "region": "대치4동",
+      "avgNoise": 5.866666666666667
+    },
+    {
+      "region": "압구정동",
+      "avgNoise": 5.6
+    }
+  ],
+  "bottomRankDtoList": [
+    {
+      "region": "압구정동",
+      "avgNoise": 5.6
+    },
+    {
+      "region": "역삼1동",
+      "avgNoise": 5.6
+    },
+    {
+      "region": "대치4동",
+      "avgNoise": 5.866666666666667
+    }
+  ],
+  "deviationRankDtoList": [
+    {
+      "region": "대치4동",
+      "avgNoise": 5.866666666666667,
+      "maxNoise": 6.3,
+      "minNoise": 5.3,
+      "deviation": 1
+    },
+    {
+      "region": "신사동",
+      "avgNoise": 6,
+      "maxNoise": 6.4,
+      "minNoise": 5.8,
+      "deviation": 0.6
+    },
+    {
+      "region": "압구정동",
+      "avgNoise": 5.6,
+      "maxNoise": 5.9,
+      "minNoise": 5.4,
+      "deviation": 0.5
+    }
+  ],
+  "totalChartDto": {
+    "overallHourAvgNoiseData": [
+      {
+        "avgNoise": 5.771428571428571,
+        "xaxis": "00"
+      },
+      {
+        "avgNoise": 6.771428571428571,
+        "xaxis": "01"
+      },
+      {
+        "avgNoise": 7.771428571428571,
+        "xaxis": "02"
+      }
+    ],
+    "overallDayAvgNoiseData": [
+      {
+        "avgNoise": 5.471428571428571,
+        "xaxis": "29"
+      },
+      {
+        "avgNoise": 4.771428571428571,
+        "xaxis": "30"
+      },
+      {
+        "avgNoise": 5.771428571428571,
+        "xaxis": "31"
+      }
+    ],
+    "trendPointHourAvgNoiseData": [
+      {
+        "avgNoiseByRegion": {
+          "대치4동": 5.866666666666667,
+          "역삼1동": 5.6,
+          "압구정동": 5.6,
+          "신사동": 6
+        },
+        "xaxis": "00"
+      },
+      {
+        "avgNoiseByRegion": {
+          "대치4동": 5.866666666666667,
+          "역삼1동": 5.6,
+          "압구정동": 5.6,
+          "신사동": 6
+        },
+        "xaxis": "01"
+      }
+    ],
+    "trendPointDayOfWeekAvgNoiseData": [
+      {
+        "avgNoiseByRegion": {
+          "대치4동": 5.866666666666667,
+          "역삼1동": 5.6,
+          "압구정동": 5.6,
+          "신사동": 6
+        },
+        "xaxis": "2"
+      },
+      {
+        "avgNoiseByRegion": {
+          "대치4동": 5.866666666666667,
+          "역삼1동": 5.6,
+          "압구정동": 5.6,
+          "신사동": 6
+        },
+        "xaxis": "3"
+      }
+    ]
+  }
+}

@@ -12,6 +12,11 @@ const config: Config = {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        // 'sans'는 기본 폰트, 'dseg'는 추가한 폰트
+        sans: ['var(--font-inter)'], // 예시: 기본 폰트
+        dseg: ['var(--font-dseg)'], // CSS 변수를 사용하도록 설정
+      },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
