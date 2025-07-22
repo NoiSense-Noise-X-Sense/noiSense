@@ -27,7 +27,7 @@ public class DashboardStatBuildTasklet implements Tasklet {
     dashboardStatService.updateNoiseSummary();
     dashboardStatService.updateNoiseHourly();
     dashboardStatService.updateNoiseYearly();
-    dashboardStatService.updateZoneNoise();
+    //지도 관련 작업 dashboardStatService.updateZoneNoise();
 
 
     logRepository.save(

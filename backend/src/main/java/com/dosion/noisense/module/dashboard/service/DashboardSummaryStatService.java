@@ -22,7 +22,7 @@ public class DashboardSummaryStatService {
   public void buildAndSaveSummaryStat(
     LocalDate startDate,
     LocalDate endDate,
-    String autonomousDistrict,
+    String autonomousDistrictCode,
     Integer peakHour,
     Integer calmHour,
     List<KeywordCount> topKeywords
@@ -33,7 +33,7 @@ public class DashboardSummaryStatService {
     DashboardDistrictNoiseSummary summary = DashboardDistrictNoiseSummary.builder()
       .startDate(startDate)
       .endDate(endDate)
-      .autonomousDistrict(autonomousDistrict)
+      .autonomousDistrictCode(autonomousDistrictCode)
       .peakHour(peakHour)
       .calmHour(calmHour)
       .topKeywords(topKeywordsNode)

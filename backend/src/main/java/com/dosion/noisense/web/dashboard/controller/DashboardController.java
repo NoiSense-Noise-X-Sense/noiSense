@@ -67,6 +67,8 @@ public class DashboardController {
     return ResponseEntity.ok(dashboardService.getYearlyNoise(district));
   }
 
+
+ /*
   @Operation(
     summary = "행정동별 평균 소음 조회",
     description = "자치구 내 행정동별 평균 소음 정보를 반환합니다."
@@ -80,7 +82,7 @@ public class DashboardController {
   public ResponseEntity<List<DistrictNoiseZoneDto>> getZoneNoise(@RequestParam String district) {
     log.info("행정동별 소음 통계 요청 - district: {}", district);
     return ResponseEntity.ok(dashboardService.getZoneNoise(district));
-  }
+  }*/
 
 
   @Operation(summary = "연도별 소음 민원 추이", description = "자치구 기준 최근 5년간 민원 건수를 반환합니다.")

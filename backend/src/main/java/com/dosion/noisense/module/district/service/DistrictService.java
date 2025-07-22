@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.district.service;
 
+import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.entity.District;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
 import com.dosion.noisense.web.district.dto.DistrictDto;
@@ -32,4 +33,19 @@ public class DistrictService {
 
     return districtDtos;
   }
+
+  /** 영어 이름 → 한글 이름 변환 */
+  public String toKorean(String englishDistrictName) {
+    return districtRepository.findByNameEn(englishDistrictName)
+      .map(AutonomousDistrict::getNameKo)
+      .orElse(englishDistrictName);
+  }
+
+  /** 한글 이름 → 영어 이름 변환 */
+  public String toEnglish(String koreanDistrictName) {
+    return districtRepository.findByNameKo(koreanDistrictName)
+      .map(AutonomousDistrict::getNameEn)
+      .orElse(koreanDistrictName);
+  }
+
 }

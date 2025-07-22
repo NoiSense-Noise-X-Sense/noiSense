@@ -10,6 +10,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class DashboardDistrictNoiseYearlyId implements Serializable {
   private String regionType;
-  private String regionName;
+  private String autonomousDistrictCode;
   private Integer year;
 }

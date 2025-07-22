@@ -10,6 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "com.dosion.noisense.module.api",
     "com.dosion.noisense.module.batchlog",
     "com.dosion.noisense.module.dashboard",
+    "com.dosion.noisense.config",
+    "com.dosion.noisense.module.district"
   }
 )
 public class BatchApplication {

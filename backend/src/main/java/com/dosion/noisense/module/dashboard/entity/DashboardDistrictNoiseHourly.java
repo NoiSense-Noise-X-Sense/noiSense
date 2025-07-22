@@ -23,9 +23,9 @@ public class DashboardDistrictNoiseHourly implements Serializable {
   private String batchId;
 
   @Id
-  @Column(name = "autonomous_district", length = 50, nullable = false)
-  @Comment("자치구명")
-  private String autonomousDistrict;
+  @Column(name = "autonomous_district_code", length = 10, nullable = false)
+  @Comment("자치구 코드")
+  private String autonomousDistrictCode;
 
   @Id
   @Column(name = "hour", nullable = false)

@@ -52,34 +52,34 @@ const allDistricts = [
   '중구',
   '중랑구',
 ];
-
-const districtMap: Record<string, string> = {
-  강남구: 'Gangnam-gu',
-  강동구: 'Gangdong-gu',
-  강북구: 'Gangbuk-gu',
-  강서구: 'Gangseo-gu',
-  관악구: 'Gwanak-gu',
-  광진구: 'Gwangjin-gu',
-  구로구: 'Guro-gu',
-  금천구: 'Geumcheon-gu',
-  노원구: 'Nowon-gu',
-  도봉구: 'Dobong-gu',
-  동대문구: 'Dongdaemun-gu',
-  동작구: 'Dongjak-gu',
-  마포구: 'Mapo-gu',
-  서대문구: 'Seodaemun-gu',
-  서초구: 'Seocho-gu',
-  성동구: 'Seongdong-gu',
-  성북구: 'Seongbuk-gu',
-  송파구: 'Songpa-gu',
-  양천구: 'Yangcheon-gu',
-  영등포구: 'Yeongdeungpo-gu',
-  용산구: 'Yongsan-gu',
-  은평구: 'Eunpyeong-gu',
-  종로구: 'Jongno-gu',
-  중구: 'Jung-gu',
-  중랑구: 'Jungnang-gu',
+const districtCodeMap: Record<string, string> = {
+  종로구: '11010',
+  중구: '11020',
+  용산구: '11030',
+  성동구: '11040',
+  광진구: '11050',
+  동대문구: '11060',
+  중랑구: '11070',
+  성북구: '11080',
+  강북구: '11090',
+  도봉구: '11100',
+  노원구: '11110',
+  은평구: '11120',
+  서대문구: '11130',
+  마포구: '11140',
+  양천구: '11150',
+  강서구: '11160',
+  구로구: '11170',
+  금천구: '11180',
+  영등포구: '11190',
+  동작구: '11200',
+  관악구: '11210',
+  서초구: '11220',
+  강남구: '11230',
+  송파구: '11240',
+  강동구: '11250',
 };
+
 
 export default function DistrictDashboard({
   selectedDistrict: initialDistrict,
@@ -95,7 +95,7 @@ export default function DistrictDashboard({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const engDistrict = districtMap[selectedDistrict];
+        const engDistrict = districtCodeMap[selectedDistrict];
         const [summary, hourly, yearly, complaints] = await Promise.all([
           fetchSummary(engDistrict),
           fetchHourly(engDistrict),

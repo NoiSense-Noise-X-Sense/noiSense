@@ -9,5 +9,7 @@ import java.util.List;
 public interface DashboardDistrictNoiseZoneRepository
   extends JpaRepository<DashboardDistrictNoiseZone, DashboardDistrictNoiseZoneId> {
 
-  List<DashboardDistrictNoiseZone> findByAutonomousDistrictOrderByAvgNoiseDesc(String autonomousDistrict);
+
+  // 자치구별 평균 소음 내림차순 조회
+  List<DashboardDistrictNoiseZone> findByAutonomousDistrictCodeOrderByAvgNoiseDesc(String autonomousDistrictCode);
 }

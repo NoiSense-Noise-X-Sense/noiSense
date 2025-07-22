@@ -8,13 +8,14 @@ import java.util.List;
 
 @Repository
 public interface DashboardDistrictNoiseYearlyRepository extends JpaRepository<DashboardDistrictNoiseYearly, DashboardDistrictNoiseYearlyId> {
-  boolean existsByRegionTypeAndRegionNameAndYear(String regionType, String regionName, Integer year);
+  boolean existsByRegionTypeAndAutonomousDistrictCodeAndYear(
+    String regionType, String autonomousDistrictCode, Integer year);
 
-  List<DashboardDistrictNoiseYearly> findByRegionTypeInAndRegionNameInAndYearBetweenOrderByYearAsc(
+  List<DashboardDistrictNoiseYearly> findByRegionTypeInAndAutonomousDistrictCodeInAndYearBetweenOrderByYearAsc(
     List<String> regionTypes,
-    List<String> regionNames,
+    List<String> autonomousDistrictCodes,
     int fromYear,
     int toYear
   );
-
 }
+
