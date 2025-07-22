@@ -11,13 +11,18 @@ public class WebConfig implements WebMvcConfigurer {
   @Value("${aws.ec2ip.private}")
   private String awsEc2IP;
 
+  @Value("${aws.ec2ip.elastic}")
+  private String awsEc2IPElastic;
+
   @Override
   public void addCorsMappings(CorsRegistry registry) {
 
     registry.addMapping("/api/**")
       .allowedOrigins("http://localhost:3000"
       , awsEc2IP
-      , awsEc2IP +":3000")
+      , awsEc2IP +":3000"
+      , awsEc2IPElastic
+      , awsEc2IPElastic +":3000")
       .allowedMethods("*")
       .allowCredentials(true);
   }
