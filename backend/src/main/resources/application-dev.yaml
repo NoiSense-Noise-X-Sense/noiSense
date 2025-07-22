@@ -60,7 +60,9 @@ api:
     service-name: ${API_SDOT_SERVICENAME}
 
 aws:
-  awsip: "172.31.39.164"
+  ec2ip:
+    private : "http://172.31.39.164"
+    elastic : "http://43.201.183.161"
 
 
 

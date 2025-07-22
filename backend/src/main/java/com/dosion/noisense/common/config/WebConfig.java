@@ -8,18 +8,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-  @Value("${aws.awsip}")
+  @Value("${aws.ec2ip.private}")
   private String awsEc2IP;
 
   @Override
   public void addCorsMappings(CorsRegistry registry) {
 
-    String awsIp = "http://" + awsEc2IP;
-
     registry.addMapping("/api/**")
       .allowedOrigins("http://localhost:3000"
-      , awsIp
-      , awsIp +":3000")
+      , awsEc2IP
+      , awsEc2IP +":3000")
       .allowedMethods("*")
       .allowCredentials(true);
   }

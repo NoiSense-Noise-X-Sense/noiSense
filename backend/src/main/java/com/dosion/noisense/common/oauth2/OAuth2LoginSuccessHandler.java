@@ -21,7 +21,7 @@ import java.util.Map;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
-  @Value("${aws.awsip}")
+  @Value("${aws.ec2ip.elastic}")
   private String awsEc2IP;
 
   @Override
@@ -63,8 +63,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
     // 로그인 성공
-    log.info("login redirect url : {}" , "http://" + awsEc2IP + ":3000/");
-    String redirectUrl = String.format( "http://" + awsEc2IP + ":3000/");
+    log.info("login redirect url : {}",  awsEc2IP + ":3000/");
+    String redirectUrl = String.format(awsEc2IP + ":3000/");
     response.sendRedirect(redirectUrl);
   }
 }
