@@ -46,13 +46,13 @@ export default function NoiSenseDashboard() {
     const fetchUser = async () => {
 
       try {
-        const BASE_URL = "http://43.201.183.161";
+        const BASE_URL = "http://mycityonnoisense.site";
         const res = await fetch(BASE_URL+'/api/user', {
           method: 'GET',
           credentials: 'include'
         });
         if (!res.ok) {
-          alert('인증만료');
+          console.log('인증 실패');
           return;
         }
         const data = await res.json();

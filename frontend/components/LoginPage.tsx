@@ -16,7 +16,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
     }
   }, [onLogin]);
 
-  const BASE_URL = "http://43.201.183.161";
+  const BASE_URL = "http://mycityonnoisense.site";
   
   const OAUTH_URLS: Record<string, string> = {
     Kakao: BASE_URL + "/oauth2/authorization/kakao",
