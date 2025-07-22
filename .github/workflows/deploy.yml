@@ -170,7 +170,7 @@ jobs:
             echo "=== 환경 변수 확인 ==="
             env | grep SPRING
             echo "=== 실행 직전 jdbcUrl 조합 ==="
-            echo "jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisensedb?currentSchema=noisense"
+            echo "${SPRING_DATASOURCE_URL}"
             echo "=== 유저명 ==="
             echo $SPRING_DATASOURCE_USERNAME
 
