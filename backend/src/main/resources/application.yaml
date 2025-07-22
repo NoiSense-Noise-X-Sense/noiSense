@@ -11,8 +11,11 @@ spring:
     ansi:
       enabled: always
 
-
-
+  docker:
+    compose:
+      file:
+      - ../Data/docker-compose.data.yml
+      - ../monitoring/docker-compose.monitoring.yml
 #  docker:
 #    compose:
 #      file: ../Data/docker-compose.data.yml
@@ -23,6 +26,8 @@ spring:
 #    date-format: yyyy-MM-dd'T'HH:mm:ss
     time-zone: Asia/Seoul
 
+  elasticsearch:
+    uris: http://localhost:9200
 
 api:
   sdot:
