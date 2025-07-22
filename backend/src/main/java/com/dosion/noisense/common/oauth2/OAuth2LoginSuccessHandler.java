@@ -47,7 +47,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     if (idObj != null) {
       id = Long.valueOf(idObj.toString());
     }
-
+    log.info("[OAuth2_LOG] id : {}" , id);
 
     Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
     accessTokenCookie.setHttpOnly(true);
@@ -63,6 +63,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
     // 로그인 성공
+    log.info("login redirect url : {}" , "http://" + awsEc2IP + ":3000/");
     String redirectUrl = String.format( "http://" + awsEc2IP + ":3000/");
     response.sendRedirect(redirectUrl);
   }
