@@ -160,13 +160,6 @@ jobs:
             echo "=== 유저명 ==="
             echo $SPRING_DATASOURCE_USERNAME
 
-#            echo "===== 기존 8080 프로세스 종료 중 ====="
-#            fuser -k 8080/tcp || true
-#
-#            echo "======== 자바 실행 ========="
-#            env nohup java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev > app.log 2>&1 & disown
-#            sleep 5
-
             echo "========= 기존 프로세스 종료 중 ========"
             pm2 delete backend || true
 
