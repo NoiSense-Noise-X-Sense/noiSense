@@ -21,7 +21,7 @@ import java.util.Map;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
-  @Value("${aws.ec2ip.elastic}")
+  @Value("${aws.ec2ip.domain}")
   private String awsEc2IP;
 
   @Override

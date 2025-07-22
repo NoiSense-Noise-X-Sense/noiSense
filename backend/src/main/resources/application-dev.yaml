@@ -62,7 +62,7 @@ api:
 aws:
   ec2ip:
     private : "http://172.31.39.164"
-    elastic : "http://mycityonnoisense.site"
+    domain : "http://mycityonnoisense.site"
 
 
 
