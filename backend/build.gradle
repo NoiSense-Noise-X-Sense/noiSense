@@ -44,6 +44,9 @@ dependencies {
   runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
   implementation 'org.springframework.boot:spring-boot-starter-security'
 
+  implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
+  implementation 'co.elastic.clients:elasticsearch-java:8.12.0' //elasticsearch
+
   // OAuth2
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-data-redis'

@@ -19,18 +19,16 @@ public class ApiDataFetchTasklet implements Tasklet {
 
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-    log.info("✅ API 3개 데이터 수집 작업 실행됨");
-
     // ✅ TODO: 여기에 실제 API 호출 → 파싱 → DB 저장 로직 구현 예정
 
     // 예시: 수집 완료 후 로그 테이블에 성공 기록
     logRepository.save(
       BatchResultLog.builder()
         .jobName("hourlyNoiseJob")
-        .message("센서 API 데이터 수집 완료")
+        .message("API 데이터 수집 완료")
         .build()
     );
-
+    log.info("[ApiDataFetchTasklet][Sucess] API 데이터 수집 완료");
     return RepeatStatus.FINISHED; // 한 번 실행하고 끝냄
   }
 }

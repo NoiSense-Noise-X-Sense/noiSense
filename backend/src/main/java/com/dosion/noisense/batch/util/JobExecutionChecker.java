@@ -11,7 +11,7 @@ public class JobExecutionChecker {
   private final JdbcTemplate jdbcTemplate;
 
   /**
-   * ✅ 오늘 이미 같은 Job이 실행된 적이 있는지 확인
+   * 오늘 이미 같은 Job이 실행된 적이 있는지 확인
    *
    * @param jobName             Job 이름
    * @param currentExecutionId  현재 실행 ID (자기 자신은 제외)
