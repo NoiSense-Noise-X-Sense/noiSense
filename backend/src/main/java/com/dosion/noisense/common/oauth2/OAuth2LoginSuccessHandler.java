@@ -63,8 +63,8 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
 
     // 로그인 성공
-    log.info("login redirect url : {}",  awsEc2IP + ":3000/");
-    String redirectUrl = String.format(awsEc2IP + ":3000/");
+    log.info("login redirect url : {}",  awsEc2IP + "/");
+    String redirectUrl = String.format(awsEc2IP + "/");
     response.sendRedirect(redirectUrl);
   }
 }
