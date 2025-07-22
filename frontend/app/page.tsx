@@ -44,8 +44,10 @@ export default function NoiSenseDashboard() {
 
   useEffect(() => {
     const fetchUser = async () => {
+
       try {
-        const res = await fetch('http://localhost:8080/api/user', {
+        const BASE_URL = "http://43.201.183.161";
+        const res = await fetch(BASE_URL+'/api/user', {
           method: 'GET',
           credentials: 'include'
         });
