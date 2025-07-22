@@ -4,6 +4,7 @@ import com.dosion.noisense.module.district.entity.District;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
 import com.dosion.noisense.web.district.dto.DistrictDto;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class DistrictService {
 
   private final DistrictRepository districtRepository;
@@ -32,4 +34,6 @@ public class DistrictService {
 
     return districtDtos;
   }
+
+
 }

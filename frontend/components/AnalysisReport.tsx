@@ -45,7 +45,7 @@ export default function AnalysisReport() {
         params.append("autonomousDistrict", filters.district);
 
         try {
-          const response = await fetch(`http://localhost:8080/api/report/getReport?${params.toString()}`);
+          const response = await fetch(`http://localhost:8080/api/v1/report/getReport?${params.toString()}`);
           if (!response.ok) {
             throw new Error(`서버 응답 오류: ${response.status}`);
           }

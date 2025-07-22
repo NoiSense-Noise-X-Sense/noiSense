@@ -3,7 +3,6 @@ package com.dosion.noisense.module.api.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.time.LocalDateTime;
 
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "sensor_data")
-public class SensorDataApiEntity {
+public class SensorData {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,9 +70,9 @@ public class SensorDataApiEntity {
   private LocalDateTime batchTime;
 
   @Builder
-  public SensorDataApiEntity(LocalDateTime sensingTime, String region , String autonomousDistrict, String administrativeDistrict,
-                             Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
-                             Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
+  public SensorData(LocalDateTime sensingTime, String region , String autonomousDistrict, String administrativeDistrict,
+                    Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
+                    Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
     this.sensingTime = sensingTime;
     this.region = region;
     this.autonomousDistrict = autonomousDistrict;

@@ -39,4 +39,7 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
           ON d.autonomous_district = a.code
         """, nativeQuery = true)
   List<District> findAllAdministrativeDistricts();
+
+  List<District> findAllByOrderByKorNameAsc();
+
 }

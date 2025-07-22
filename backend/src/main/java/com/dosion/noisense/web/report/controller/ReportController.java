@@ -19,7 +19,7 @@ import java.time.LocalDate;
 @Tag(name = "Noise-Report-Controller", description = "소음 리포트")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/report")
+@RequestMapping("/api/v1/report")
 public class ReportController {
 
   private final ReportService reportService;
