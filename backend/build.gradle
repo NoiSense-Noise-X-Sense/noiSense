@@ -3,6 +3,7 @@ plugins {
   id 'java'
   id 'org.springframework.boot' version '3.5.3'
   id 'io.spring.dependency-management' version '1.1.7'
+  id 'application'
 }
 
 group = 'com.dosion.noisense'
@@ -12,6 +13,11 @@ java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(17)
   }
+}
+
+
+application { // 빌드 시점용 설정
+  mainClass = 'com.dosion.noisense.BackendApplication'
 }
 
 configurations {
@@ -84,6 +90,6 @@ tasks.named('test') {
 
 tasks.register("prepareKotlinBuildScriptModel"){}
 
-bootRun {
+bootRun { // 개발 서버 실행 시 사용
   mainClass.set('com.dosion.noisense.BackendApplication')
 }
