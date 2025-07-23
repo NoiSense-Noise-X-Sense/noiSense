@@ -1,7 +1,7 @@
 // 통합된 버전: 더미데이터 제거 + API 연동 적용
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { Volume2, Moon, TrendingUp } from 'lucide-react';
@@ -18,90 +18,66 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { fetchSummary, fetchHourly, fetchYearly, fetchComplaints } from '@/lib/api/dashboard';
+import {
+  fetchDistrictList,
+  fetchSummary,
+  fetchHourly,
+  fetchYearly,
+  fetchComplaints,
+} from '@/lib/api/dashboard';
 
 type KeywordCount = {
   keyword: string;
   count: number;
 };
 
-const allDistricts = [
-  '강남구',
-  '강동구',
-  '강북구',
-  '강서구',
-  '관악구',
-  '광진구',
-  '구로구',
-  '금천구',
-  '노원구',
-  '도봉구',
-  '동대문구',
-  '동작구',
-  '마포구',
-  '서대문구',
-  '서초구',
-  '성동구',
-  '성북구',
-  '송파구',
-  '양천구',
-  '영등포구',
-  '용산구',
-  '은평구',
-  '종로구',
-  '중구',
-  '중랑구',
-];
-const districtCodeMap: Record<string, string> = {
-  종로구: '11010',
-  중구: '11020',
-  용산구: '11030',
-  성동구: '11040',
-  광진구: '11050',
-  동대문구: '11060',
-  중랑구: '11070',
-  성북구: '11080',
-  강북구: '11090',
-  도봉구: '11100',
-  노원구: '11110',
-  은평구: '11120',
-  서대문구: '11130',
-  마포구: '11140',
-  양천구: '11150',
-  강서구: '11160',
-  구로구: '11170',
-  금천구: '11180',
-  영등포구: '11190',
-  동작구: '11200',
-  관악구: '11210',
-  서초구: '11220',
-  강남구: '11230',
-  송파구: '11240',
-  강동구: '11250',
+type District = {
+  code: string;
+  nameKo: string;
+  nameEn: string;
 };
 
-export default function DistrictDashboard({
-                                            selectedDistrict: initialDistrict,
-                                          }: {
-  selectedDistrict: string;
-}) {
+export default function DistrictDashboard({ selectedDistrict: initialDistrict }: { selectedDistrict: string }) {
+  // DB에서 받아온 자치구 목록
+  const [districts, setDistricts] = useState<District[]>([]);
+  // 현재 선택된 자치구(이름, nameKo)
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [districtData, setDistrictData] = useState<any>(null);
 
+  // 자치구 목록 fetch (최초 1회)
   useEffect(() => {
+    fetchDistrictList().then((list: District[]) => {
+      list.sort((a, b) => a.nameKo.localeCompare(b.nameKo, 'ko-KR'));
+      setDistricts(list);
+    });
+  }, []);
+
+
+  // allDistricts 동적 생성 (항상 최신 구 이름 목록)
+  const allDistricts = useMemo(() => districts.map(d => d.nameKo), [districts]);
+
+  // nameKo → code 변환 함수
+  const getDistrictCode = (nameKo: string) => {
+    const found = districts.find(d => d.nameKo === nameKo);
+    return found?.code ?? '';
+  };
+
+  // 데이터 fetch (선택된 구가 바뀌거나 구 목록이 바뀔 때)
+  useEffect(() => {
+    if (districts.length === 0) return;
     const fetchData = async () => {
       try {
-        const engDistrict = districtCodeMap[selectedDistrict];
+        const code = getDistrictCode(selectedDistrict);
+        if (!code) return;
         const [summary, hourly, yearly, complaints] = await Promise.all([
-          fetchSummary(engDistrict),
-          fetchHourly(engDistrict),
-          fetchYearly(engDistrict),
-          fetchComplaints(engDistrict),
+          fetchSummary(code),
+          fetchHourly(code),
+          fetchYearly(code),
+          fetchComplaints(code),
         ]);
-
         setDistrictData({
           avgNoise: {
             value: parseFloat(summary.avgNoise),
@@ -117,8 +93,7 @@ export default function DistrictDashboard({
             noise: summary.calmNoise,
             analysisPeriod: `${summary.startDate} ~ ${summary.endDate}`,
           },
-          keywords: summary.topKeywords, // count 포함된 구조
-
+          keywords: summary.topKeywords,
           noiseTrendData: hourly.map((h: any) => ({
             hour: `${h.hour.toString().padStart(2, '0')}시`,
             실시간: h.avgDay,
@@ -138,25 +113,26 @@ export default function DistrictDashboard({
         console.error('데이터 로딩 실패:', err);
       }
     };
-
     fetchData();
-  }, [selectedDistrict]);
+  }, [selectedDistrict, districts]);
 
+  // 자동 순환 로직
   useEffect(() => {
-    if (autoScroll) {
+    if (autoScroll && allDistricts.length > 0) {
       scrollIntervalRef.current = setInterval(() => {
         setSelectedDistrict(prev => {
           const idx = allDistricts.indexOf(prev);
-          return allDistricts[(idx + 1) % allDistricts.length];
+          const nextIdx = (idx + 1) % allDistricts.length;
+          return allDistricts[nextIdx] ?? prev;
         });
-      }, 5000000);
+      }, 5000);
     } else {
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     }
     return () => {
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     };
-  }, [autoScroll]);
+  }, [autoScroll, allDistricts]);
 
   const handleDistrictClick = (district: string) => {
     setAutoScroll(false);

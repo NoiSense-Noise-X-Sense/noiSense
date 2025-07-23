@@ -1,6 +1,8 @@
 package com.dosion.noisense.web.dashboard.controller;
 
+import com.dosion.noisense.module.api.repository.AutonomousDistrictRepository;
 import com.dosion.noisense.module.dashboard.service.DashboardService;
+import com.dosion.noisense.web.api.dto.AutonomousDistrictDto;
 import com.dosion.noisense.web.dashboard.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +24,8 @@ import java.util.List;
 public class DashboardController {
 
   private final DashboardService dashboardService;
+
+  private final AutonomousDistrictRepository autonomousDistrictRepository;
 
   @Operation(
     summary = "지역별 소음 요약 통계 호출",
@@ -95,6 +99,22 @@ public class DashboardController {
   public ResponseEntity<List<DistrictNoiseComplaintsDto>> getComplaintsByDistrict(@RequestParam String district) {
     log.info("소음 민원 추이 요청 - district: {}", district);
     return ResponseEntity.ok(dashboardService.getComplaintsByDistrict(district));
+  }
+
+  @Operation(
+    summary = "서울시 자치구 목록 조회",
+    description = "서울시 25개구(자치구) 코드와 이름 목록을 반환합니다."
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = AutonomousDistrictDto.class))
+  )
+  @GetMapping("/districts")
+  public List<AutonomousDistrictDto> getDistricts() {
+    return autonomousDistrictRepository.findAllByOrderByNameKoAsc().stream()
+      .map(d -> new AutonomousDistrictDto(d.getCode(), d.getNameKo(), d.getNameEn()))
+      .toList();
   }
 
 
