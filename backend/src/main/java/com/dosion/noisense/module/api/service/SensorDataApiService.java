@@ -17,6 +17,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.Instant;
@@ -250,13 +251,9 @@ public class SensorDataApiService {
 
     List<SensorDataApiDto> dataToProcess;
 
-    // 기존 데이터가 있을 경우 lastKnownTimes로 필터링
     if ( latestTime == null) {
-
       dataToProcess = new ArrayList<>(dtoList);
-
     } else {
-
       dataToProcess = dtoList.stream()
         .filter(dto -> dto.getSensingTime().isAfter(latestTime))
         .collect(Collectors.toList());
@@ -275,7 +272,6 @@ public class SensorDataApiService {
     if (!newEntitiesToSave.isEmpty()) {
       sensorDataRepository.bulkInsert(newEntitiesToSave);
       log.info("[{}] 새로운 데이터 {}건을 저장했습니다.", sourceName, newEntitiesToSave.size());
-
     }
   }
 
@@ -325,9 +321,12 @@ public class SensorDataApiService {
   // Entity로 빌드
   private SensorData mapDtoToEntity(SensorDataApiDto sensorDataApiDTO) {
 
+    // 변환에 성공하면 Enum 객체가, 실패하면 null이 여기에 저장
+    Region regionEnumObject = Region.fromNameEn(sensorDataApiDTO.getRegion());
+
     return com.dosion.noisense.module.api.entity.SensorData.builder()
       .sensingTime(sensorDataApiDTO.getSensingTime())
-      .region(Region.valueOf(sensorDataApiDTO.getRegion()))
+      .region(regionEnumObject) // 여기에 Enum 객체 또는 null이 그대로 들어갑니다.
       .autonomousDistrict(sensorDataApiDTO.getAutonomousDistrict())
       .administrativeDistrict(sensorDataApiDTO.getAdministrativeDistrict())
       .maxNoise(sensorDataApiDTO.getMaxNoise())
@@ -340,7 +339,6 @@ public class SensorDataApiService {
       .avgHumi(sensorDataApiDTO.getAvgHumi())
       .minHumi(sensorDataApiDTO.getMinHumi())
       .build();
-
   }
 
 

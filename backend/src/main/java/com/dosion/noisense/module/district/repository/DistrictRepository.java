@@ -40,6 +40,6 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
         """, nativeQuery = true)
   List<District> findAllAdministrativeDistricts();
 
-  List<District> findAllByOrderByKorNameAsc();
+  List<District> findAllByOrderByNameKoAsc();
 
 }

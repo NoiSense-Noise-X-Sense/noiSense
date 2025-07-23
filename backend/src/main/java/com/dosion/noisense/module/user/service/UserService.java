@@ -35,8 +35,6 @@ public class UserService {
      return userDto;
   }
 
-
-
   @Transactional
   public UserDto getUserInfo(Long id){
     Users user = userRepository.findById(id)

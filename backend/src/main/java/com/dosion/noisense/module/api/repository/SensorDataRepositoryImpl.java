@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types; // Types.VARCHAR를 위해 import
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,7 +31,15 @@ public class SensorDataRepositoryImpl implements SensorDataRepositoryCustom {
       public void setValues(PreparedStatement ps, int i) throws SQLException {
         SensorData entity = entities.get(i);
         ps.setObject(1, entity.getSensingTime());
-        ps.setString(2, entity.getRegion().name());
+
+        if (entity.getRegion() != null) {
+          // .name() 대신 .getNameEn()을 사용하여 소문자 문자열("residential_area")을 가져옴
+          ps.setString(2, entity.getRegion().getNameEn());
+        } else {
+          // 만약 region 필드가 null일 경우, DB에도 null을 명시적으로 설정
+          ps.setNull(2, Types.VARCHAR);
+        }
+
         ps.setString(3, entity.getAutonomousDistrict());
         ps.setString(4, entity.getAdministrativeDistrict());
         ps.setObject(5, entity.getMaxNoise());
@@ -51,9 +60,4 @@ public class SensorDataRepositoryImpl implements SensorDataRepositoryCustom {
       }
     });
   }
-
-
-
-
-
 }

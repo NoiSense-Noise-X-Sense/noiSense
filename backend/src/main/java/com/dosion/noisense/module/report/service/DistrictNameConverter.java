@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
-public class RegionConverter {
+public class DistrictNameConverter {
 
   // 한글과 영어를 키와 밸류로 각각 담아 변환할때 사용하는 map
   private  Map<String, String> CODE_TO_ENG = new HashMap<>();

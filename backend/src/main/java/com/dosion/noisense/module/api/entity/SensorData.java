@@ -25,8 +25,7 @@ public class SensorData {
   private LocalDateTime sensingTime;
 
   // 지역 데이터
-  @Enumerated(EnumType.STRING)
-  @Column(name = "region", nullable = false)
+  @Column(name = "region", columnDefinition = "region_type" )
   private Region region;
 
   // 자치구

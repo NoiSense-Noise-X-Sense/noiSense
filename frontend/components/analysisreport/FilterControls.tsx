@@ -1,6 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ReactDatePicker, { registerLocale } from "react-datepicker"
@@ -14,9 +13,11 @@ import html2canvas from "html2canvas"
 
 registerLocale("ko", ko)
 
-interface District {
-  districtId: number;
-  districtName: string;
+interface DistrictDto {
+  code: string;
+  nameKo: string;
+  nameEn: string;
+  [key: string]: any;
 }
 
 interface FilterControlsProps {
@@ -26,42 +27,13 @@ interface FilterControlsProps {
     district: string
   }
   setFilters: (filters: any) => void
+  districts: DistrictDto[]
+  isLoading: boolean
 }
 
-export default function FilterControls({ filters, setFilters }: FilterControlsProps) {
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchDistricts = async () => {
-      try {
-        // 1. 실제 컨트롤러 주소로 수정
-        const response = await fetch("http://localhost:8080/api/v1/district/autonomousDistrict");
-        if (!response.ok) {
-          throw new Error("자치구 목록을 불러오는 데 실패했습니다.");
-        }
-
-        // 2. ResponseDto 구조에 맞게 데이터 파싱
-        const result = await response.json();
-
-        // 3. success가 true이고 data가 배열일 때만 상태 업데이트
-        if (result.success && Array.isArray(result.data)) {
-          setDistricts(result.data);
-        } else {
-          console.error("API 응답 데이터 형식이 올바르지 않습니다:", result.errorMessage);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDistricts();
-  }, []);
+export default function FilterControls({ filters, setFilters, districts, isLoading }: FilterControlsProps) {
 
   const handlePrintPdf = () => {
-    // PDF 변환 로직 (기존과 동일)
     const element = document.getElementById("pdf-content");
     if (!element) return;
     html2canvas(element, { scale: 2, useCORS: true }).then((canvas) => {
@@ -84,13 +56,10 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">상세 검색</h2>
         <Button onClick={handlePrintPdf} variant="outline">
-          <Printer className="mr-2 h-4 w-4" />
-          PDF 변환
+          <Printer className="mr-2 h-4 w-4" /> PDF 변환
         </Button>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-        {/* 날짜 선택기는 변경 없음 */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">시작일</label>
           <ReactDatePicker
@@ -122,7 +91,6 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
           />
         </div>
 
-        {/* 구 선택 메뉴는 변경 없음 (데이터 소스만 바뀜) */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">지역구</label>
           <Select
@@ -135,13 +103,29 @@ export default function FilterControls({ filters, setFilters }: FilterControlsPr
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">전체 구</SelectItem>
-              {districts.map((district) => (
-                <SelectItem key={district.districtId} value={district.districtName}>
-                  {district.districtName}
-                </SelectItem>
-              ))}
+              {districts && districts.length > 0 ? (
+                districts.map((district, index) => {
+                  const anyDistrict = district as any;
+                  const code = anyDistrict.code || anyDistrict.districtCode || anyDistrict.id || `district-${index}`;
+                  const name = anyDistrict.nameKo || anyDistrict.districtNameKo || anyDistrict.name || anyDistrict.districtName || anyDistrict.korName || `구-${index}`;
+
+                  return (
+                    <SelectItem key={code} value={code}>
+                      {name}
+                    </SelectItem>
+                  );
+                })
+              ) : (
+                !isLoading && (
+                  <SelectItem value="no-data" disabled>
+                    데이터가 없습니다
+                  </SelectItem>
+                )
+              )}
             </SelectContent>
           </Select>
+          <div className="text-xs text-gray-500 mt-1">
+          </div>
         </div>
       </div>
     </Card>

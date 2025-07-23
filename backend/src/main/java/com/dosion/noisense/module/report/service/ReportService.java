@@ -24,7 +24,7 @@ public class ReportService {
 
   private final PerceivedNoiseCalculator perceivedNoiseCalculator;
 
-  private final RegionConverter regionConverter;
+  private final DistrictNameConverter districtNameConverter;
 
       /*
       응답 데이터 목록
@@ -43,6 +43,7 @@ public class ReportService {
         요일 별 Top 3/Bottom 3 소음 지역 그래프 ->  x축 스트링(요일)
     */
 
+
   public ReportDto getReport(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode) {
     log.info("getReport");
     log.info("startDate : {}, endDate : {}, autonomousDistrictCode : {}", startDate, endDate, autonomousDistrictCode);
@@ -51,7 +52,7 @@ public class ReportService {
       throw new IllegalArgumentException("시작일은 종료일보다 이전이어야 합니다. 시작일 : " + startDate + ", 종료일 : " + endDate);
     }
 
-    String autonomousDistrictEng = "all".equalsIgnoreCase(autonomousDistrictCode) ? "all" : regionConverter.toENG(autonomousDistrictCode);
+    String autonomousDistrictEng = "all".equalsIgnoreCase(autonomousDistrictCode) ? "all" : districtNameConverter.toENG(autonomousDistrictCode);
 
     LocalDateTime startDateTime = startDate.atStartOfDay();
 
@@ -99,7 +100,7 @@ public class ReportService {
       regionPath = sensorData.administrativeDistrict;
     }
     maxNosieReginEng = maxDataByAutonomousDistrict.get(regionPath);
-    maxNoiseRegionCode = regionConverter.toCode(maxNosieReginEng);
+    maxNoiseRegionCode = districtNameConverter.toCode(maxNosieReginEng);
     maxNoiseRegion = getKorByCode(regionPath, maxNoiseRegionCode);
 
     log.info(maxDataByAutonomousDistrict.toString());
@@ -157,7 +158,7 @@ public class ReportService {
         } else if (dto.getClass().equals(DeviationDto.class)) {
           regionEng = ((DeviationDto) dto).getRegion();
         }
-        regionCode = regionConverter.toCode(regionEng);
+        regionCode = districtNameConverter.toCode(regionEng);
         String regionKor = getKorByCode(regionPath, regionCode);
         engToKorMap.put(regionEng, regionKor);
       }
@@ -257,8 +258,8 @@ public class ReportService {
     List<MapDto> result = new ArrayList<>();
 
     // 들어온 변수(한글명)을 센서데이터의 영문으로 변환
-    String auEng = regionConverter.toENG(autonomousDistrictCode);
-    String adEng = regionConverter.toENG(administrativeDistrictCode);
+    String auEng = districtNameConverter.toENG(autonomousDistrictCode);
+    String adEng = districtNameConverter.toENG(administrativeDistrictCode);
     log.info("auEng : {}, adEng : {}", auEng, adEng);
 
     List<AvgNoiseRegionDto> avgNoiseRegionDtoList = reportRepository.findAverageNoiseByRegion(startDate, endDate, auEng, adEng, regionTypeList);
