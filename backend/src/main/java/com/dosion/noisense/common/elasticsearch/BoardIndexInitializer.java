@@ -52,7 +52,7 @@ public class BoardIndexInitializer implements ApplicationRunner {
       }
 
     } catch (IOException e) {
-      log.error("❌ Elasticsearch 인덱스 생성 실패", e.getMessage());
+      log.error("❌ Elasticsearch 인덱스 생성 실패", e.getCause());
     }
   }
 }

@@ -1,17 +1,21 @@
 package com.dosion.noisense.web.board.controller;
 
+import com.dosion.noisense.common.security.core.CustomUserDetails;
 import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.service.BoardService;
 import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @Tag(name = "Board-Controller", description = "게시판 API")
 @RestController
 @RequestMapping("/api/boards")
@@ -23,8 +27,15 @@ public class BoardController {
 
   /** 게시글 작성 **/
   @PostMapping
-  public ResponseEntity<?> createBoard(@RequestBody List<BoardDto> boardDtoList) {
+  public ResponseEntity<?> createBoard(@AuthenticationPrincipal CustomUserDetails userDetails,
+    @RequestBody List<BoardDto> boardDtoList) {
+
+    Long id = userDetails.getId();
+    log.info("[getUserInfo] id : {}", id);
+    log.info("[getUserInfo] username : {}", userDetails.getUsername());
+
     // Security 미구현 상태: userId, nickname을 프론트에서 받아 사용
+
     boardDtoList.forEach(boardService::createBoard); //반복 insert
     return ResponseEntity.ok().build();
   }
