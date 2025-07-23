@@ -8,14 +8,14 @@ spring:
       enabled: false
 
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense?currentSchema=noisense
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   data:
     redis:
-      host:  ${REDIS_HOST:localhost}
+      host:  ${REDIS_HOST}
       port: 6379
 
   elasticsearch:
@@ -52,7 +52,19 @@ logging:
 
 ---
 
+aws:
+  ec2ip:
+    private : "http://0000"
+    domain : "http://0000"
 
+openai:
+  api-key: something
+
+api:
+  sdot:
+    key: ${API_SDOT_KEY}
+    uri: "http://openapi.seoul.go.kr:8088"
+    service-name: ${API_SDOT_SERVICENAME}
 
 
 jwt:
