@@ -80,7 +80,6 @@ const districtCodeMap: Record<string, string> = {
   강동구: '11250',
 };
 
-
 export default function DistrictDashboard({
   selectedDistrict: initialDistrict,
 }: {
@@ -135,6 +134,7 @@ export default function DistrictDashboard({
             return acc;
           }, {}),
         });
+        console.log('[DEBUG] summary.topKeywords:', summary.topKeywords);
       } catch (err) {
         console.error('데이터 로딩 실패:', err);
       }
@@ -303,11 +303,11 @@ export default function DistrictDashboard({
           </Card>
 
           {/* TOP Keywords - Second Row */}
-          <Card className="col-span-1 lg:col-span-1 py-1 px-2 min-h-[60px] h-36">
-            <CardTitle className="text-sm font-semibold mb-0">
+          <Card className="col-span-1 lg:col-span-1 py-1 px-2 min-h-[60px] h-36 flex flex-col">
+            <CardTitle className="text-sm font-semibold mb-1 text-left">
               {selectedDistrict}의 TOP 키워드
             </CardTitle>
-            <div className="flex flex-wrap gap-2 justify-center items-start">
+            <div className="flex-1 flex flex-wrap gap-2 justify-center items-center">
               {(() => {
                 if (!districtData.keywords || districtData.keywords.length === 0)
                   return <span>데이터 없음</span>;
