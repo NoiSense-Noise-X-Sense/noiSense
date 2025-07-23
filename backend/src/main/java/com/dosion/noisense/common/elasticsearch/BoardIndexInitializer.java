@@ -1,4 +1,4 @@
-package com.dosion.noisense.common.config;
+package com.dosion.noisense.common.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.indices.CreateIndexRequest;
@@ -52,7 +52,7 @@ public class BoardIndexInitializer implements ApplicationRunner {
       }
 
     } catch (IOException e) {
-      log.error("❌ Elasticsearch 인덱스 생성 실패", e);
+      log.error("❌ Elasticsearch 인덱스 생성 실패", e.getMessage());
     }
   }
 }

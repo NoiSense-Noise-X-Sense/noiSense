@@ -20,9 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     registry.addMapping("/api/**")
       .allowedOrigins("http://localhost:3000"
       , awsEc2IP
-      , awsEc2IP +":3000"
-      , awsEc2IPDomain
-      , awsEc2IPDomain +":3000")
+      , awsEc2IPDomain)
       .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
       .allowCredentials(true);
   }

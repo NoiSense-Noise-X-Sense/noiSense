@@ -15,7 +15,7 @@ spring:
 
   data:
     redis:
-      host:  ${REDIS_HOST}
+      host: ${REDIS_HOST}
       port: 6379
 
   elasticsearch:
@@ -54,8 +54,8 @@ logging:
 
 aws:
   ec2ip:
-    private : "http://0000"
-    domain : "http://0000"
+    private : "http://localhost:3000"
+    domain : "http://localhost:3000"
 
 openai:
   api-key: something
