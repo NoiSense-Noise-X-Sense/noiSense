@@ -422,7 +422,7 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
             <div className="flex justify-center gap-6 mt-3 text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
-                <span className="font-medium">실시간</span>
+                <span className="font-medium">전일</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
