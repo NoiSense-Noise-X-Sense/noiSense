@@ -1,4 +1,4 @@
-package com.dosion.noisense.config;
+package com.dosion.noisense.common.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;

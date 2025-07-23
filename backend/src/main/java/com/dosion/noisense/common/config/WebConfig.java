@@ -23,7 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
       , awsEc2IP +":3000"
       , awsEc2IPDomain
       , awsEc2IPDomain +":3000")
-      .allowedMethods("*")
+      .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
       .allowCredentials(true);
   }
 }

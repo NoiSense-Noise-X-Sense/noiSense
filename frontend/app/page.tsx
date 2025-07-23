@@ -43,12 +43,15 @@ export default function NoiSenseDashboard() {
   const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
   const [user, setUser] = useState<User | null>(null);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
     const fetchUser = async () => {
 
       try {
-        const BASE_URL = "http://mycityonnoisense.site";
-        const res = await fetch(BASE_URL+'/api/user', {
+       console.log("✅ API_URL:", process.env.NEXT_PUBLIC_API_URL);
+
+        const res = await fetch(`${API_URL}/api/user`, {
           method: 'GET',
           credentials: 'include'
         });

@@ -29,7 +29,8 @@ jobs:
           tar czf nextjs_build.tar.gz \
            .next package.json package-lock.json next.config.mjs \
            public styles components hooks lib app \
-           tailwind.config.ts postcss.config.mjs tsconfig.json
+           tailwind.config.ts postcss.config.mjs tsconfig.json \
+           .env.production
 
       - name: Copy to EC2
         uses: appleboy/scp-action@v0.1.4

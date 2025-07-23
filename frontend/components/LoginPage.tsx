@@ -16,11 +16,11 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
     }
   }, [onLogin]);
 
-  const BASE_URL = "http://mycityonnoisense.site";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   
   const OAUTH_URLS: Record<string, string> = {
-    Kakao: BASE_URL + "/oauth2/authorization/kakao",
-    Google: BASE_URL + "/oauth2/authorization/google",
+    Kakao: API_URL + "/oauth2/authorization/kakao",
+    Google: API_URL + "/oauth2/authorization/google",
   };
 
 

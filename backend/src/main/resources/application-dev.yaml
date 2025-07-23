@@ -44,6 +44,10 @@ spring:
     job:
       enabled: false
 
+
+  elasticsearch:
+    uris: http://172.31.39.164:9200
+
 # 로깅
 logging:
   level:
@@ -53,18 +57,20 @@ logging:
 ---
 
 
-api:
-  sdot:
-    key: ${API_SDOT_KEY}
-    uri: "http://openapi.seoul.go.kr:8088"
-    service-name: ${API_SDOT_SERVICENAME}
 
 aws:
   ec2ip:
     private : "http://172.31.39.164"
     domain : "http://mycityonnoisense.site"
 
+openai:
+  api-key: something
 
+api:
+  sdot:
+    key: ${API_SDOT_KEY}
+    uri: "http://openapi.seoul.go.kr:8088"
+    service-name: ${API_SDOT_SERVICENAME}
 
 jwt:
   accessTokenExpirationTime: 1000000

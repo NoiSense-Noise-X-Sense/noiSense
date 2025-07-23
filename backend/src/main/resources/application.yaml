@@ -29,8 +29,3 @@ spring:
   elasticsearch:
     uris: http://localhost:9200
 
-api:
-  sdot:
-    key: ${API_SDOT_KEY}
-    uri: "http://openapi.seoul.go.kr:8088"
-    service-name: ${API_SDOT_SERVICENAME}
