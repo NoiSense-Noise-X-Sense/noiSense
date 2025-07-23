@@ -38,7 +38,6 @@ public class DashboardController {
   )
   @GetMapping("/summary")
   public ResponseEntity<DistrictNoiseSummaryDto> getDistrictSummary(@RequestParam String district) {
-    log.info("요약 소음 통계 요청 - district: {}", district);
     return ResponseEntity.ok(dashboardService.getLatestSummary(district));
   }
 
@@ -54,7 +53,7 @@ public class DashboardController {
   )
   @GetMapping("/hourly")
   public ResponseEntity<List<DistrictNoiseHourlyDto>> getHourlyNoise(@RequestParam String district) {
-    log.info("시간대별 소음 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getHourlyNoise(district));
   }
 
@@ -67,7 +66,7 @@ public class DashboardController {
   )
   @GetMapping("/yearly")
   public ResponseEntity<List<DistrictNoiseYearlyDto>> getYearlyNoise(@RequestParam String district) {
-    log.info("연도별 소음 통계 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getYearlyNoise(district));
   }
 
@@ -84,7 +83,7 @@ public class DashboardController {
   )
   @GetMapping("/zone")
   public ResponseEntity<List<DistrictNoiseZoneDto>> getZoneNoise(@RequestParam String district) {
-    log.info("행정동별 소음 통계 요청 - district: {}", district);
+    
     return ResponseEntity.ok(dashboardService.getZoneNoise(district));
   }*/
 
@@ -97,7 +96,7 @@ public class DashboardController {
   )
   @GetMapping("/complaints")
   public ResponseEntity<List<DistrictNoiseComplaintsDto>> getComplaintsByDistrict(@RequestParam String district) {
-    log.info("소음 민원 추이 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getComplaintsByDistrict(district));
   }
 
