@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,23 +17,9 @@ import {
   MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getBoardById, BoardPost } from "@/lib/boardApi";
 
 // Dummy data for a single post and comments
-const dummyPost = {
-  id: 1,
-  title: "강남역 근처 공사 소음이 너무 심해요",
-  content:
-    "매일 아침 7시부터 공사 소음으로 잠을 못 자겠습니다. 주말에도 계속되어서 너무 힘드네요. 특히 새벽 시간대에도 작업이 이루어져서 생활에 큰 불편을 겪고 있습니다. 구청에 민원을 넣어봤지만 개선되지 않고 있습니다. 다른 분들도 비슷한 경험 있으신가요? 어떻게 해결해야 할지 막막합니다.",
-  region: "강남구",
-  dong: "역삼동",
-  likes: 15,
-  comments: 8,
-  views: 120,
-  createdAt: "2024.07.05",
-  author: "김소음",
-  isAuthor: true, // Simulate if the current user is the author
-};
-
 const dummyComments = [
   {
     id: 1,
@@ -58,18 +44,35 @@ const dummyComments = [
 ];
 
 export default function PostDetail({
-  postId,
-  onBack,
-  onEdit,
-  onDelete,
-}: {
+                                     postId,
+                                     onBack,
+                                     onEdit,
+                                     onDelete,
+                                   }: {
   postId: number;
   onBack: () => void;
   onEdit: (postId: number) => void;
   onDelete: (postId: number) => void;
 }) {
-  // In a real application, you would fetch post details based on postId
-  const post = dummyPost; // Using dummy data for now
+  const [post, setPost] = useState<BoardPost | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await getBoardById(postId);
+        setPost(data);
+      } catch (e) {
+        setError("게시글을 불러오지 못했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [postId]);
 
   const [commentContent, setCommentContent] = useState("");
   const [isLiked, setIsLiked] = useState(false); // State for like button
@@ -88,10 +91,17 @@ export default function PostDetail({
     // In a real app, send like/unlike action to backend
   };
 
-  if (!post) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
-        <p className="text-gray-500">게시글을 찾을 수 없습니다.</p>
+        <p className="text-gray-500">불러오는 중...</p>
+      </div>
+    );
+  }
+  if (error || !post) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 md:p-8 flex items-center justify-center">
+        <p className="text-red-500">{error || "게시글을 찾을 수 없습니다."}</p>
       </div>
     );
   }
@@ -114,35 +124,16 @@ export default function PostDetail({
           <CardHeader>
             <div className="flex items-center justify-between mb-2">
               <CardTitle className="text-2xl font-bold">{post.title}</CardTitle>
-              {post.isAuthor && ( // Show edit/delete only if current user is the author
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onEdit(post.id)}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    수정
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => onDelete(post.id)}
-                  >
-                    <Trash2 className="h-4 w-4 mr-1" />
-                    삭제
-                  </Button>
-                </div>
-              )}
+              {/* TODO: 본인 글일 때만 수정/삭제 버튼 노출 (isAuthor 등 추후 구현) */}
             </div>
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <Badge variant="secondary">
                 <MapPin className="h-3 w-3 mr-1" />
-                {post.region} {post.dong}
+                {post.autonomousDistrict} {post.administrativeDistrict}
               </Badge>
-              <span>{post.author}</span>
+              <span>{post.nickname}</span>
               <span>•</span>
-              <span>{post.createdAt}</span>
+              <span>{post.createdDate}</span>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -161,15 +152,15 @@ export default function PostDetail({
                     isLiked ? "fill-red-500 text-red-500" : ""
                   )}
                 />
-                {post.likes + (isLiked ? 1 : 0)}
+                {post.empathyCount + (isLiked ? 1 : 0)}
               </Button>
+              {/* 댓글 수는 별도 API 필요, 일단 미표시 */}
               <span className="flex items-center gap-1">
                 <MessageSquare className="h-5 w-5" />
-                {post.comments}
               </span>
               <span className="flex items-center gap-1">
                 <Eye className="h-5 w-5" />
-                {post.views}
+                {post.viewCount}
               </span>
             </div>
 
