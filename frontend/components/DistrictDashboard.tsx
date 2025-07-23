@@ -134,7 +134,6 @@ export default function DistrictDashboard({
             return acc;
           }, {}),
         });
-        console.log('[DEBUG] summary.topKeywords:', summary.topKeywords);
       } catch (err) {
         console.error('데이터 로딩 실패:', err);
       }
