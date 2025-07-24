@@ -28,10 +28,10 @@ configurations {
 
 
 // QueryDSL 설정 추가
-def querydslDir = "$buildDir/generated/querydsl"
+def querydslDir = layout.buildDirectory.dir("generated/querydsl")
 
 sourceSets {
-  main.java.srcDirs += [ querydslDir ]
+  main.java.srcDirs += [querydslDir]
 }
 
 tasks.withType(JavaCompile) {
@@ -45,7 +45,7 @@ clean.doLast {
 
 
 repositories {
-	mavenCentral()
+  mavenCentral()
   maven {
     url "https://repo.osgeo.org/repository/release/"
   }
@@ -57,7 +57,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
-  
+
   developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
   runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -105,9 +105,9 @@ dependencies {
     exclude(group: "javax.media", module: "jai_core")
   }
   testImplementation 'org.locationtech.jts:jts-core:1.20.0' // Geometry 연산용
-}
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
+}
 
 
 tasks.withType(JavaCompile) {
@@ -118,7 +118,7 @@ tasks.named('test') {
   useJUnitPlatform()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+tasks.register("prepareKotlinBuildScriptModel") {}
 
 bootRun { // 개발 서버 실행 시 사용
   mainClass.set('com.dosion.noisense.BackendApplication')
