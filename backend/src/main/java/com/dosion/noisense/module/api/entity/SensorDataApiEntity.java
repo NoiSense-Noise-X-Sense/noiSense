@@ -25,8 +25,8 @@ public class SensorDataApiEntity {
   private LocalDateTime sensingTime;
 
   // 지역 데이터
-  @Column(name = "region", nullable = false)
-  private String region;
+  @Column(name = "region", columnDefinition = "region_type" )
+  private Region region;
 
   // 자치구
   @Column(name = "autonomous_district", nullable = false)
