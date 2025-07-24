@@ -1,7 +1,7 @@
 // 통합된 버전: 더미데이터 제거 + API 연동 적용
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardTitle } from '@/components/ui/card';
 import { Volume2, Moon, TrendingUp } from 'lucide-react';
@@ -18,67 +18,23 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { fetchSummary, fetchHourly, fetchYearly, fetchComplaints } from '@/lib/api/dashboard';
+import {
+  fetchDistrictList,
+  fetchSummary,
+  fetchHourly,
+  fetchYearly,
+  fetchComplaints,
+} from '@/lib/api/dashboard';
 
 type KeywordCount = {
   keyword: string;
   count: number;
 };
 
-const allDistricts = [
-  '강남구',
-  '강동구',
-  '강북구',
-  '강서구',
-  '관악구',
-  '광진구',
-  '구로구',
-  '금천구',
-  '노원구',
-  '도봉구',
-  '동대문구',
-  '동작구',
-  '마포구',
-  '서대문구',
-  '서초구',
-  '성동구',
-  '성북구',
-  '송파구',
-  '양천구',
-  '영등포구',
-  '용산구',
-  '은평구',
-  '종로구',
-  '중구',
-  '중랑구',
-];
-
-const districtMap: Record<string, string> = {
-  강남구: 'Gangnam-gu',
-  강동구: 'Gangdong-gu',
-  강북구: 'Gangbuk-gu',
-  강서구: 'Gangseo-gu',
-  관악구: 'Gwanak-gu',
-  광진구: 'Gwangjin-gu',
-  구로구: 'Guro-gu',
-  금천구: 'Geumcheon-gu',
-  노원구: 'Nowon-gu',
-  도봉구: 'Dobong-gu',
-  동대문구: 'Dongdaemun-gu',
-  동작구: 'Dongjak-gu',
-  마포구: 'Mapo-gu',
-  서대문구: 'Seodaemun-gu',
-  서초구: 'Seocho-gu',
-  성동구: 'Seongdong-gu',
-  성북구: 'Seongbuk-gu',
-  송파구: 'Songpa-gu',
-  양천구: 'Yangcheon-gu',
-  영등포구: 'Yeongdeungpo-gu',
-  용산구: 'Yongsan-gu',
-  은평구: 'Eunpyeong-gu',
-  종로구: 'Jongno-gu',
-  중구: 'Jung-gu',
-  중랑구: 'Jungnang-gu',
+type District = {
+  code: string;
+  nameKo: string;
+  nameEn: string;
 };
 
 export default function DistrictDashboard({
@@ -86,23 +42,47 @@ export default function DistrictDashboard({
 }: {
   selectedDistrict: string;
 }) {
+  // DB에서 받아온 자치구 목록
+  const [districts, setDistricts] = useState<District[]>([]);
+  // 현재 선택된 자치구(이름, nameKo)
   const [selectedDistrict, setSelectedDistrict] = useState(initialDistrict);
   const [autoScroll, setAutoScroll] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [districtData, setDistrictData] = useState<any>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
+  // 자치구 목록 fetch (최초 1회)
   useEffect(() => {
+    fetchDistrictList().then((list: District[]) => {
+      list.sort((a, b) => a.nameKo.localeCompare(b.nameKo, 'ko-KR'));
+      setDistricts(list);
+    });
+  }, []);
+
+  // allDistricts 동적 생성 (항상 최신 구 이름 목록)
+  const allDistricts = useMemo(() => districts.map(d => d.nameKo), [districts]);
+
+  // nameKo → code 변환 함수
+  const getDistrictCode = (nameKo: string) => {
+    const found = districts.find(d => d.nameKo === nameKo);
+    return found?.code ?? '';
+  };
+
+  // 데이터 fetch (선택된 구가 바뀌거나 구 목록이 바뀔 때)
+  useEffect(() => {
+    if (districts.length === 0) return;
     const fetchData = async () => {
       try {
-        const engDistrict = districtMap[selectedDistrict];
+        setFetchError(null); // 에러 초기화
+        const code = getDistrictCode(selectedDistrict);
+        if (!code) return;
         const [summary, hourly, yearly, complaints] = await Promise.all([
-          fetchSummary(engDistrict),
-          fetchHourly(engDistrict),
-          fetchYearly(engDistrict),
-          fetchComplaints(engDistrict),
+          fetchSummary(code),
+          fetchHourly(code),
+          fetchYearly(code),
+          fetchComplaints(code),
         ]);
-
         setDistrictData({
           avgNoise: {
             value: parseFloat(summary.avgNoise),
@@ -118,8 +98,7 @@ export default function DistrictDashboard({
             noise: summary.calmNoise,
             analysisPeriod: `${summary.startDate} ~ ${summary.endDate}`,
           },
-          keywords: summary.topKeywords, // count 포함된 구조
-
+          keywords: summary.topKeywords,
           noiseTrendData: hourly.map((h: any) => ({
             hour: `${h.hour.toString().padStart(2, '0')}시`,
             실시간: h.avgDay,
@@ -136,33 +115,79 @@ export default function DistrictDashboard({
           }, {}),
         });
       } catch (err) {
-        console.error('데이터 로딩 실패:', err);
+        setDistrictData(null);
+        setFetchError('해당 구역의 소음 데이터가 존재하지 않습니다.');
       }
     };
-
     fetchData();
-  }, [selectedDistrict]);
+  }, [selectedDistrict, districts]);
 
+  // 자동 순환 로직
   useEffect(() => {
-    if (autoScroll) {
+    if (autoScroll && allDistricts.length > 0) {
       scrollIntervalRef.current = setInterval(() => {
         setSelectedDistrict(prev => {
           const idx = allDistricts.indexOf(prev);
-          return allDistricts[(idx + 1) % allDistricts.length];
+          const nextIdx = (idx + 1) % allDistricts.length;
+          return allDistricts[nextIdx] ?? prev;
         });
-      }, 5000000);
+      }, 5000);
     } else {
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     }
     return () => {
       if (scrollIntervalRef.current) clearInterval(scrollIntervalRef.current);
     };
-  }, [autoScroll]);
+  }, [autoScroll, allDistricts]);
 
   const handleDistrictClick = (district: string) => {
     setAutoScroll(false);
     setSelectedDistrict(district);
   };
+
+  if (fetchError) {
+    return (
+      <div className="flex h-[calc(100vh-64px)] bg-gray-50">
+        {/* Left Sidebar: 구 선택 */}
+        <div className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">서울시 25개구</h2>
+            <div className="flex items-center space-x-2">
+              <UILabel htmlFor="auto-scroll" className="text-sm text-gray-600">
+                자동 순환
+              </UILabel>
+              <Switch id="auto-scroll" checked={autoScroll} onCheckedChange={setAutoScroll} />
+            </div>
+          </div>
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto space-y-1">
+            {allDistricts.map(district => (
+              <Button
+                key={district}
+                variant="ghost"
+                className={`w-full justify-start text-left px-3 py-2 rounded-lg ${
+                  selectedDistrict === district
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => handleDistrictClick(district)}
+              >
+                <Volume2 className="h-4 w-4 mr-2" />
+                {district}
+              </Button>
+            ))}
+          </div>
+        </div>
+        {/* Right Main: 에러 메시지 */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
+            <span className="text-5xl mb-3">📭</span>
+            <div className="text-gray-400 mt-2 text-base font-medium">{fetchError}</div>
+            <div className="text-xs text-gray-300 mt-1">다른 구를 선택해 주세요</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!districtData)
     return (
@@ -303,41 +328,53 @@ export default function DistrictDashboard({
           </Card>
 
           {/* TOP Keywords - Second Row */}
-          <Card className="col-span-1 lg:col-span-1 py-1 px-2 min-h-[60px] h-36">
-            <CardTitle className="text-sm font-semibold mb-0">
+          <Card className="col-span-1 lg:col-span-1 py-1 px-2 min-h-[60px] h-36 flex flex-col">
+            <CardTitle className="text-sm font-semibold mb-1 text-left">
               {selectedDistrict}의 TOP 키워드
             </CardTitle>
-            <div className="flex flex-wrap gap-2 justify-center items-start">
+            <div className="flex-1 flex flex-wrap gap-2 justify-center items-center overflow-hidden min-w-0">
               {(() => {
                 if (!districtData.keywords || districtData.keywords.length === 0)
                   return <span>데이터 없음</span>;
 
-                const max = Math.max(...districtData.keywords.map((k: KeywordCount) => k.count));
-                const min = Math.min(...districtData.keywords.map((k: KeywordCount) => k.count));
+                // count 기준 내림차순 정렬
+                const sortedKeywords = [...districtData.keywords].sort(
+                  (a: KeywordCount, b: KeywordCount) => b.count - a.count
+                );
 
+                // 순위별 색상 지정
+                const colorByRank = [
+                  'text-red-600', // 1등
+                  'text-orange-500', // 2등
+                  'text-yellow-500', // 3등
+                  'text-green-500', // 4등
+                ];
+
+                // count 기준 글자 크기 동적 결정
+                const max = Math.max(...sortedKeywords.map((k: KeywordCount) => k.count));
+                const min = Math.min(...sortedKeywords.map((k: KeywordCount) => k.count));
                 const range = max - min || 1;
 
-                return districtData.keywords.map((kw: any, idx: number) => {
+                return sortedKeywords.map((kw: any, idx: number) => {
+                  const color = colorByRank[idx] || 'text-gray-500';
+                  // count 비율에 따라 크기 조정
                   const norm = (kw.count - min) / range;
                   let textSize = 'text-base';
-                  let color = 'text-gray-500';
-
                   if (norm >= 0.8) {
                     textSize = 'text-3xl';
-                    color = 'text-red-600';
                   } else if (norm >= 0.6) {
                     textSize = 'text-2xl';
-                    color = 'text-orange-500';
                   } else if (norm >= 0.4) {
                     textSize = 'text-xl';
-                    color = 'text-yellow-500';
                   } else if (norm >= 0.2) {
                     textSize = 'text-lg';
-                    color = 'text-green-500';
                   }
-
                   return (
-                    <span key={idx} className={`${textSize} ${color} font-semibold`}>
+                    <span
+                      key={idx}
+                      className={`${textSize} ${color} font-semibold break-words max-w-full text-center overflow-hidden text-ellipsis whitespace-pre-line`}
+                      style={{ wordBreak: 'break-all', minWidth: 0, maxWidth: '100%' }}
+                    >
                       {kw.keyword}
                     </span>
                   );
@@ -447,7 +484,7 @@ export default function DistrictDashboard({
             <div className="flex justify-center gap-6 mt-3 text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-orange-500 rounded-full"></span>
-                <span className="font-medium">실시간</span>
+                <span className="font-medium">전일</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>

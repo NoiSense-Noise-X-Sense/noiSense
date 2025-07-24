@@ -86,5 +86,6 @@ temp/
 
 
 backend/src/main/gen
+monitoring/volumes/
 
 Data/volumes

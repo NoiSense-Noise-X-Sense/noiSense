@@ -16,9 +16,11 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
     }
   }, [onLogin]);
 
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  
   const OAUTH_URLS: Record<string, string> = {
-    Kakao: "http://localhost:8080/oauth2/authorization/kakao",
-    Google: "http://localhost:8080/oauth2/authorization/google",
+    Kakao: API_URL + "/oauth2/authorization/kakao",
+    Google: API_URL + "/oauth2/authorization/google",
   };
 
 

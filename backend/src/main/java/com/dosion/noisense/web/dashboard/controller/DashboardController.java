@@ -1,33 +1,120 @@
-package com.dosion.noisense.web.dashboard.controller; // 패키지는 프로젝트 구조에 맞게 생성하세요.
+package com.dosion.noisense.web.dashboard.controller;
 
+import com.dosion.noisense.module.api.repository.AutonomousDistrictRepository;
+import com.dosion.noisense.module.dashboard.service.DashboardService;
+import com.dosion.noisense.web.api.dto.AutonomousDistrictDto;
+import com.dosion.noisense.web.dashboard.dto.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import java.util.Collections;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+@Slf4j
+@Tag(name = "Noise-Dashboard-Controller", description = "지역별 소음 대시보드")
 @RestController
 @RequestMapping("/api/dashboard")
+@RequiredArgsConstructor
 public class DashboardController {
 
-  // 임시로 빈 데이터를 정상 응답으로 보내는 메서드들
+  private final DashboardService dashboardService;
+
+  private final AutonomousDistrictRepository autonomousDistrictRepository;
+
+  @Operation(
+    summary = "지역별 소음 요약 통계 호출",
+    description = "한달 평균 소음, 집중/안정 시간, 키워드 등 요약 데이터를 반환합니다."
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = DistrictNoiseSummaryDto.class))
+  )
   @GetMapping("/summary")
-  public ResponseEntity<?> getSummary() {
-    return ResponseEntity.ok(Collections.emptyMap());
+  public ResponseEntity<DistrictNoiseSummaryDto> getDistrictSummary(@RequestParam String district) {
+    return ResponseEntity.ok(dashboardService.getLatestSummary(district));
   }
 
-  @GetMapping("/complaints")
-  public ResponseEntity<?> getComplaints() {
-    return ResponseEntity.ok(Collections.emptyList());
-  }
 
-  @GetMapping("/yearly")
-  public ResponseEntity<?> getYearlyData() {
-    return ResponseEntity.ok(Collections.emptyMap());
-  }
-
+  @Operation(
+    summary = "시간대별 소음 평균 정보 조회",
+    description = "자치구별 0~23시 시간대별 소음 평균 추이 제공"
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = DistrictNoiseHourlyDto.class))
+  )
   @GetMapping("/hourly")
-  public ResponseEntity<?> getHourlyData() {
-    return ResponseEntity.ok(Collections.emptyMap());
+  public ResponseEntity<List<DistrictNoiseHourlyDto>> getHourlyNoise(@RequestParam String district) {
+
+    return ResponseEntity.ok(dashboardService.getHourlyNoise(district));
   }
+
+
+  @Operation(summary = "연도별 평균 소음 비교", description = "서울시 vs 자치구 평균 소음을 연도별로 조회합니다.")
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = DistrictNoiseYearlyDto.class))
+  )
+  @GetMapping("/yearly")
+  public ResponseEntity<List<DistrictNoiseYearlyDto>> getYearlyNoise(@RequestParam String district) {
+
+    return ResponseEntity.ok(dashboardService.getYearlyNoise(district));
+  }
+
+
+ /*
+  @Operation(
+    summary = "행정동별 평균 소음 조회",
+    description = "자치구 내 행정동별 평균 소음 정보를 반환합니다."
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = DistrictNoiseZoneDto.class))
+  )
+  @GetMapping("/zone")
+  public ResponseEntity<List<DistrictNoiseZoneDto>> getZoneNoise(@RequestParam String district) {
+    
+    return ResponseEntity.ok(dashboardService.getZoneNoise(district));
+  }*/
+
+
+  @Operation(summary = "연도별 소음 민원 추이", description = "자치구 기준 최근 5년간 민원 건수를 반환합니다.")
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = DistrictNoiseComplaintsDto.class))
+  )
+  @GetMapping("/complaints")
+  public ResponseEntity<List<DistrictNoiseComplaintsDto>> getComplaintsByDistrict(@RequestParam String district) {
+
+    return ResponseEntity.ok(dashboardService.getComplaintsByDistrict(district));
+  }
+
+  @Operation(
+    summary = "서울시 자치구 목록 조회",
+    description = "서울시 25개구(자치구) 코드와 이름 목록을 반환합니다."
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = AutonomousDistrictDto.class))
+  )
+  @GetMapping("/districts")
+  public List<AutonomousDistrictDto> getDistricts() {
+    return autonomousDistrictRepository.findAllByOrderByNameKoAsc().stream()
+      .map(d -> new AutonomousDistrictDto(d.getCode(), d.getNameKo(), d.getNameEn()))
+      .toList();
+  }
+
+
 }

@@ -2,11 +2,12 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",  
   "scripts": {
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start -H 0.0.0.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -43,6 +44,7 @@
     "clsx": "^2.1.1",
     "cmdk": "latest",
     "date-fns": "4.1.0",
+    "dotenv": "^17.2.0",
     "embla-carousel-react": "latest",
     "html2canvas": "^1.4.1",
     "input-otp": "latest",
