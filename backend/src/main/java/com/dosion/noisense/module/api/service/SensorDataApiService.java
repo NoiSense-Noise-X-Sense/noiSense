@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Component
 public class SensorDataApiService {
 
   private final SensorDataApiReader sensorDataApiReader;
@@ -217,10 +219,6 @@ public class SensorDataApiService {
 
 
   // 9시 30분, 15시 30분에 한 번씩 부르기
-  // S-DoT Data가 하루에 한 번만 업데이트 됨
-  // 오전에 누락 될 수 있으니 15시에 한 번 더
-//  @Scheduled(cron = "0 */1 * * * *")
-  @Scheduled(cron = "0 30 9,15 * * *")
   public void scheduledBatchExecution() {
     fetchRecentData();
   }

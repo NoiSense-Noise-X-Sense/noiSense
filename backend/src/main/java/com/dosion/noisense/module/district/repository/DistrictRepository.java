@@ -43,6 +43,8 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
         """, nativeQuery = true)
   List<District> findAllAdministrativeDistricts();
 
+  List<District> findAllByOrderByNameKoAsc();
+
   Optional<AutonomousDistrict> findByNameKo(String nameKo);
 
   Optional<AutonomousDistrict> findByNameEn(String nameEn);

@@ -39,7 +39,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
-  
+
   developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
   runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -76,6 +76,8 @@ dependencies {
   testCompileOnly 'org.projectlombok:lombok'
   testAnnotationProcessor 'org.projectlombok:lombok'
 
+  implementation 'org.springframework.boot:spring-boot-starter-batch'
+
   // 좌표계 변환 시 사용
   testImplementation("org.geotools:gt-referencing:33.2") {
     exclude(group: "javax.media", module: "jai_core")
@@ -93,8 +95,6 @@ tasks.withType(JavaCompile) {
 tasks.named('test') {
   useJUnitPlatform()
 }
-
-tasks.register("prepareKotlinBuildScriptModel"){}
 
 bootRun { // 개발 서버 실행 시 사용
   mainClass.set('com.dosion.noisense.BackendApplication')
