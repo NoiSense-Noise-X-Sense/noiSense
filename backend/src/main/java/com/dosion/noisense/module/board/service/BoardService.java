@@ -162,6 +162,7 @@ public class BoardService {
       boardEmpathyRepository.save(boardEmpathy);
       board.setEmpathyCount(board.getEmpathyCount() + 1);
     }
+    boardRepository.save(board); // 공감 수 저장
   }
 
   /** Entity → DTO 변환 **/

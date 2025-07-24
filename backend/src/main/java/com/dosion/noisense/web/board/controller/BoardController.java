@@ -27,16 +27,34 @@ public class BoardController {
 
   /** 게시글 작성 **/
   @PostMapping
-  public ResponseEntity<?> createBoard(@AuthenticationPrincipal CustomUserDetails userDetails,
+  public ResponseEntity<?> createBoard(
+    @AuthenticationPrincipal CustomUserDetails userDetails,
     @RequestBody List<BoardDto> boardDtoList) {
 
-    Long id = userDetails.getId();
-    log.info("[getUserInfo] id : {}", id);
+    Long userId = userDetails.getId();
+    log.info("[getUserInfo] userId : {}", userId);
     log.info("[getUserInfo] username : {}", userDetails.getUsername());
 
-    // Security 미구현 상태: userId, nickname을 프론트에서 받아 사용
+    String nickname = userDetails.getNickname();
 
-    boardDtoList.forEach(boardService::createBoard); //반복 insert
+    List<BoardDto> fixedDtoList = boardDtoList.stream()
+      .map(dto -> BoardDto.builder()
+        .boardId(dto.getBoardId())
+        .userId(userId)
+        .nickname(nickname)
+        .title(dto.getTitle())
+        .content(dto.getContent())
+        .emotionalScore(dto.getEmotionalScore())
+        .empathyCount(dto.getEmpathyCount())
+        .viewCount(dto.getViewCount())
+        .autonomousDistrict(dto.getAutonomousDistrict())
+        .administrativeDistrict(dto.getAdministrativeDistrict())
+        .createdDate(dto.getCreatedDate())
+        .modifiedDate(dto.getModifiedDate())
+        .build())
+      .toList();
+
+    fixedDtoList.forEach(boardService::createBoard);
     return ResponseEntity.ok().build();
   }
 
@@ -62,9 +80,10 @@ public class BoardController {
   @PutMapping("/{id}")
   public ResponseEntity<BoardDto> updateBoard(
     @PathVariable Long id,
-    @RequestParam Long userId, // 쿼리 파라미터로 userId 전달
+    @AuthenticationPrincipal CustomUserDetails userDetails,
     @RequestBody BoardDto boardDto) {
 
+    Long userId = userDetails.getId();
     BoardDto updatedBoard = boardService.updateBoard(id, userId, boardDto);
     return ResponseEntity.ok(updatedBoard);
   }
@@ -73,8 +92,9 @@ public class BoardController {
   @DeleteMapping("/{id}")
   public ResponseEntity<String> deleteBoard(
     @PathVariable Long id,
-    @RequestParam Long userId // Security 미구현 상태: userId를 쿼리 파라미터로 전달
+    @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
+    Long userId = userDetails.getId();
     boardService.deleteBoard(id, userId);
     return ResponseEntity.ok("게시글이 성공적으로 삭제되었습니다.");
   }
@@ -91,8 +111,9 @@ public class BoardController {
   @PostMapping("/{id}/empathy")
   public ResponseEntity<String> toggleEmpathyCount(
     @PathVariable("id") Long boardId,
-    @RequestParam("userId") Long userId
+    @AuthenticationPrincipal CustomUserDetails userDetails
   ) {
+    Long userId = userDetails.getId();
     boardService.toggleEmpathyCount(boardId, userId);
     return ResponseEntity.ok("공감 상태가 변경되었습니다.");
   }
