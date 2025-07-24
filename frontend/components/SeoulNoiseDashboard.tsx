@@ -189,7 +189,7 @@ export default function SeoulNoiseDashboard({ onDistrictClick }: Props) {
           <Card>
             <CardContent className="p-4 text-center">
               <div className="text-sm text-gray-600 mb-2">업데이트 주기</div>
-              <div className="font-semibold text-gray-900">실시간 (60분 간격)</div>
+              <div className="font-semibold text-gray-900">매일 오전 9시 30분, 오후 3시 30분</div>
             </CardContent>
           </Card>
 
