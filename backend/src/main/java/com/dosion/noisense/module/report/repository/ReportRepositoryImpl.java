@@ -1,6 +1,5 @@
 package com.dosion.noisense.module.report.repository;
 
-import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -13,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.dosion.noisense.module.district.entity.QAdministrativeDistrict.administrativeDistrict;
 import static com.dosion.noisense.module.district.entity.QAutonomousDistrict.autonomousDistrict;
@@ -216,11 +214,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   }
 
   @Override
-  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<Region> regionList) {
-
-    List<String> regionAsString = regionList.stream()
-      .map(e -> e.getNameEn())
-      .collect(Collectors.toList());
+  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<String> regionList) {
 
     return jpaQueryFactory
       .select(Projections.constructor(AvgNoiseRegionDto.class,
@@ -246,7 +240,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       .where(
         sensorData.sensingTime.between(startDate, endDate),
         eqAuAdCode(autonomousDistrictCode, administrativeDistrictCode),
-        sensorData.region.stringValue().in(regionAsString)
+        sensorData.region.stringValue().lower().in(regionList)
       )
       .groupBy(
         autonomousDistrict.code,

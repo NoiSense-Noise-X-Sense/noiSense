@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Noise-Report-Controller", description = "소음 리포트")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/report")
+@RequestMapping("/api/report")
 public class ReportController {
 
   private final ReportService reportService;

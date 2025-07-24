@@ -2,16 +2,13 @@ package com.dosion.noisense.module.report.service;
 
 import com.dosion.noisense.module.district.repository.DistrictRepository;
 import com.dosion.noisense.module.report.repository.ReportRepository;
-import com.dosion.noisense.module.report.repository.ReportRepository_v2;
 import com.dosion.noisense.module.report.util.PerceivedNoiseCalculator;
-import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -61,7 +58,7 @@ public class ReportService {
 
     // 체감 소음
     //Double perceivedNoise = avgNoise;
-    String autonomousDistrictKor = "all".equals(autonomousDistrictCode) ? "all" : districtRepository.findNameKoByCode(autonomousDistrictCode);
+    String autonomousDistrictKor = "all".equals(autonomousDistrictCode) ? "all" : districtRepository.findAutonomousNameKoByCode(autonomousDistrictCode);
     // log.info("체감 소음에 보낼 행정구 : {}", autonomousDistrictKor);
     Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), autonomousDistrictKor, "all");
 
@@ -172,40 +169,6 @@ public class ReportService {
         avgNoiseByRegion.put(dto.getLegion(), dto.getAvgNoise());
       }
       result.add(new TrendPointChartDto(entry.getKey(), avgNoiseByRegion));
-    }
-
-    return result;
-  }
-
-
-  public List<MapDto> getMapData(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<String> regionList) {
-    log.info("getMapData");
-
-    // 지역을 Region Enum에 담기
-    List<Region> regionTypeList = new ArrayList<>();
-    for (String region : regionList) {
-      regionTypeList.add(Region.fromNameEn(region));
-    }
-    // log.info("regionTypeList : {}", regionTypeList);
-
-    List<MapDto> result = new ArrayList<>();
-
-    List<AvgNoiseRegionDto> avgNoiseRegionDtoList = reportRepository.findAverageNoiseByRegion(startDate, endDate, autonomousDistrictCode, administrativeDistrictCode, regionTypeList);
-    // log.info("avgNoiseRegionDtoList : {}", avgNoiseRegionDtoList);
-    for (AvgNoiseRegionDto dto : avgNoiseRegionDtoList) {
-      // log.info("dto : {}", dto);
-      // Double perceivedNoise = 0.0;
-      Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(dto.getAvgNoise(), startDate, endDate, dto.getAutonomousDistrictKor(), dto.getAdministrativeDistrictKor());
-      result.add(MapDto.builder()
-        .avgNoise(dto.getAvgNoise())
-        .perceivedNoise(perceivedNoise)
-        .autonomousDistrictCode(dto.getAutonomousDistrictCode())
-        .autonomousDistrictKor(dto.getAutonomousDistrictKor())
-        .autonomousDistrictEng(dto.getAutonomousDistrictEng())
-        .administrativeDistrictCode(dto.getAdministrativeDistrictCode())
-        .administrativeDistrictKor(dto.getAdministrativeDistrictKor())
-        .administrativeDistrictEng(dto.getAdministrativeDistrictEng())
-        .build());
     }
 
     return result;

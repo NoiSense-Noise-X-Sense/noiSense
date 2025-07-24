@@ -42,5 +42,5 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
   List<District> findAllAdministrativeDistricts();
 
   @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
-  String findNameKoByCode(@Param("code") String code);
+  String findAutonomousNameKoByCode(@Param("code") String code);
 }
