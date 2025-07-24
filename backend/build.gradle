@@ -45,7 +45,7 @@ clean.doLast {
 
 
 repositories {
-  mavenCentral()
+	mavenCentral()
   maven {
     url "https://repo.osgeo.org/repository/release/"
   }
@@ -110,6 +110,7 @@ dependencies {
 }
 
 
+
 tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'
 }
@@ -118,7 +119,7 @@ tasks.named('test') {
   useJUnitPlatform()
 }
 
-tasks.register("prepareKotlinBuildScriptModel") {}
+tasks.register("prepareKotlinBuildScriptModel"){}
 
 bootRun { // 개발 서버 실행 시 사용
   mainClass.set('com.dosion.noisense.BackendApplication')
