@@ -39,7 +39,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-validation'
   compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
-  
+
   developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
   runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -81,9 +81,10 @@ dependencies {
     exclude(group: "javax.media", module: "jai_core")
   }
   testImplementation 'org.locationtech.jts:jts-core:1.20.0' // Geometry 연산용
+
+  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
 
 
 tasks.withType(JavaCompile) {
