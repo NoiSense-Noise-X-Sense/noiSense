@@ -56,11 +56,17 @@ export default function MainChart({ hourlyData, dailyData }: MainChartProps) {
               {/* --- ✨✨✨ 여기가 두 번째 핵심 수정 부분입니다 ✨✨✨ --- */}
               {/* dataKey를 'xAxis'에서 실제 데이터 키인 'xaxis'(소문자)로 변경합니다. */}
               <XAxis dataKey="xaxis" tick={{ fontSize: 12 }} interval={activeTab === "hourly" ? "preserveEnd" : 0} />
-              <YAxis type="number" domain={['dataMin - 5', 'dataMax + 5']} tickCount={8} allowDecimals={false} tickFormatter={(value) => `${value.toFixed(1)} dB`} />
+              <YAxis
+                type="number"
+                domain={['dataMin - 5', 'dataMax + 5']}
+                tickCount={8}
+                allowDecimals={false}
+                label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }}
+              />
               <Tooltip
-                formatter={(value: number | null) => {
-                  if (value === null) return ["데이터 없음", "평균 소음"];
-                  return [`${value.toFixed(1)} dB`, "평균 소음"];
+                formatter={(value) => {
+                  if (typeof value !== "number") return ["데이터 없음", "평균 소음"];
+                  return [Math.round(value).toString(), "평균 소음"];
                 }}
                 labelFormatter={(label) => `${activeTab === "hourly" ? "시간" : "날짜"}: ${label}${activeTab === "hourly" ? ":00" : "일"}`}
               />

@@ -16,8 +16,20 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
 
   console.log("CombinedDailyChart data:", data);
 
-
   const hasData = data && data.length > 0;
+  // 지역명 리스트 추출 (xaxis 제외)
+  const regionList = hasData ? Object.keys(data[0]).filter(key => key !== "xaxis") : [];
+
+  // 요일 숫자를 한글 요일로 변환하는 매핑
+  const dayMap: { [key: string]: string } = {
+    "1": "월",
+    "2": "화",
+    "3": "수",
+    "4": "목",
+    "5": "금",
+    "6": "토",
+    "7": "일",
+  };
 
   return (
     <Card className="p-6">
@@ -28,16 +40,26 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="xaxis" tick={{ fontSize: 12 }} />
+              <XAxis
+                dataKey="xaxis"
+                tick={{ fontSize: 12 }}
+                tickFormatter={(value) => dayMap[value] || value}
+              />
               <YAxis label={{ value: "Average Noise Level (dB)", angle: -90, position: "insideLeft" }} tick={{ fontSize: 12 }} />
               <Tooltip formatter={(value: number) => [`${value.toFixed(1)} dB`, "평균 소음"]} />
               <Legend />
-              <Line type="monotone" dataKey="top1" stroke="#dc2626" strokeWidth={2} name="Top 1" connectNulls />
-              <Line type="monotone" dataKey="top2" stroke="#ea580c" strokeWidth={2} name="Top 2" connectNulls />
-              <Line type="monotone" dataKey="top3" stroke="#f59e0b" strokeWidth={2} name="Top 3" connectNulls />
-              <Line type="monotone" dataKey="bottom1" stroke="#16a34a" strokeWidth={2} strokeDasharray="5 5" name="Bottom 1" connectNulls />
-              <Line type="monotone" dataKey="bottom2" stroke="#0891b2" strokeWidth={2} strokeDasharray="5 5" name="Bottom 2" connectNulls />
-              <Line type="monotone" dataKey="bottom3" stroke="#7c3aed" strokeWidth={2} strokeDasharray="5 5" name="Bottom 3" connectNulls />
+              {/* 지역명별로 Line 생성 */}
+              {regionList.map((regionName, idx) => (
+                <Line
+                  key={regionName}
+                  type="monotone"
+                  dataKey={regionName}
+                  strokeWidth={2}
+                  connectNulls
+                  stroke={getColor(idx)}
+                  name={regionName}
+                />
+              ))}
             </LineChart>
           </ResponsiveContainer>
         ) : (
@@ -48,4 +70,14 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
       </div>
     </Card>
   )
+}
+
+// 색상 팔레트 함수 추가
+function getColor(index: number): string {
+  const colors = [
+    "#dc2626", "#ea580c", "#2563eb", "#f59e0b", "#16a34a",
+    "#0891b2", "#7c3aed", "#be185d", "#84cc16", "#d946ef",
+    "#14b8a6", "#facc15",
+  ];
+  return colors[index % colors.length];
 }

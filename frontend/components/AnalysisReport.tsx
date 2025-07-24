@@ -148,6 +148,12 @@ export default function AnalysisReport() {
                           ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
                           : {}
                       )
+                      // xaxis(시간)를 기준으로 정렬 (00~23)
+                      .sort((a, b) => {
+                        const numA = parseInt(a.xaxis, 10);
+                        const numB = parseInt(b.xaxis, 10);
+                        return numA - numB;
+                      })
                   }
                 />
                 <CombinedDailyChart
@@ -159,6 +165,7 @@ export default function AnalysisReport() {
                           : {}
                       )
                   }
+                />
               </>
             ) : (
               <div className="text-center py-20 text-gray-500">표시할 데이터가 없습니다.</div>

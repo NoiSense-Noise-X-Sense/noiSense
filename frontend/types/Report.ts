@@ -29,8 +29,8 @@ export interface DeviationDto {
 export interface TotalChartDto {
   overallHourAvgNoiseData: ChartDataPoint[];
   overallDayAvgNoiseData: ChartDataPoint[];
-  TrendPointHourAvgNoiseData: any[]; // 이 부분도 실제 구조에 맞는 타입으로 바꿔주면 좋습니다.
-  TrendPointDayOfWeekAvgNoiseData: any[]; // 이 부분도 실제 구조에 맞는 타입으로 바꿔주면 좋습니다.
+  trendPointHourAvgNoiseData: any[]; // 이 부분도 실제 구조에 맞는 타입으로 바꿔주면 좋습니다.
+  trendPointDayOfWeekAvgNoiseData: any[]; // 이 부분도 실제 구조에 맞는 타입으로 바꿔주면 좋습니다.
 }
 
 // 전체 리포트 데이터의 타입
