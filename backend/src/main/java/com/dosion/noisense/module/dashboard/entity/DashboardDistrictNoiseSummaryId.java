@@ -5,13 +5,13 @@ import java.util.Objects;
 
 public class DashboardDistrictNoiseSummaryId implements Serializable {
   private String batchId;
-  private String autonomousDistrict;
+  private String autonomousDistrictCode;
 
   public DashboardDistrictNoiseSummaryId() {}
 
   public DashboardDistrictNoiseSummaryId(String batchId, String autonomousDistrict) {
     this.batchId = batchId;
-    this.autonomousDistrict = autonomousDistrict;
+    this.autonomousDistrictCode = autonomousDistrict;
   }
 
   @Override
@@ -20,11 +20,11 @@ public class DashboardDistrictNoiseSummaryId implements Serializable {
     if (!(o instanceof DashboardDistrictNoiseSummaryId)) return false;
     DashboardDistrictNoiseSummaryId that = (DashboardDistrictNoiseSummaryId) o;
     return Objects.equals(batchId, that.batchId)
-      && Objects.equals(autonomousDistrict, that.autonomousDistrict);
+      && Objects.equals(autonomousDistrictCode, that.autonomousDistrictCode);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(batchId, autonomousDistrict);
+    return Objects.hash(batchId, autonomousDistrictCode);
   }
 }

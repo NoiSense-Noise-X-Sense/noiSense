@@ -23,14 +23,14 @@ public class DashboardDistrictNoiseZone implements Serializable {
   private String batchId;
 
   @Id
-  @Column(name = "autonomous_district", length = 50, nullable = false)
+  @Column(name = "autonomous_district_code", length = 10, nullable = false)
   @Comment("자치구명")
-  private String autonomousDistrict;
+  private String autonomousDistrictCode;
 
   @Id
-  @Column(name = "administrative_district", length = 50, nullable = false)
+  @Column(name = "administrative_district_code", length = 10, nullable = false)
   @Comment("행정동명")
-  private String administrativeDistrict;
+  private String administrativeDistrictCode;
 
   @Column(name = "start_date")
   @Comment("통계 시작일")

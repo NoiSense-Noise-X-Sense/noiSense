@@ -10,9 +10,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication(
   scanBasePackages = {
     "com.dosion.noisense.common",
-    "com.dosion.noisense.dashboard",
     "com.dosion.noisense.module",
-    "com.dosion.noisense.web"
+    "com.dosion.noisense.web",
+    "com.dosion.noisense.common.config"
   }
 )
 @Slf4j
@@ -27,5 +27,3 @@ public class BackendApplication {
 	}
 
 }
-
-

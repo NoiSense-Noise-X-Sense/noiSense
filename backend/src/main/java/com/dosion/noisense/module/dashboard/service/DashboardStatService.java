@@ -1,25 +1,30 @@
 package com.dosion.noisense.module.dashboard.service;
 
 import com.dosion.noisense.module.api.repository.SensorDataRepository;
+import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import com.dosion.noisense.module.dashboard.entity.*;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseYearlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseHourlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseSummaryRepository;
-import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseZoneRepository;
+import com.dosion.noisense.module.district.entity.AutonomousDistrict;
+import com.dosion.noisense.module.district.repository.DistrictRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,10 +34,14 @@ public class DashboardStatService {
   private final DashboardDistrictNoiseSummaryRepository dashboardDistrictNoiseSummaryRepository;
   private final DashboardDistrictNoiseHourlyRepository dashboardDistrictNoiseHourlyRepository;
   private final DashboardDistrictNoiseYearlyRepository dashboardDistrictNoiseYearlyRepository;
-  private final DashboardDistrictNoiseZoneRepository dashboardDistrictNoiseZoneRepository;
   private final ObjectMapper objectMapper;
 
+  private final BoardEsService boardEsService;
+
   // 여기에 통계별 Repository 주입
+
+  @Autowired
+  private DistrictRepository districtRepository;
 
   /**
    * 하루 1회 요약 통계(자치구별) 집계 및 저장
@@ -51,30 +60,23 @@ public class DashboardStatService {
     List<Object[]> results = sensorDataRepository.findDistrictPeakAndCalmHourWithAvg(startDate, endDate);
 
     // 3. 엔티티 리스트 조립
-
     List<DashboardDistrictNoiseSummary> summaries = new ArrayList<>();
     String batchId = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
 
-    // 테스트
-    List<KeywordCount> keywordList = List.of(
-      new KeywordCount("시끄러워", 30),
-      new KeywordCount("공사", 24),
-      new KeywordCount("층간소음", 20),
-      new KeywordCount("놀이터", 19),
-      new KeywordCount("왜", 18),
-      new KeywordCount("ㅋㅋ", 14),
-      new KeywordCount("ㅎㅎ", 13),
-      new KeywordCount("ㅜㅜ", 12),
-      new KeywordCount("아", 10)
-    );
-
     for (Object[] row : results) {
       String district = (String) row[0];
+      String districtCode = districtRepository.findByNameEnOrNameKo(district)
+        .map(AutonomousDistrict::getCode)
+        .orElse("none");
+
       Integer peakHour = row[1] != null ? ((Number) row[1]).intValue() : null;
       BigDecimal peakNoise = row[2] != null ? new BigDecimal(row[2].toString()) : null;
       Integer calmHour = row[3] != null ? ((Number) row[3]).intValue() : null;
       BigDecimal calmNoise = row[4] != null ? new BigDecimal(row[4].toString()) : null;
-      BigDecimal avgNoise = row[5] != null ? new BigDecimal(row[5].toString()) : null;  // <- 추가
+      BigDecimal avgNoise = row[5] != null ? new BigDecimal(row[5].toString()) : null;
+
+
+      List<KeywordCount> keywordList = fetchTopKeywords(districtCode, startDate, endDate, 5);
 
       JsonNode topKeywordsNode = objectMapper.valueToTree(keywordList);
 
@@ -82,7 +84,7 @@ public class DashboardStatService {
         .batchId(batchId)
         .startDate(startDate.toLocalDate())
         .endDate(endDate.toLocalDate())
-        .autonomousDistrict(district)
+        .autonomousDistrictCode(districtCode)
         .peakHour(peakHour)
         .peakNoise(peakNoise)
         .calmHour(calmHour)
@@ -92,11 +94,21 @@ public class DashboardStatService {
         .build();
 
       summaries.add(summary);
-      log.info("summary!! : " + summary);
     }
-
-    log.info("summary row: " + summaries.size());
     dashboardDistrictNoiseSummaryRepository.saveAll(summaries);
+  }
+
+
+  public List<KeywordCount> fetchTopKeywords(String districtCode, LocalDateTime start, LocalDateTime end, int size) {
+
+    Map<String, Long> wordMap = boardEsService.getFrequentWords(districtCode, start, end, size);
+
+    // KeywordCount로 변환
+    List<KeywordCount> result = wordMap.entrySet().stream()
+      .map(e -> new KeywordCount(e.getKey(), e.getValue().intValue()))
+      .collect(Collectors.toList());
+
+    return result;
   }
 
   /**
@@ -122,12 +134,17 @@ public class DashboardStatService {
     String batchId = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     List<DashboardDistrictNoiseHourly> entities = new ArrayList<>();
     for (Object[] row : rows) {
+      String district = (String) row[0];
+      String districtCode = districtRepository.findByNameEnOrNameKo(district)
+        .map(AutonomousDistrict::getCode)
+        .orElse("none");
+
       entities.add(
         DashboardDistrictNoiseHourly.builder()
           .batchId(batchId)
           .startDate(monthStart.toLocalDate())
           .endDate(batchEnd.toLocalDate())
-          .autonomousDistrict((String) row[0])
+          .autonomousDistrictCode(districtCode)
           .hour(row[1] == null ? null : ((Number) row[1]).intValue())
           .avgDay(row[2] == null ? null : new BigDecimal(row[2].toString()))
           .avgWeek(row[3] == null ? null : new BigDecimal(row[3].toString()))
@@ -137,7 +154,6 @@ public class DashboardStatService {
     }
 
     dashboardDistrictNoiseHourlyRepository.saveAll(entities);
-    log.info("Inserted hourly stats: {}", entities.size());
   }
 
 
@@ -154,7 +170,11 @@ public class DashboardStatService {
 
     for (Object[] row : rows) {
       String regionType = (String) row[0];
-      String regionName = (String) row[1];
+      String district = (String) row[1];
+      String districtCode = districtRepository.findByNameEnOrNameKo(district)
+        .map(AutonomousDistrict::getCode)
+        .orElse("seoul-si");
+
       Integer year = ((Number) row[2]).intValue();
       BigDecimal avgNoise = new BigDecimal(row[3].toString());
 
@@ -162,18 +182,18 @@ public class DashboardStatService {
         // 올해는 무조건 upsert(갱신/덮어쓰기)
         entities.add(DashboardDistrictNoiseYearly.builder()
           .regionType(regionType)
-          .regionName(regionName)
+          .autonomousDistrictCode(districtCode)
           .year(year)
           .avgNoise(avgNoise)
           .batchId(batchId)
           .build());
       } else {
         // 과거년은 이미 있으면 skip
-        boolean exists = dashboardDistrictNoiseYearlyRepository.existsByRegionTypeAndRegionNameAndYear(regionType, regionName, year);
+        boolean exists = dashboardDistrictNoiseYearlyRepository.existsByRegionTypeAndAutonomousDistrictCodeAndYear(regionType, districtCode, year);
         if (!exists) {
           entities.add(DashboardDistrictNoiseYearly.builder()
             .regionType(regionType)
-            .regionName(regionName)
+            .autonomousDistrictCode(districtCode)
             .year(year)
             .avgNoise(avgNoise)
             .batchId(batchId)
@@ -184,6 +204,7 @@ public class DashboardStatService {
     dashboardDistrictNoiseYearlyRepository.saveAll(entities);
   }
 
+  /* 동별 조회 (보류)
   @Transactional
   public void updateZoneNoise() {
     dashboardDistrictNoiseZoneRepository.deleteAllInBatch();
@@ -197,18 +218,31 @@ public class DashboardStatService {
 
     List<DashboardDistrictNoiseZone> entities = new ArrayList<>();
     for (Object[] row : rows) {
+      // 자치구
+      String autonomousDistrict =(String) row[3];
+      String autonomousDistrictCode = districtRepository.findByNameEnOrNameKo(autonomousDistrict)
+        .map(AutonomousDistrict::getCode)
+        .orElse(null);
+
+      // 동
+      String administrativeDistrict =(String) row[4];
+      String administrativeDistrictCode = districtRepository.findByNameEnOrNameKo(administrativeDistrict)
+        .map(AutonomousDistrict::getCode)
+        .orElse(null);
+
       entities.add(DashboardDistrictNoiseZone.builder()
         .batchId((String) row[0])
         .startDate(row[1] == null ? null : ((java.sql.Date) row[1]).toLocalDate())
         .endDate(row[2] == null ? null : ((java.sql.Date) row[2]).toLocalDate())
-        .autonomousDistrict((String) row[3])
-        .administrativeDistrict((String) row[4])
+        .autonomousDistrict(autonomousDistrictCode)
+        .administrativeDistrict(administrativeDistrictCode)
         .avgNoise(row[5] == null ? null : new BigDecimal(row[5].toString()))
         .build());
     }
 
     log.info("Inserted zone stats !!!: {}", entities);
     dashboardDistrictNoiseZoneRepository.saveAll(entities);
-  }
+  }*/
+
 
 }

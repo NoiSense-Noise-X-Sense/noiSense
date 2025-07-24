@@ -17,6 +17,13 @@ import FilterSidebar from "../components/FilterSidebar";
 import AnalysisReport from "../components/AnalysisReport";
 import { fetchWithAuth } from "@/lib/fetchWithAuth";
 
+interface User {
+  nickname: string;
+  id: string;
+  name: string;
+  email: string;
+}
+
 // 내부 상태로 화면 전환
 type PageType =
   | "main"
@@ -34,28 +41,41 @@ export default function NoiSenseDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
+  const [user, setUser] = useState<User | null>(null);
 
-  // 1) 새로고침/OAuth 콜백 등으로 진입 시 토큰 있으면 로그인 상태
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   useEffect(() => {
-    if (localStorage.getItem("accessToken")) {
-      setIsLoggedIn(true);
-      setCurrentPage("main");
-    }
+    const fetchUser = async () => {
+
+      try {
+       console.log("✅ API_URL:", process.env.NEXT_PUBLIC_API_URL);
+
+        const res = await fetch(`${API_URL}/api/user`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        if (!res.ok) {
+          console.log('인증 실패');
+          setIsLoggedIn(false);
+          return;
+        }
+        const data = await res.json();
+        setIsLoggedIn(true);
+        setUser(data);
+        //User.name=data.nickname;
+        console.log("nickname :", data.nickname);
+        // 여기서 상태로 유저 정보 저장하거나, 페이지 이동 등 처리 가능
+      } catch (err) {
+        setIsLoggedIn(false);
+        console.error('유저 정보 요청 실패:', err);
+      }
+    };
+
+    fetchUser();
   }, []);
 
-  // 2) OAuth 콜백 진입 감지 (예: /?accessToken=xxxxx 형태)
-  useEffect(() => {
-    // 쿼리스트링 파싱
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("accessToken");
-    if (token) {
-      localStorage.setItem("accessToken", token);
-      setIsLoggedIn(true);
-      setCurrentPage("main");
-      // URL에서 accessToken 파라미터 제거 (UX 개선)
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-  }, []);
+
 
   // --------- 이벤트 핸들러들 ---------
   const handleLogin = () => {
@@ -200,8 +220,9 @@ export default function NoiSenseDashboard() {
             </div>
             {/* Login/Logout Button */}
             {isLoggedIn ? (
+               
               <Button onClick={handleLogout} variant="outline" size="sm">
-                로그아웃
+                {user?.nickname || "게스트"}님 로그아웃
               </Button>
             ) : (
               <Button onClick={() => setCurrentPage("login")} variant="outline" size="sm">

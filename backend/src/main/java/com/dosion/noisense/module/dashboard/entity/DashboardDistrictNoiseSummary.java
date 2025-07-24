@@ -28,9 +28,9 @@ public class DashboardDistrictNoiseSummary implements Serializable {
   private String batchId;
 
   @Id
-  @Column(name = "autonomous_district", length = 50, nullable = false)
+  @Column(name = "autonomous_district_code", length = 10, nullable = false)
   @Comment("자치구명")
-  private String autonomousDistrict;
+  private String autonomousDistrictCode;
 
   @Column(name = "start_date")
   @Comment("통계 시작일")

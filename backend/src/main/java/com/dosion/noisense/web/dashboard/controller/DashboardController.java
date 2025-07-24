@@ -1,6 +1,8 @@
 package com.dosion.noisense.web.dashboard.controller;
 
+import com.dosion.noisense.module.api.repository.AutonomousDistrictRepository;
 import com.dosion.noisense.module.dashboard.service.DashboardService;
+import com.dosion.noisense.web.api.dto.AutonomousDistrictDto;
 import com.dosion.noisense.web.dashboard.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +25,8 @@ public class DashboardController {
 
   private final DashboardService dashboardService;
 
+  private final AutonomousDistrictRepository autonomousDistrictRepository;
+
   @Operation(
     summary = "지역별 소음 요약 통계 호출",
     description = "한달 평균 소음, 집중/안정 시간, 키워드 등 요약 데이터를 반환합니다."
@@ -34,7 +38,6 @@ public class DashboardController {
   )
   @GetMapping("/summary")
   public ResponseEntity<DistrictNoiseSummaryDto> getDistrictSummary(@RequestParam String district) {
-    log.info("요약 소음 통계 요청 - district: {}", district);
     return ResponseEntity.ok(dashboardService.getLatestSummary(district));
   }
 
@@ -50,7 +53,7 @@ public class DashboardController {
   )
   @GetMapping("/hourly")
   public ResponseEntity<List<DistrictNoiseHourlyDto>> getHourlyNoise(@RequestParam String district) {
-    log.info("시간대별 소음 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getHourlyNoise(district));
   }
 
@@ -63,10 +66,12 @@ public class DashboardController {
   )
   @GetMapping("/yearly")
   public ResponseEntity<List<DistrictNoiseYearlyDto>> getYearlyNoise(@RequestParam String district) {
-    log.info("연도별 소음 통계 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getYearlyNoise(district));
   }
 
+
+ /*
   @Operation(
     summary = "행정동별 평균 소음 조회",
     description = "자치구 내 행정동별 평균 소음 정보를 반환합니다."
@@ -78,9 +83,9 @@ public class DashboardController {
   )
   @GetMapping("/zone")
   public ResponseEntity<List<DistrictNoiseZoneDto>> getZoneNoise(@RequestParam String district) {
-    log.info("행정동별 소음 통계 요청 - district: {}", district);
+    
     return ResponseEntity.ok(dashboardService.getZoneNoise(district));
-  }
+  }*/
 
 
   @Operation(summary = "연도별 소음 민원 추이", description = "자치구 기준 최근 5년간 민원 건수를 반환합니다.")
@@ -91,8 +96,24 @@ public class DashboardController {
   )
   @GetMapping("/complaints")
   public ResponseEntity<List<DistrictNoiseComplaintsDto>> getComplaintsByDistrict(@RequestParam String district) {
-    log.info("소음 민원 추이 요청 - district: {}", district);
+
     return ResponseEntity.ok(dashboardService.getComplaintsByDistrict(district));
+  }
+
+  @Operation(
+    summary = "서울시 자치구 목록 조회",
+    description = "서울시 25개구(자치구) 코드와 이름 목록을 반환합니다."
+  )
+  @ApiResponse(
+    responseCode = "200",
+    description = "성공",
+    content = @Content(schema = @Schema(implementation = AutonomousDistrictDto.class))
+  )
+  @GetMapping("/districts")
+  public List<AutonomousDistrictDto> getDistricts() {
+    return autonomousDistrictRepository.findAllByOrderByNameKoAsc().stream()
+      .map(d -> new AutonomousDistrictDto(d.getCode(), d.getNameKo(), d.getNameEn()))
+      .toList();
   }
 
 

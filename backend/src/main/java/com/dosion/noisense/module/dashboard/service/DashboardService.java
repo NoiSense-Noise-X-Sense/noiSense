@@ -32,26 +32,25 @@ public class DashboardService {
 
   /**
    * 자치구별 최신 소음 요약 데이터를 반환한다.
+   *
    * @param district 자치구명 (예: 강남구)
    * @return DTO
    */
   public DistrictNoiseSummaryDto getLatestSummary(String district) {
     DashboardDistrictNoiseSummary entity = summaryRepository
-      .findTopByAutonomousDistrictOrderByEndDateDesc(district);
-
-    if (entity == null) {
-      throw new IllegalArgumentException("해당 자치구의 소음 데이터가 없습니다: " + district);
-    }
+      .findTopByAutonomousDistrictCodeOrderByEndDateDesc(district)
+      .orElseThrow(() -> new IllegalArgumentException("해당 자치구의 소음 데이터가 없습니다: " + district));
 
     JsonNode topKeywords = entity.getTopKeywords();
     List<KeywordCount> keywordList = Collections.emptyList();
     if (topKeywords != null && topKeywords.isArray()) {
       keywordList = objectMapper.convertValue(
-        topKeywords, new TypeReference<List<KeywordCount>>() {});
+        topKeywords, new TypeReference<List<KeywordCount>>() {
+        });
     }
 
     return DistrictNoiseSummaryDto.builder()
-      .autonomousDistrict(entity.getAutonomousDistrict())
+      .autonomousDistrict(entity.getAutonomousDistrictCode())
       .startDate(entity.getStartDate())
       .endDate(entity.getEndDate())
       .avgNoise(entity.getAvgNoise())
@@ -71,8 +70,8 @@ public class DashboardService {
   }
 
 
-  public List<DistrictNoiseHourlyDto> getHourlyNoise(String district) {
-    return hourlyRepository.findByAutonomousDistrictOrderByHourAsc(district).stream()
+  public List<DistrictNoiseHourlyDto> getHourlyNoise(String districtCode) {
+    return hourlyRepository.findByAutonomousDistrictCodeOrderByHourAsc(districtCode).stream()
       .map(e -> DistrictNoiseHourlyDto.builder()
         .hour(e.getHour())
         .avgDay(e.getAvgDay())
@@ -82,18 +81,17 @@ public class DashboardService {
       .toList();
   }
 
-  public List<DistrictNoiseYearlyDto> getYearlyNoise(String district) {
+
+  public List<DistrictNoiseYearlyDto> getYearlyNoise(String districtCode) {
     int thisYear = Year.now().getValue();
     int fromYear = thisYear - 4;
 
     String cityKey = "seoul-si";
-    String districtKey = district;
-    //String districtKey = convertToDbRegionName(district); // 예: "금천구" → "geumcheon-gu"
 
     List<DashboardDistrictNoiseYearly> list =
-      yearlyRepository.findByRegionTypeInAndRegionNameInAndYearBetweenOrderByYearAsc(
+      yearlyRepository.findByRegionTypeInAndAutonomousDistrictCodeInAndYearBetweenOrderByYearAsc(
         List.of("city", "district"),
-        List.of(cityKey, districtKey),
+        List.of(cityKey, districtCode),
         fromYear,
         thisYear
       );
@@ -120,21 +118,22 @@ public class DashboardService {
       .toList();
   }
 
+  /*
   public List<DistrictNoiseZoneDto> getZoneNoise(String district) {
-    return zoneRepository.findByAutonomousDistrictOrderByAvgNoiseDesc(district).stream()
+    return zoneRepository.findByAutonomousDistrictCodeOrderByAvgNoiseDesc(district).stream()
       .map(e -> DistrictNoiseZoneDto.builder()
         .administrativeDistrict(e.getAdministrativeDistrict())
         .avgNoise(e.getAvgNoise())
         .build())
       .toList();
-  }
+  }*/
 
-  public List<DistrictNoiseComplaintsDto> getComplaintsByDistrict(String district) {
+  public List<DistrictNoiseComplaintsDto> getComplaintsByDistrict(String districtCode) {
     int thisYear = Year.now().getValue();
-    int fromYear = thisYear - 4;
+    int fromYear = thisYear - 5;
 
     return noiseComplaintsRepository
-      .findByAutonomousDistrictAndYearBetweenOrderByYearAsc(district, fromYear, thisYear)
+      .findByAutonomousDistrictAndYearBetweenOrderByYearAsc(districtCode, fromYear, thisYear)
       .stream()
       .map(e -> DistrictNoiseComplaintsDto.builder()
         .year(e.getYear())

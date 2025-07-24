@@ -8,15 +8,38 @@ spring:
       enabled: false
 
   datasource:
-    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense
+    url: jdbc:postgresql://${SPRING_DATASOURCE_URL}:${SPRING_DATASOURCE_PORT}/noisense?currentSchema=noisense
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
+
+  # JPA
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: noisense
+        naming:
+          physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # jdbc batch size 설정
+        jdbc:
+          batch_size: 500
+    show_sql: true
+
   # batch
   batch:
+    jdbc:
+      initialize-schema: never
     job:
       enabled: false
+
+
 
 # 로깅
 logging:

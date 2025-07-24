@@ -1,23 +1,29 @@
 plugins {
   id 'com.github.node-gradle.node' version '7.0.2'
-	id 'java'
-	id 'org.springframework.boot' version '3.5.3'
-	id 'io.spring.dependency-management' version '1.1.7'
+  id 'java'
+  id 'org.springframework.boot' version '3.5.3'
+  id 'io.spring.dependency-management' version '1.1.7'
+  id 'application'
 }
 
 group = 'com.dosion.noisense'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
+}
+
+
+application { // 빌드 시점용 설정
+  mainClass = 'com.dosion.noisense.BackendApplication'
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
 }
 
 repositories {
@@ -29,17 +35,15 @@ repositories {
 
 dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	compileOnly 'org.projectlombok:lombok'
+  implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
-
-  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
-
-	developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
+  
+  developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+  runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+  annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+  annotationProcessor 'org.projectlombok:lombok'
 
   implementation 'org.postgresql:postgresql'
   implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0" //swagger
@@ -48,6 +52,9 @@ dependencies {
   runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
   runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
   implementation 'org.springframework.boot:spring-boot-starter-security'
+
+  implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
+  implementation 'co.elastic.clients:elasticsearch-java:8.12.0'
 
   // OAuth2
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
@@ -61,7 +68,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+  testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
   // 인증 우회 시 사용
   testImplementation 'org.springframework.security:spring-security-test'
@@ -84,5 +91,11 @@ tasks.withType(JavaCompile) {
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+  useJUnitPlatform()
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}
+
+bootRun { // 개발 서버 실행 시 사용
+  mainClass.set('com.dosion.noisense.BackendApplication')
 }

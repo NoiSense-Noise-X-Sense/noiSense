@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class DashboardDistrictNoiseHourlyId implements Serializable {
   private String batchId;
-  private String autonomousDistrict;
+  private String autonomousDistrictCode;
   private Integer hour;
 
   @Override
@@ -24,12 +24,12 @@ public class DashboardDistrictNoiseHourlyId implements Serializable {
     if (!(o instanceof DashboardDistrictNoiseHourlyId)) return false;
     DashboardDistrictNoiseHourlyId that = (DashboardDistrictNoiseHourlyId) o;
     return Objects.equals(batchId, that.batchId)
-      && Objects.equals(autonomousDistrict, that.autonomousDistrict)
+      && Objects.equals(autonomousDistrictCode, that.autonomousDistrictCode)
       && Objects.equals(hour, that.hour);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(batchId, autonomousDistrict, hour);
+    return Objects.hash(batchId, autonomousDistrictCode, hour);
   }
 }

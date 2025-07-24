@@ -21,9 +21,9 @@ public class DashboardDistrictNoiseYearly implements Serializable {
   private String regionType;
 
   @Id
-  @Column(name = "region_name", length = 50, nullable = false)
-  @Comment("지역명")
-  private String regionName;
+  @Column(name = "autonomous_district_code", length = 10, nullable = false)
+  @Comment("지역 코드")
+  private String autonomousDistrictCode;
 
   @Id
   @Column(name = "year", nullable = false)

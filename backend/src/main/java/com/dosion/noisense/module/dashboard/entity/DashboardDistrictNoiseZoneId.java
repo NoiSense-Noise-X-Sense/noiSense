@@ -13,6 +13,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class DashboardDistrictNoiseZoneId implements Serializable {
   private String batchId;
-  private String autonomousDistrict;
-  private String administrativeDistrict;
+  private String autonomousDistrictCode;
+  private String administrativeDistrictCode;
 }

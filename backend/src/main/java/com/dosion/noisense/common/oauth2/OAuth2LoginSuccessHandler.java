@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -19,6 +20,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
+
+  @Value("${aws.ec2ip.domain}")
+  private String awsEc2IP;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request,
@@ -43,7 +47,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     if (idObj != null) {
       id = Long.valueOf(idObj.toString());
     }
-
+    log.info("[OAuth2_LOG] id : {}" , id);
 
     Cookie accessTokenCookie = new Cookie("accessToken", accessToken);
     accessTokenCookie.setHttpOnly(true);
@@ -58,11 +62,9 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     response.addCookie(refreshTokenCookie);
 
 
-    // 로그인 성공시, 쿼리스트링에 토큰 추가
-    String redirectUrl = String.format(
-      "http://localhost:3000/?accessToken=%s&refreshToken=%s",
-      accessToken, refreshToken
-    );
+    // 로그인 성공
+    log.info("login redirect url : {}",  awsEc2IP + "/");
+    String redirectUrl = String.format(awsEc2IP + "/");
     response.sendRedirect(redirectUrl);
   }
 }

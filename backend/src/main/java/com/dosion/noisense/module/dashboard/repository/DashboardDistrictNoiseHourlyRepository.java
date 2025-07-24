@@ -10,5 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface DashboardDistrictNoiseHourlyRepository extends JpaRepository<DashboardDistrictNoiseHourly, DashboardDistrictNoiseHourlyId> {
-  List<DashboardDistrictNoiseHourly> findByAutonomousDistrictOrderByHourAsc(String autonomousDistrict);
+
+  List<DashboardDistrictNoiseHourly> findByAutonomousDistrictCodeOrderByHourAsc(String autonomousDistrictCode);
+
 }

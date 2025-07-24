@@ -1,0 +1,6 @@
+FROM docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+
+# nori와 hanhinsam 모두 설치
+RUN elasticsearch-plugin install analysis-nori
+COPY hanhinsam-0.1.zip /tmp/hanhinsam-0.1.zip
+RUN elasticsearch-plugin install file:///tmp/hanhinsam-0.1.zip

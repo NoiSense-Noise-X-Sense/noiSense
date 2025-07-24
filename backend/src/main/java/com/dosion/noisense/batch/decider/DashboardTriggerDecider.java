@@ -21,7 +21,7 @@ public class DashboardTriggerDecider implements JobExecutionDecider {
     // 오늘 날짜 기준, 이미 hourlyNoiseJob이 실행된 적 있는지 확인
     boolean isFirstToday = !checker.hasJobCompletedTodayBefore("hourlyNoiseJob", jobExecution.getId());
 
-    log.info("[FlowExecutionStatus] 오늘 첫 실행 확인 {}", isFirstToday);
+    log.info("[FlowExecutionStatus] Check if it's the first run today : {}", isFirstToday);
 
     if (isFirstToday) {
       return new FlowExecutionStatus("EXECUTE_DASHBOARD"); // 통계 Step 실행
