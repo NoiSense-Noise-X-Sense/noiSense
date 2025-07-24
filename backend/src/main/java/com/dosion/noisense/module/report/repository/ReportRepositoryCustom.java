@@ -2,7 +2,6 @@ package com.dosion.noisense.module.report.repository;
 
 import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
-import com.querydsl.core.Tuple;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,14 +15,14 @@ public interface ReportRepositoryCustom {
     해당 지역 평균 소음
      autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
-  Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict);
+  Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode);
 
 
   /*
     해당 지역의 최대 소음 지역
     autonomous : 강남구 강동구 등 행정구, 서울시 전국일 경우 all
    */
-  Tuple getMaxDataByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict);
+  MaxNoiseDto findLoudesDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict);
 
 
   /*
@@ -67,9 +66,9 @@ public interface ReportRepositoryCustom {
 
 
   /*
-    지도에서 평균소음과 지역 정보 데이터 조회
+    평균소음과 지역 정보 데이터 조회
     행정구, 행정동이 전체면 all
    */
-  List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng, List<Region> regionList);
+  List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<Region> regionList);
 
 }

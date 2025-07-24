@@ -14,4 +14,5 @@ public interface ReportRepository extends JpaRepository<SensorData, Long>, Repor
 
   @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
   String findAutonomousByCode(@Param("code") String code);
+
 }

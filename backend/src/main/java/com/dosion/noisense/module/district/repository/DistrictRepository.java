@@ -4,6 +4,7 @@ import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.entity.District;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -39,4 +40,7 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
           ON d.autonomous_district = a.code
         """, nativeQuery = true)
   List<District> findAllAdministrativeDistricts();
+
+  @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
+  String findNameKoByCode(@Param("code") String code);
 }

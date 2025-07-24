@@ -2,13 +2,9 @@ package com.dosion.noisense.module.report.repository;
 
 import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.report.dto.*;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.*;
-import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -31,127 +27,128 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   private final JPAQueryFactory jpaQueryFactory;
 
   @Override
-  public Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
+  public Double getAvgNoiseByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode) {
+
     return jpaQueryFactory
       .select(sensorData.avgNoise.avg())
       .from(sensorData)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
+      )
       .where(
         betweenDate(startDate, endDate),
-        eqAutonomous(autonomousDistrict)
+        likeAutonomousDistrictCode(autonomousDistrictCode)
       )
       .fetchOne();
   }
 
-
   @Override
-  public Tuple getMaxDataByAutonomousDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
+  public MaxNoiseDto findLoudesDistrict(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode) {
 
-    StringPath region;
-    BooleanBuilder builder = new BooleanBuilder(betweenDate(startDate, endDate));
-    if (autonomousDistrict.equals("all")) {
-      region = sensorData.autonomousDistrict;
-      builder.and(sensorData.autonomousDistrict.ne("Seoul_Grand_Park"));
-    } else {
-      region = sensorData.administrativeDistrict;
-      builder.and(sensorData.autonomousDistrict.eq(autonomousDistrict));
-    }
-
-    JPQLQuery<Double> subQuery = JPAExpressions
-      .select(sensorData.maxNoise.max())
-      .from(sensorData)
-      .where(builder);
+    RegionQueryParts queryParts = getRegionQueryParts(autonomousDistrictCode);
 
     return jpaQueryFactory
-      .select(
-        region,
+      .select(Projections.constructor(MaxNoiseDto.class,
+        queryParts.district,
         sensorData.sensingTime,
         sensorData.maxNoise
-      )
+      ))
       .from(sensorData)
-      .where(
-        builder,
-        sensorData.maxNoise.eq(subQuery)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
       )
-      .orderBy(sensorData.sensingTime.desc())
+      .join(administrativeDistrict).on(
+        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
+      )
+      .join(autonomousDistrict).on(
+        administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
+      )
+      .where(
+        betweenDate(startDate, endDate),
+        queryParts.whereCondition
+      )
+      .orderBy(sensorData.maxNoise.desc().nullsLast())
       .limit(1)
       .fetchOne();
   }
 
-
   @Override
-  public List<RankDto> getAvgNoiseRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit) {
+  public List<RankDto> getAvgNoiseRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode, String rankType, int limit) {
 
-    StringPath region;
-    BooleanExpression excludeParkCondition = null;
-    if (autonomousDistrict.equals("all")) {
-      region = sensorData.autonomousDistrict;
-      excludeParkCondition = sensorData.autonomousDistrict.ne("Seoul_Grand_Park");
-    } else {
-      region = sensorData.administrativeDistrict;
-    }
+    RegionQueryParts queryParts = getRegionQueryParts(autonomousDistrictCode);
 
     OrderSpecifier<?> order = "top".equals(rankType) ? sensorData.avgNoise.avg().desc() : sensorData.avgNoise.avg().asc();
 
     return jpaQueryFactory
       .select(Projections.constructor(
-          RankDto.class,
-          region,
-          sensorData.avgNoise.avg()
-        )
-      )
+        RankDto.class,
+        queryParts.district,
+        sensorData.avgNoise.avg()
+      ))
       .from(sensorData)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
+      )
+      .join(administrativeDistrict).on(
+        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
+      )
+      .join(autonomousDistrict).on(
+        administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
+      )
       .where(
         betweenDate(startDate, endDate),
-        eqAutonomous(autonomousDistrict),
-        excludeParkCondition
+        queryParts.whereCondition
       )
-      .groupBy(region)
+      .groupBy(queryParts.district)
       .orderBy(order.nullsLast())
       .limit(limit)
       .fetch();
   }
 
-
   @Override
-  public List<DeviationDto> getDeviationRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrict, String rankType, int limit) {
+  public List<DeviationDto> getDeviationRankByRegion(LocalDate startDate, LocalDate endDate, String autonomousDistrictCode, String rankType, int limit) {
 
-    StringPath region;
-    BooleanExpression excludeParkCondition = null;
-    if (autonomousDistrict.equals("all")) {
-      region = sensorData.autonomousDistrict;
-      excludeParkCondition = sensorData.autonomousDistrict.ne("Seoul_Grand_Park");
-    } else {
-      region = sensorData.administrativeDistrict;
-    }
+    RegionQueryParts queryParts = getRegionQueryParts(autonomousDistrictCode);
 
-    NumberExpression<Double> deviation = sensorData.maxNoise.max().subtract(sensorData.minNoise.min());
+    NumberExpression<Double> deviation = sensorData.maxNoise.avg().subtract(sensorData.minNoise.avg());
 
     OrderSpecifier<?> order = "top".equals(rankType) ? deviation.desc() : deviation.asc();
 
     return jpaQueryFactory
       .select(Projections.constructor(
-          DeviationDto.class,
-          region,
-          sensorData.avgNoise.avg(),
-          sensorData.maxNoise.max(),
-          sensorData.minNoise.min(),
-          deviation
-        )
-      )
+        DeviationDto.class,
+        queryParts.district,
+        sensorData.avgNoise.avg(),
+        sensorData.maxNoise.avg(),
+        sensorData.minNoise.avg(),
+        deviation
+      ))
       .from(sensorData)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
+      )
+      .join(administrativeDistrict).on(
+        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
+      )
+      .join(autonomousDistrict).on(
+        administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
+      )
       .where(
         betweenDate(startDate, endDate),
-        eqAutonomous(autonomousDistrict),
-        excludeParkCondition
+        queryParts.whereCondition
       )
-      .groupBy(region)
+      .groupBy(queryParts.district)
       .orderBy(order.nullsLast())
       .limit(limit)
       .fetch();
   }
 
   @Override
-  public List<OverallChartDto> getOverallAvgData(String type, LocalDate startDate, LocalDate endDate, String autonomousDistrict) {
+  public List<OverallChartDto> getOverallAvgData(String type, LocalDate startDate, LocalDate endDate, String autonomousDistrictCode) {
 
     StringExpression xAxisE = getXAxisExpression(type);
 
@@ -162,9 +159,13 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
         sensorData.avgNoise.avg()
       ))
       .from(sensorData)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
+      )
       .where(
         betweenDate(startDate, endDate),
-        eqAutonomous(autonomousDistrict)
+        likeAutonomousDistrictCode(autonomousDistrictCode)
       )
       .groupBy(xAxisE)
       .orderBy(xAxisE.asc())
@@ -173,34 +174,52 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 
   @Override
   public List<ComparisonChartDto> getTrendPointAvgData(
-    String type, LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrict) {
+    String type, LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrictCode) {
 
     StringExpression xAxisE = getXAxisExpression(type);
 
-    StringPath region = autonomousDistrict.equals("all") ? sensorData.autonomousDistrict : sensorData.administrativeDistrict;
+    StringPath regionPath = null;
+    BooleanExpression whereCondition = null;
+    if ("all".equalsIgnoreCase(autonomousDistrictCode)) {
+      regionPath = autonomousDistrict.nameKo;
+      whereCondition = autonomousDistrict.nameKo.in(trendPointRegionList);
+    } else {
+      regionPath = administrativeDistrict.nameKo;
+      whereCondition = autonomousDistrict.code.eq(autonomousDistrictCode).and(administrativeDistrict.nameKo.in(trendPointRegionList));
+    }
 
     return jpaQueryFactory
       .select(Projections.constructor(
         ComparisonChartDto.class,
         xAxisE,
         sensorData.avgNoise.avg(),
-        region
+        regionPath
       ))
       .from(sensorData)
+      .join(sensorDistrictMapping).on(
+        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
+          .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
+      )
+      .join(administrativeDistrict).on(
+        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
+      )
+      .join(autonomousDistrict).on(
+        administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
+      )
       .where(
         betweenDate(startDate, endDate),
-        eqTrendPointRegion(trendPointRegionList, autonomousDistrict)
+        whereCondition
       )
-      .groupBy(xAxisE, region)
-      .orderBy(xAxisE.asc(), region.asc())
+      .groupBy(xAxisE, regionPath)
+      .orderBy(xAxisE.asc(), regionPath.asc())
       .fetch();
   }
 
   @Override
-  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictEng, String administrativeDistrictEng, List<Region> regionList) {
+  public List<AvgNoiseRegionDto> findAverageNoiseByRegion(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<Region> regionList) {
 
     List<String> regionAsString = regionList.stream()
-      .map( e -> e.getNameEn())
+      .map(e -> e.getNameEn())
       .collect(Collectors.toList());
 
     return jpaQueryFactory
@@ -214,7 +233,6 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
         administrativeDistrict.nameKo
       ))
       .from(sensorData)
-      // 1. SensorData -> Mapping
       .join(sensorDistrictMapping).on(
         sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn)
           .and(sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn))
@@ -222,21 +240,12 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
       .join(administrativeDistrict).on(
         sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code)
       )
-      // 3. AdministrativeDistrict -> AutonomousDistrict (코드로 조인)
       .join(autonomousDistrict).on(
         administrativeDistrict.autonomousDistrict.code.eq(autonomousDistrict.code)
       )
       .where(
-        // --- JOIN 조건들을 WHERE 절로 이동 ---
-//        sensorData.autonomousDistrict.eq(sensorDistrictMapping.id.sensorAutoDistrictEn),
-//        sensorData.administrativeDistrict.eq(sensorDistrictMapping.id.sensorAdminDistrictEn),
-//        sensorDistrictMapping.adminDistrictCode.eq(administrativeDistrict.code),
-//        administrativeDistrict.autonomousDistrict.eq(autonomousDistrict),
-
         sensorData.sensingTime.between(startDate, endDate),
-//        eqAutonomousEng(autonomousDistrictEng),
-//        eqAdministrativeEng(administrativeDistrictEng),
-        eqAuAdEng(autonomousDistrictEng, administrativeDistrictEng),
+        eqAuAdCode(autonomousDistrictCode, administrativeDistrictCode),
         sensorData.region.stringValue().in(regionAsString)
       )
       .groupBy(
@@ -252,49 +261,37 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
   }
 
 
-  // 센서데이터 테이블 조건
-  // 두 날짜 사이 조건 쿼리
   private BooleanExpression betweenDate(LocalDate startDate, LocalDate endDate) {
     return sensorData.sensingTime.between(startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX));
   }
 
-  // autonomous 값이 all이면 null을 반환
-  private BooleanExpression eqAutonomous(String autonomous) {
-    return autonomous.equals("all") ? null : sensorData.autonomousDistrict.eq(autonomous);
-  }
-
-  // autonomous 값이 all 이면 trendPointRegionList는 행정구 조건 SQL쿼리
-  // all 이 아니면 trendPointRegionList는 행정동 조건 SQL쿼리
-  private BooleanExpression eqTrendPointRegion(List<String> trendPointRegionList, String autonomous) {
-
-    if (autonomous.equals("all")) {
-      return sensorData.autonomousDistrict.in(trendPointRegionList);
+  private RegionQueryParts getRegionQueryParts(String autonomousDistrictCode) {
+    StringPath regionPath = null;
+    BooleanExpression whereCondition = null;
+    if ("all".equalsIgnoreCase(autonomousDistrictCode)) {
+      regionPath = autonomousDistrict.nameKo;
+      whereCondition = sensorData.autonomousDistrict.ne("Seoul_Grand_Park");
     } else {
-      return sensorData.autonomousDistrict.eq(autonomous).and(sensorData.administrativeDistrict.in(trendPointRegionList));
+      regionPath = administrativeDistrict.nameKo;
+      whereCondition = autonomousDistrict.code.eq(autonomousDistrictCode);
     }
+    return new RegionQueryParts(regionPath, whereCondition);
   }
 
-  // 행정구테이블 조건
-  private BooleanExpression eqAutonomousEng(String nameEn) {
-    return (nameEn == null || "all".equalsIgnoreCase(nameEn))
-      ? null
-      : autonomousDistrict.nameEn.eq(nameEn);
-  }
-
-  // 행정동테이블 조건
-  private BooleanExpression eqAdministrativeEng(String nameEn) {
-    return (nameEn == null || "all".equalsIgnoreCase(nameEn))
-      ? null
-      : administrativeDistrict.nameEn.eq(nameEn);
-  }
-
-  private BooleanExpression eqAuAdEng(String autonomousEng, String administrativeEng) {
-    if(autonomousEng == null || "all".equalsIgnoreCase(autonomousEng)) {
+  private BooleanExpression likeAutonomousDistrictCode(String autonomousDistrictCode) {
+    if (autonomousDistrictCode == null || "all".equalsIgnoreCase(autonomousDistrictCode)) {
       return null;
-    }else if(administrativeEng == null || "all".equalsIgnoreCase(administrativeEng)) {
-      return autonomousDistrict.nameEn.eq(autonomousEng);
-    }else{
-      return autonomousDistrict.nameEn.eq(autonomousEng).and(administrativeDistrict.nameEn.eq(administrativeEng));
+    }
+    return sensorDistrictMapping.adminDistrictCode.like(autonomousDistrictCode + "%");
+  }
+
+  private BooleanExpression eqAuAdCode(String autonomousDistrictCode, String administrativeDistrictCode) {
+    if (autonomousDistrictCode == null || "all".equalsIgnoreCase(autonomousDistrictCode)) {
+      return null;
+    } else if (administrativeDistrictCode == null || "all".equalsIgnoreCase(administrativeDistrictCode)) {
+      return autonomousDistrict.code.eq(autonomousDistrictCode);
+    } else {
+      return autonomousDistrict.code.eq(autonomousDistrictCode).and(administrativeDistrict.code.eq(administrativeDistrictCode));
     }
   }
 
@@ -317,5 +314,23 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
     }
   }
 
+  private record RegionQueryParts(StringPath district, BooleanExpression whereCondition) {
+  }
+
+/*
+  // 행정구테이블 조건
+  private BooleanExpression eqAutonomousEng(String nameEn) {
+    return (nameEn == null || "all".equalsIgnoreCase(nameEn))
+      ? null
+      : autonomousDistrict.nameEn.eq(nameEn);
+  }
+
+  // 행정동테이블 조건
+  private BooleanExpression eqAdministrativeEng(String nameEn) {
+    return (nameEn == null || "all".equalsIgnoreCase(nameEn))
+      ? null
+      : administrativeDistrict.nameEn.eq(nameEn);
+  }
+*/
 
 }
