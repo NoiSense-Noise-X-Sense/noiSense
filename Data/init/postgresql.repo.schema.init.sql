@@ -357,3 +357,22 @@ CREATE TABLE dashboard_district_noise_zone (
 );
 
 -- 지역 대시보드 테이블 End
+
+
+-- sensor_distrtict_mapping
+CREATE TABLE sensor_district_mapping (
+                                       sensor_auto_district_en  VARCHAR(50) NOT NULL,
+                                       sensor_admin_district_en VARCHAR(50) NOT NULL,
+                                       admin_district_code      VARCHAR(10)  NOT NULL
+);
+
+COMMENT ON TABLE sensor_district_mapping IS '센서 데이터 테이블과 행정동 코드 매핑';
+
+ALTER TABLE sensor_district_mapping
+  ADD CONSTRAINT pk_sensor_district_mapping
+    PRIMARY KEY (sensor_auto_district_en, sensor_admin_district_en);
+
+ALTER TABLE sensor_district_mapping
+  ADD CONSTRAINT fk_mapping_to_admin_district
+    FOREIGN KEY (admin_district_code)
+      REFERENCES administrative_district (code);

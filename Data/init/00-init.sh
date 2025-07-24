@@ -48,4 +48,11 @@ SET search_path TO noisense;
 \i /tmp/boundary_polygon.sql
 EOSQL
 
+echo "📌 Step 6: Insert data (sensor_district_mapping.sql)"
+#psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname=noisense -f /docker-entrypoint-initdb.d/administrative_district.sql
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname=noisense <<EOSQL
+SET search_path TO noisense;
+\i /tmp/sensor_district_mapping.sql
+EOSQL
+
 echo "✅ All initialization complete!"
