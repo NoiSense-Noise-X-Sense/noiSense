@@ -71,7 +71,7 @@ public class SensorDataApiEntity {
   private LocalDateTime batchTime;
 
   @Builder
-  public SensorDataApiEntity(LocalDateTime sensingTime, String region , String autonomousDistrict, String administrativeDistrict,
+  public SensorDataApiEntity(LocalDateTime sensingTime, Region region , String autonomousDistrict, String administrativeDistrict,
                              Double maxNoise, Double avgNoise, Double minNoise, Double maxTemp, Double avgTemp,
                              Double minTemp, Double maxHumi, Double avgHumi, Double minHumi) {
     this.sensingTime = sensingTime;
