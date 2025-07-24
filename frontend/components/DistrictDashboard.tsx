@@ -37,7 +37,11 @@ type District = {
   nameEn: string;
 };
 
-export default function DistrictDashboard({ selectedDistrict: initialDistrict }: { selectedDistrict: string }) {
+export default function DistrictDashboard({
+  selectedDistrict: initialDistrict,
+}: {
+  selectedDistrict: string;
+}) {
   // DB에서 받아온 자치구 목록
   const [districts, setDistricts] = useState<District[]>([]);
   // 현재 선택된 자치구(이름, nameKo)
@@ -54,7 +58,6 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
       setDistricts(list);
     });
   }, []);
-
 
   // allDistricts 동적 생성 (항상 최신 구 이름 목록)
   const allDistricts = useMemo(() => districts.map(d => d.nameKo), [districts]);
@@ -282,37 +285,49 @@ export default function DistrictDashboard({ selectedDistrict: initialDistrict }:
             <CardTitle className="text-sm font-semibold mb-1 text-left">
               {selectedDistrict}의 TOP 키워드
             </CardTitle>
-            <div className="flex-1 flex flex-wrap gap-2 justify-center items-center">
+            <div className="flex-1 flex flex-wrap gap-2 justify-center items-center overflow-hidden min-w-0">
               {(() => {
                 if (!districtData.keywords || districtData.keywords.length === 0)
                   return <span>데이터 없음</span>;
 
-                const max = Math.max(...districtData.keywords.map((k: KeywordCount) => k.count));
-                const min = Math.min(...districtData.keywords.map((k: KeywordCount) => k.count));
+                // count 기준 내림차순 정렬
+                const sortedKeywords = [...districtData.keywords].sort(
+                  (a: KeywordCount, b: KeywordCount) => b.count - a.count
+                );
 
+                // 순위별 색상 지정
+                const colorByRank = [
+                  'text-red-600', // 1등
+                  'text-orange-500', // 2등
+                  'text-yellow-500', // 3등
+                  'text-green-500', // 4등
+                ];
+
+                // count 기준 글자 크기 동적 결정
+                const max = Math.max(...sortedKeywords.map((k: KeywordCount) => k.count));
+                const min = Math.min(...sortedKeywords.map((k: KeywordCount) => k.count));
                 const range = max - min || 1;
 
-                return districtData.keywords.map((kw: any, idx: number) => {
+                return sortedKeywords.map((kw: any, idx: number) => {
+                  const color = colorByRank[idx] || 'text-gray-500';
+                  // count 비율에 따라 크기 조정
                   const norm = (kw.count - min) / range;
                   let textSize = 'text-base';
-                  let color = 'text-gray-500';
-
                   if (norm >= 0.8) {
                     textSize = 'text-3xl';
-                    color = 'text-red-600';
                   } else if (norm >= 0.6) {
                     textSize = 'text-2xl';
-                    color = 'text-orange-500';
                   } else if (norm >= 0.4) {
                     textSize = 'text-xl';
-                    color = 'text-yellow-500';
                   } else if (norm >= 0.2) {
                     textSize = 'text-lg';
-                    color = 'text-green-500';
                   }
-
                   return (
-                    <span key={idx} className={`${textSize} ${color} font-semibold`}>
+                    <span
+                      key={idx}
+                      className={`${textSize} ${color} font-semibold break-words max-w-full text-center overflow-hidden text-ellipsis whitespace-pre-line`}
+                      style={{ wordBreak: 'break-all', minWidth: 0, maxWidth: '100%' }}
+                    >
                       {kw.keyword}
                     </span>
                   );
