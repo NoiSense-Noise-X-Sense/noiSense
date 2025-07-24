@@ -50,6 +50,7 @@ export default function DistrictDashboard({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const [districtData, setDistrictData] = useState<any>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // 자치구 목록 fetch (최초 1회)
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function DistrictDashboard({
     if (districts.length === 0) return;
     const fetchData = async () => {
       try {
+        setFetchError(null); // 에러 초기화
         const code = getDistrictCode(selectedDistrict);
         if (!code) return;
         const [summary, hourly, yearly, complaints] = await Promise.all([
@@ -113,7 +115,8 @@ export default function DistrictDashboard({
           }, {}),
         });
       } catch (err) {
-        console.error('데이터 로딩 실패:', err);
+        setDistrictData(null);
+        setFetchError('해당 구역의 소음 데이터가 존재하지 않습니다.');
       }
     };
     fetchData();
@@ -141,6 +144,50 @@ export default function DistrictDashboard({
     setAutoScroll(false);
     setSelectedDistrict(district);
   };
+
+  if (fetchError) {
+    return (
+      <div className="flex h-[calc(100vh-64px)] bg-gray-50">
+        {/* Left Sidebar: 구 선택 */}
+        <div className="w-64 bg-white border-r border-gray-200 p-4 flex flex-col">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-800">서울시 25개구</h2>
+            <div className="flex items-center space-x-2">
+              <UILabel htmlFor="auto-scroll" className="text-sm text-gray-600">
+                자동 순환
+              </UILabel>
+              <Switch id="auto-scroll" checked={autoScroll} onCheckedChange={setAutoScroll} />
+            </div>
+          </div>
+          <div ref={scrollContainerRef} className="flex-1 overflow-y-auto space-y-1">
+            {allDistricts.map(district => (
+              <Button
+                key={district}
+                variant="ghost"
+                className={`w-full justify-start text-left px-3 py-2 rounded-lg ${
+                  selectedDistrict === district
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+                onClick={() => handleDistrictClick(district)}
+              >
+                <Volume2 className="h-4 w-4 mr-2" />
+                {district}
+              </Button>
+            ))}
+          </div>
+        </div>
+        {/* Right Main: 에러 메시지 */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center min-h-[300px] w-full">
+            <span className="text-5xl mb-3">📭</span>
+            <div className="text-gray-400 mt-2 text-base font-medium">{fetchError}</div>
+            <div className="text-xs text-gray-300 mt-1">다른 구를 선택해 주세요</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!districtData)
     return (
