@@ -1,8 +1,8 @@
 package com.dosion.noisense.module.report.service;
 
+import com.dosion.noisense.common.util.PerceivedNoiseCalculator;
+import com.dosion.noisense.module.api.repository.SensorDataRepository;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
-import com.dosion.noisense.module.report.repository.ReportRepository;
-import com.dosion.noisense.module.report.util.PerceivedNoiseCalculator;
 import com.dosion.noisense.web.report.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ReportService {
 
-  private final ReportRepository reportRepository;
+  private final SensorDataRepository sensorDataRepository;
 
   private final DistrictRepository districtRepository;
 
@@ -51,10 +51,10 @@ public class ReportService {
     }
 
     // 지역 평균 소음
-    Double avgNoise = reportRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, autonomousDistrictCode);
+    Double avgNoise = sensorDataRepository.getAvgNoiseByAutonomousDistrict(startDate, endDate, autonomousDistrictCode);
 
     // 최다 소음 정보(지역과 시간)
-    MaxNoiseDto maxNoiseDto = reportRepository.findLoudesDistrict(startDate, endDate, autonomousDistrictCode);
+    MaxNoiseDto maxNoiseDto = sensorDataRepository.findLoudesDistrict(startDate, endDate, autonomousDistrictCode);
 
     // 체감 소음
     //Double perceivedNoise = avgNoise;
@@ -67,9 +67,9 @@ public class ReportService {
     조용한 지역(Top3) -> String, Double
     소음 편차가 큰 지역(Top3) -> String, Double
     */
-    List<RankDto> topRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictCode, "top", 3);
-    List<RankDto> bottomRankDtoList = reportRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictCode, "bottom", 3);
-    List<DeviationDto> deviationRankDtoList = reportRepository.getDeviationRankByRegion(startDate, endDate, autonomousDistrictCode, "top", 3);
+    List<RankDto> topRankDtoList = sensorDataRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictCode, "top", 3);
+    List<RankDto> bottomRankDtoList = sensorDataRepository.getAvgNoiseRankByRegion(startDate, endDate, autonomousDistrictCode, "bottom", 3);
+    List<DeviationDto> deviationRankDtoList = sensorDataRepository.getDeviationRankByRegion(startDate, endDate, autonomousDistrictCode, "top", 3);
 
     /*
     log.info("avgNoise : {}", avgNoise);
@@ -132,13 +132,13 @@ public class ReportService {
   private TotalChartDto getChartData(LocalDate startDate, LocalDate endDate, List<String> trendPointRegionList, String autonomousDistrictCode) {
     log.info("getChartData");
     // 1. 시간대 별 평균 소음
-    List<OverallChartDto> overallHourAvgNoiseData = reportRepository.getOverallAvgData("hour", startDate, endDate, autonomousDistrictCode);
+    List<OverallChartDto> overallHourAvgNoiseData = sensorDataRepository.getOverallAvgData("hour", startDate, endDate, autonomousDistrictCode);
     // 2. 일 별 평균 소음
-    List<OverallChartDto> overallDayAvgNoiseData = reportRepository.getOverallAvgData("dayOfMonth", startDate, endDate, autonomousDistrictCode);
+    List<OverallChartDto> overallDayAvgNoiseData = sensorDataRepository.getOverallAvgData("dayOfMonth", startDate, endDate, autonomousDistrictCode);
     // 3. 시간대별 지역 비교
-    List<ComparisonChartDto> trendPointHourAvgNoiseData = reportRepository.getTrendPointAvgData("hour", startDate, endDate, trendPointRegionList, autonomousDistrictCode);
+    List<ComparisonChartDto> trendPointHourAvgNoiseData = sensorDataRepository.getTrendPointAvgData("hour", startDate, endDate, trendPointRegionList, autonomousDistrictCode);
     // 4. 요일별 지역 비교
-    List<ComparisonChartDto> trendPointDayOfWeekAvgNoiseData = reportRepository.getTrendPointAvgData("dayOfWeek", startDate, endDate, trendPointRegionList, autonomousDistrictCode);
+    List<ComparisonChartDto> trendPointDayOfWeekAvgNoiseData = sensorDataRepository.getTrendPointAvgData("dayOfWeek", startDate, endDate, trendPointRegionList, autonomousDistrictCode);
 
     return TotalChartDto.builder()
       .overallHourAvgNoiseData(overallHourAvgNoiseData)

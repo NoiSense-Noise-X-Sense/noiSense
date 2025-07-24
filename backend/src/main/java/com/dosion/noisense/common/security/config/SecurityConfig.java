@@ -58,7 +58,8 @@ public class SecurityConfig {
           "/swagger-ui/**",
           "/swagger-ui.html"
           ,"/api/batch/run-initial-load"
-          ,"/api/report/*").permitAll()
+          ,"/api/report/getReport"
+        , "/api/map/getMap").permitAll()
 
         .requestMatchers(
           "/api/auth/sign-up",

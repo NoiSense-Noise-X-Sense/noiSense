@@ -1,9 +1,7 @@
 package com.dosion.noisense.web.report.controller;
 
 
-import com.dosion.noisense.module.report.service.MapService;
 import com.dosion.noisense.module.report.service.ReportService;
-import com.dosion.noisense.web.report.dto.MapDto;
 import com.dosion.noisense.web.report.dto.ReportDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Tag(name = "Noise-Report-Controller", description = "소음 리포트")
 @RestController
@@ -30,7 +26,6 @@ import java.util.List;
 public class ReportController {
 
   private final ReportService reportService;
-  private final MapService mapService;
 
   @Operation(summary = "리포트 호출", description = "기간별, 지역별")
   @ApiResponse(
@@ -45,23 +40,5 @@ public class ReportController {
     , @RequestParam @Parameter(example = "11020") String autonomousDistrictCode) {
     return ResponseEntity.ok(reportService.getReport(startDate, endDate, autonomousDistrictCode));
   }
-
-
-  @Operation(summary = "지도 호출", description = "기간별, 지역별")
-  @ApiResponse(
-    responseCode = "200",
-    description = "성공",
-    content = @Content(schema = @Schema(implementation = MapDto.class))
-  )
-  @GetMapping("/getMap")
-  public ResponseEntity<List<MapDto>> getMap(
-    @RequestParam @Parameter(example = "2024-06-01 00:00") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime startDate,
-    @RequestParam @Parameter(example = "2025-07-30 23:59") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm") LocalDateTime endDate,
-    @RequestParam @Parameter(example = "11020") String autonomousDistrictKor,
-    @RequestParam @Parameter(example = "all") String administrativeDistrictKor,
-    @RequestParam @Parameter(example = "") List<String> regionList) {
-    return ResponseEntity.ok(mapService.getMapData(startDate, endDate, autonomousDistrictKor, administrativeDistrictKor, regionList));
-  }
-
 
 }

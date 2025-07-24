@@ -1,4 +1,4 @@
-package com.dosion.noisense.module.report.util;
+package com.dosion.noisense.common.util;
 
 import com.dosion.noisense.module.board.repository.BoardRepository;
 import com.dosion.noisense.web.report.dto.EmotionBoardDto;
