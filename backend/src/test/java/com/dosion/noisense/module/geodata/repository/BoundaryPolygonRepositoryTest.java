@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
+import static com.dosion.noisense.common.util.JsonUtilTest.toJsonNode;
 import static com.dosion.noisense.module.geodata.enums.GeometryFormat.GeoJSON;
 import static com.dosion.noisense.module.geodata.enums.GeometryType.MultiPolygon;
 import static com.dosion.noisense.module.geodata.fixture.GeodataFixture.getBoundaryPolygons;
@@ -48,8 +49,8 @@ class BoundaryPolygonRepositoryTest {
           , BoundaryPolygon::getBoundaryType
           , BoundaryPolygon::getGeometryType
           , BoundaryPolygon::getGeometryFormat
-          , BoundaryPolygon::getCoordinate)
-        .contains(1L, "11060", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, "[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]"),
+          , BoundaryPolygon::getGeometryCoordinate)
+        .contains(1L, "11060", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, toJsonNode("[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]")),
       () -> assertThat(result.get(1)).extracting(
         BoundaryPolygon::getBoundaryPolygonId
         , BoundaryPolygon::getAutonomousDistrict
@@ -57,8 +58,8 @@ class BoundaryPolygonRepositoryTest {
         , BoundaryPolygon::getBoundaryType
         , BoundaryPolygon::getGeometryType
         , BoundaryPolygon::getGeometryFormat
-        , BoundaryPolygon::getCoordinate)
-        .contains(2L, "11070", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, "[[[[209826.33645053432,557905.3167482152],[209881.5303268841,557873.5327106739],[209900.3525923023,557862.6933919518]]]]"),
+        , BoundaryPolygon::getGeometryCoordinate)
+        .contains(2L, "11070", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, toJsonNode("[[[[209826.33645053432,557905.3167482152],[209881.5303268841,557873.5327106739],[209900.3525923023,557862.6933919518]]]]")),
     () -> assertThat(result.get(2)).extracting(
       BoundaryPolygon::getBoundaryPolygonId
       , BoundaryPolygon::getAutonomousDistrict
@@ -66,8 +67,8 @@ class BoundaryPolygonRepositoryTest {
       , BoundaryPolygon::getBoundaryType
       , BoundaryPolygon::getGeometryType
       , BoundaryPolygon::getGeometryFormat
-      , BoundaryPolygon::getCoordinate)
-      .contains(3L, "11080", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, "[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]")
+      , BoundaryPolygon::getGeometryCoordinate)
+      .contains(3L, "11080", null, AUTONOMOUS_DISTRICT, MultiPolygon, GeoJSON, toJsonNode("[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]"))
     );
   }
 

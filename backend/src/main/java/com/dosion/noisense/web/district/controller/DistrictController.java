@@ -28,4 +28,26 @@ public class DistrictController {
       return ResponseEntity.ok(ResponseDto.fail(e.getMessage(), e.getCause().getMessage()));
     }
   }
+
+  @GetMapping("/autonomousDistrict")
+  public ResponseEntity<?> getAutonomousDistricts() {
+
+    try {
+      List<DistrictDto> districtDtos = districtService.getAllAutonomousDistricts();
+      return ResponseEntity.ok(ResponseDto.success(districtDtos));
+    } catch(Exception e) {
+      return ResponseEntity.ok(ResponseDto.fail(e.getMessage(), e.getCause().getMessage()));
+    }
+  }
+
+  @GetMapping("/administrativeDistrict")
+  public ResponseEntity<?> getAdministrativeDistricts() {
+
+    try {
+      List<DistrictDto> districtDtos = districtService.getAllAdministrativeDistricts();
+      return ResponseEntity.ok(ResponseDto.success(districtDtos));
+    } catch(Exception e) {
+      return ResponseEntity.ok(ResponseDto.fail(e.getMessage(), e.getCause().getMessage()));
+    }
+  }
 }

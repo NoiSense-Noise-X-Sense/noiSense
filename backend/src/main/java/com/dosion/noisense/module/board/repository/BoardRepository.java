@@ -1,17 +1,28 @@
 package com.dosion.noisense.module.board.repository;
 
+import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.module.board.entity.Board;
-import com.dosion.noisense.web.report.dto.EmotionBoardDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
+
+  /** 특정 User의 게시글만 조회 **/
+  List<Board> findByUserId(Long userId);
+
+  /** 전체 게시글 페이징 조회 **/
+  @Query("SELECT new com.dosion.noisense.web.board.dto.BoardDto(" +
+    "b.id, b.userId, b.nickname, b.title, b.content, " +
+    "b.emotionalScore, b.empathyCount, b.viewCount, " +
+    "b.autonomousDistrict, b.administrativeDistrict, " +
+    "b.createdDate, b.modifiedDate) " +
+    "FROM Board b " +
+    "ORDER BY b.createdDate DESC")
+  Page<BoardDto> findAllPaging(Pageable pageable);
 
     @Query("SELECT new com.dosion.noisense.web.report.dto.EmotionBoardDto(b.emotionalScore, b.createdDate) " +
             "FROM Board b " +

@@ -18,6 +18,8 @@ services:
       - ./init/autonomous_district.sql:/tmp/autonomous_district.sql:ro
       - ./init/administrative_district.sql:/tmp/administrative_district.sql:ro
       - ./init/boundary_polygon.sql:/tmp/boundary_polygon.sql:ro
+      - ./init/noise_complaints.sql:/tmp/noise_complaints.sql:ro # 년도별 민원건수 실제 데이터 insert (1년에 1회 갱신)
+      - ./init/sensor_district_mapping.sql:/tmp/sensor_district_mapping.sql:ro
     #    healthcheck:
 #      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
 #      interval: 10s

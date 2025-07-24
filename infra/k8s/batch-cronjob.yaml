@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: noisense-batch-job
 spec:
-  schedule: "*/3 * * * *"       # 3분마다 실행 (테스트)
+  schedule: "0 * * * *"      # 매 시간 정각(0분)에 1회 실행
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:

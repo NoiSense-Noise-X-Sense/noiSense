@@ -2,12 +2,14 @@ package com.dosion.noisense.module.district.repository;
 
 import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.entity.District;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.nio.channels.FileChannel;
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -40,6 +42,14 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
           ON d.autonomous_district = a.code
         """, nativeQuery = true)
   List<District> findAllAdministrativeDistricts();
+
+  Optional<AutonomousDistrict> findByNameKo(String nameKo);
+
+  Optional<AutonomousDistrict> findByNameEn(String nameEn);
+
+  // 영문 또는 한글명으로 찾기 (엔티티명에 맞게 JPQL로 수정)
+  @Query("SELECT d FROM AutonomousDistrict d WHERE d.nameEn = :name OR d.nameKo = :name")
+  Optional<AutonomousDistrict> findByNameEnOrNameKo(@Param("name") String name);
 
   @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
   String findAutonomousNameKoByCode(@Param("code") String code);

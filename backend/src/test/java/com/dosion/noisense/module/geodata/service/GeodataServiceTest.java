@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.geodata.service;
 
+import com.dosion.noisense.common.util.JsonUtilTest;
 import com.dosion.noisense.module.geodata.entity.BoundaryPolygon;
 import com.dosion.noisense.module.geodata.enums.GeometryType;
 import com.dosion.noisense.module.geodata.repository.BoundaryPolygonRepository;
@@ -53,16 +54,16 @@ class GeodataServiceTest {
 
     when(polygonDto.getGeometry()).thenReturn(mock(BoundaryPolygonDto.Geometry.class));
     when(polygonDto.getGeometry().getGeometryType()).thenReturn(GeometryType.valueOf(GeometryType.MultiPolygon.toString()));
-    when(polygonDto.getGeometry().getCoordinates()).thenReturn(StringUtils.collectionToCommaDelimitedString(List.of("100,100", "200,200")));
+    when(polygonDto.getGeometry().getCoordinates()).thenReturn(JsonUtilTest.toJsonNode(StringUtils.collectionToCommaDelimitedString(List.of("100,100", "200,200"))));
 //    when(BoundaryPolygon.toGeometryDto(polygon)).thenReturn(mock(BoundaryPolygonDto.Geometry.class));
 //    when(GeometryType.from("MultiPolygon")).thenReturn(GeometryType.MultiPolygon);
 //    when(polygon.getGeometryType()).thenReturn(String.valueOf(GeometryType.MultiPolygon));
-    when(polygon.getCoordinate()).thenReturn(StringUtils.collectionToCommaDelimitedString(List.of("100,100", "200,200")));
+    when(polygon.getGeometryCoordinate()).thenReturn(JsonUtilTest.toJsonNode(StringUtils.collectionToCommaDelimitedString(List.of("100,100", "200,200"))));
 
 
 //    when(polygon.()).thenReturn(Geo);
 
-    given(geodataService.getAllPolygons()).willReturn(List.of(BoundaryPolygonDto.builder().boundaryPolygonId(1L).build()));
+    given(geodataService.getAutonomousPolygons()).willReturn(List.of(BoundaryPolygonDto.builder().boundaryPolygonId(1L).build()));
 
     // when
 //    assertThat(geodataService.getAllPolygons()).hasSize(1);

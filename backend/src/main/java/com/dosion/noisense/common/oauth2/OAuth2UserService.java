@@ -48,10 +48,12 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     String userNm, nickname, email;
 
     if ("google".equals(provider)) {
+      // google - email, name
       email = (String) attributes.get("email");
       userNm = email;
       nickname = (String) attributes.get("name");
     } else if ("kakao".equals(provider)) {
+      // kakao -
       userNm = attributes.get("id").toString() + "@kakao";
       Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
       email = (String) kakaoAccount.get("email");
@@ -67,7 +69,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
     log.info(provider + " 로그인 확인 email = " + email);
     log.info(provider + " 로그인 확인 nickname = " + nickname);
 
-    Users user = userRepository.findByUserNmOrEmail(userNm, email)
+    Users user = userRepository.findByUserNm(userNm)
       .orElseGet(() -> {
         log.info("[OAuth2] 신규회원: name={}, nickname={}", userNm, nickname);
         Users newUser = new Users();

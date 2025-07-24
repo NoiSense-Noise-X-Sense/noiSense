@@ -1,10 +1,11 @@
 package com.dosion.noisense.module.api.service;
 
-import com.dosion.noisense.module.api.entity.AutonomousDistrictEntity;
-import com.dosion.noisense.module.api.repository.AutonomousDistrictRepository;
+import com.dosion.noisense.module.api.entity.SensorData;
+import com.dosion.noisense.module.district.entity.AutonomousDistrict;
+import com.dosion.noisense.module.district.repository.DistrictRepository;
+import com.dosion.noisense.module.sensor.enums.Region;
 import com.dosion.noisense.web.api.controller.SensorDataApiReader;
 import com.dosion.noisense.web.api.dto.SensorDataApiDto;
-import com.dosion.noisense.module.api.entity.SensorDataApiEntity;
 import com.dosion.noisense.module.api.repository.SensorDataRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import org.springframework.beans.factory.annotation.Value;
 
@@ -33,7 +35,7 @@ import java.util.stream.Collectors;
 public class SensorDataApiService {
 
   private final SensorDataApiReader sensorDataApiReader;
-  private final AutonomousDistrictRepository autonomousDistrictRepository;
+  private final DistrictRepository districtRepository;
   private final SensorDataRepository sensorDataRepository;
   private final Executor batchTaskExecutor;
   private final ObjectMapper objectMapper;
@@ -46,13 +48,13 @@ public class SensorDataApiService {
 
   public SensorDataApiService(
     SensorDataApiReader sensorDataApiReader,
-    AutonomousDistrictRepository autonomousDistrictRepository,
+    DistrictRepository districtRepository,
     SensorDataRepository sensorDataRepository,
     ObjectMapper objectMapper,
     @Qualifier("batchTaskExecutor") Executor batchTaskExecutor
   ) {
     this.sensorDataApiReader = sensorDataApiReader;
-    this.autonomousDistrictRepository = autonomousDistrictRepository;
+    this.districtRepository = districtRepository;
     this.sensorDataRepository = sensorDataRepository;
     this.objectMapper = objectMapper;
     this.batchTaskExecutor = batchTaskExecutor;
@@ -165,12 +167,12 @@ public class SensorDataApiService {
   // 증분 업데이트 실행
   private void runIncrementalUpdate(LocalDateTime latestTime, Long startTime) {
 
-    List<AutonomousDistrictEntity> districtList = autonomousDistrictRepository.findAll();
+    List<AutonomousDistrict> districtList = districtRepository.findAll();
 
     log.info("DB에서 조회한 자치구 목록의 개수: {}", districtList.size());
 
 
-    for (AutonomousDistrictEntity district : districtList) {
+    for (AutonomousDistrict district : districtList) {
 
       int startIndex = 1;
       int endIndex = CHUNK_SIZE;
@@ -217,6 +219,7 @@ public class SensorDataApiService {
   // 9시 30분, 15시 30분에 한 번씩 부르기
   // S-DoT Data가 하루에 한 번만 업데이트 됨
   // 오전에 누락 될 수 있으니 15시에 한 번 더
+//  @Scheduled(cron = "0 */1 * * * *")
   @Scheduled(cron = "0 30 9,15 * * *")
   public void scheduledBatchExecution() {
     fetchRecentData();
@@ -248,13 +251,9 @@ public class SensorDataApiService {
 
     List<SensorDataApiDto> dataToProcess;
 
-    // 기존 데이터가 있을 경우 lastKnownTimes로 필터링
     if ( latestTime == null) {
-
       dataToProcess = new ArrayList<>(dtoList);
-
     } else {
-
       dataToProcess = dtoList.stream()
         .filter(dto -> dto.getSensingTime().isAfter(latestTime))
         .collect(Collectors.toList());
@@ -266,14 +265,13 @@ public class SensorDataApiService {
     }
 
     // 저장
-    List<SensorDataApiEntity> newEntitiesToSave = dataToProcess.stream()
+    List<SensorData> newEntitiesToSave = dataToProcess.stream()
       .map(this::mapDtoToEntity)
       .collect(Collectors.toList());
 
     if (!newEntitiesToSave.isEmpty()) {
       sensorDataRepository.bulkInsert(newEntitiesToSave);
       log.info("[{}] 새로운 데이터 {}건을 저장했습니다.", sourceName, newEntitiesToSave.size());
-
     }
   }
 
@@ -321,11 +319,14 @@ public class SensorDataApiService {
   }
 
   // Entity로 빌드
-  private SensorDataApiEntity mapDtoToEntity(SensorDataApiDto sensorDataApiDTO) {
+  private SensorData mapDtoToEntity(SensorDataApiDto sensorDataApiDTO) {
 
-    return SensorDataApiEntity.builder()
+    // 변환에 성공하면 Enum 객체가, 실패하면 null이 여기에 저장
+    Region regionEnumObject = Region.fromNameEn(sensorDataApiDTO.getRegion());
+
+    return com.dosion.noisense.module.api.entity.SensorData.builder()
       .sensingTime(sensorDataApiDTO.getSensingTime())
-      .region(sensorDataApiDTO.getRegion())
+      .region(regionEnumObject) // 여기에 Enum 객체 또는 null이 그대로 들어갑니다.
       .autonomousDistrict(sensorDataApiDTO.getAutonomousDistrict())
       .administrativeDistrict(sensorDataApiDTO.getAdministrativeDistrict())
       .maxNoise(sensorDataApiDTO.getMaxNoise())
@@ -338,7 +339,6 @@ public class SensorDataApiService {
       .avgHumi(sensorDataApiDTO.getAvgHumi())
       .minHumi(sensorDataApiDTO.getMinHumi())
       .build();
-
   }
 
 
