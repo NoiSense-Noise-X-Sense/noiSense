@@ -8,7 +8,5 @@ import java.util.Optional;
 
 public interface DashboardDistrictNoiseSummaryRepository extends JpaRepository<DashboardDistrictNoiseSummary, DashboardDistrictNoiseSummaryId> {
   // 특정 자치구의 소음 요약 정보 조회
-  //DashboardDistrictNoiseSummary findTopByAutonomousDistrictOrderByEndDateDesc(String autonomousDistrictCode);
   Optional<DashboardDistrictNoiseSummary> findTopByAutonomousDistrictCodeOrderByEndDateDesc(String autonomousDistrictCode);
-
 }
