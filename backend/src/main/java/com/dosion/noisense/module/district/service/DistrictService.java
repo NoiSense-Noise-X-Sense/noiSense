@@ -21,7 +21,6 @@ public class DistrictService {
 
   public List<DistrictDto> getAllDistricts() {
 
-//    List<District> all = districtRepository.findAllDistricts();
     List<District> autonomous = districtRepository.findAllAutonomousDistricts();
     List<District> administrative = districtRepository.findAllAdministrativeDistricts();
 
@@ -34,6 +33,30 @@ public class DistrictService {
     return districtDtos;
   }
 
+  public List<DistrictDto> getAllAutonomousDistricts() {
+    List<District> autonomous = districtRepository.findAllAutonomousDistricts();
+
+    List<DistrictDto> districtDtos = autonomous.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("AutonomousDistirctDtos : {}", districtDtos.size());
+
+    return districtDtos;
+  }
+
+  public List<DistrictDto> getAllAdministrativeDistricts() {
+    List<District> administrative = districtRepository.findAllAdministrativeDistricts();
+
+    List<DistrictDto> districtDtos =administrative.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("AdministrativeDistirctDtos : {}", districtDtos.size());
+
+    return districtDtos;
+  }
+  
   /** 영어 이름 → 한글 이름 변환 */
   public String toKorean(String englishDistrictName) {
     return districtRepository.findByNameEn(englishDistrictName)
