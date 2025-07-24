@@ -8,6 +8,7 @@ import com.dosion.noisense.web.geodata.dto.BoundaryPolygonDto;
 
 import java.util.List;
 
+import static com.dosion.noisense.common.util.JsonUtilTest.toJsonNode;
 import static com.dosion.noisense.module.geodata.enums.GeometryFormat.GeoJSON;
 
 public class GeodataFixture {
@@ -30,9 +31,9 @@ public class GeodataFixture {
 
   public static List<BoundaryPolygon> getBoundaryPolygons() {
     return List.of(
-      BoundaryPolygon.builder().boundaryPolygonId(1L).autonomousDistrict("11060").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).coordinate("[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]").build(),
-      BoundaryPolygon.builder().boundaryPolygonId(2L).autonomousDistrict("11070").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).coordinate("[[[[209826.33645053432,557905.3167482152],[209881.5303268841,557873.5327106739],[209900.3525923023,557862.6933919518]]]]").build(),
-      BoundaryPolygon.builder().boundaryPolygonId(3L).autonomousDistrict("11080").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).coordinate("[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]").build()
+      BoundaryPolygon.builder().boundaryPolygonId(1L).autonomousDistrict("11060").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).geometryCoordinate(toJsonNode("[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]")).build(),
+      BoundaryPolygon.builder().boundaryPolygonId(2L).autonomousDistrict("11070").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).geometryCoordinate(toJsonNode("[[[[209826.33645053432,557905.3167482152],[209881.5303268841,557873.5327106739],[209900.3525923023,557862.6933919518]]]]")).build(),
+      BoundaryPolygon.builder().boundaryPolygonId(3L).autonomousDistrict("11080").boundaryType(BoundaryType.AUTONOMOUS_DISTRICT).geometryFormat(GeoJSON).geometryType(GeometryType.MultiPolygon).geometryCoordinate(toJsonNode("[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]")).build()
     );
   }
 
@@ -45,7 +46,7 @@ public class GeodataFixture {
         .geometryFormat(GeoJSON)
         .geometry(BoundaryPolygonDto.Geometry.builder()
           .geometryType(GeometryType.MultiPolygon)
-          .coordinates(("[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]"))
+          .coordinates(toJsonNode("[[[[206125.5336832993,556523.929393474],[206126.01199087722,556434.116097902]]]]"))
           .build())
         .build(),
       BoundaryPolygonDto.builder()
@@ -55,7 +56,7 @@ public class GeodataFixture {
         .geometryFormat(GeoJSON)
         .geometry(BoundaryPolygonDto.Geometry.builder()
           .geometryType(GeometryType.MultiPolygon)
-          .coordinates(("[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]"))
+          .coordinates(toJsonNode("[[[[198584.19091137382,559647.2756913631],[198605.31397907215,559636.1141751622],[198605.6207541241,559636.4228293214]]]]"))
           .build())
         .build()
     );

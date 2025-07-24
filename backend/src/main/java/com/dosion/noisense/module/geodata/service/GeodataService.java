@@ -1,10 +1,9 @@
 package com.dosion.noisense.module.geodata.service;
 
-import com.dosion.noisense.module.geodata.entity.BoundaryPolygon;
 import com.dosion.noisense.module.geodata.repository.BoundaryPolygonRepository;
-import com.dosion.noisense.module.sensor.enums.BoundaryType;
 import com.dosion.noisense.web.district.dto.DistrictDto;
 import com.dosion.noisense.web.geodata.dto.BoundaryPolygonDto;
+import com.dosion.noisense.web.geodata.dto.BoundaryPolygonProjection;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,42 +17,77 @@ public class GeodataService {
 
   private final BoundaryPolygonRepository boundaryPolygonRepository;
 
+  /*자치구 경계 좌표 조회*/
+  public List<BoundaryPolygonDto> getAutonomousPolygons() {
 
-  /*전체 경계 좌표 조회*/
-  public List<BoundaryPolygonDto> getAllPolygons() {
+    try {
+      List<BoundaryPolygonProjection> projections = boundaryPolygonRepository.findAutonomousPolygons();
 
-    List<BoundaryPolygon> polygons = boundaryPolygonRepository.findAllPolygons();
-
-    // dto로 변환해서 넘겨준다
-    List<BoundaryPolygonDto> polygonDtos = polygons
-      .stream()
-      .map(entity -> {
-
-        DistrictDto districtDto;
-
-        // 이거 통과 못 할 것 같은데???
-        if (BoundaryType.AUTONOMOUS_DISTRICT.equals(entity.getBoundaryType())) {
-          districtDto = DistrictDto.builder()
-            .hasAutonomousDistrictCode(false)
-            .districtCode(entity.getAutonomousDistrict())
+      return projections.stream()
+        .map(p -> {
+          DistrictDto districtDto = DistrictDto.builder()
+            .hasAutonomousDistrictCode(false) // or true? 상황에 맞게
+            .districtCode(p.autonomousDistrict())
+            .districtNameEn(p.districtNameEn())
+            .districtNameKo(p.districtNameKo())
             .build();
-        } else {
-          districtDto = DistrictDto.builder()
+
+          BoundaryPolygonDto.Geometry geometry = BoundaryPolygonDto.Geometry.builder()
+            .geometryType(p.geometryType())
+            .coordinates(p.geometryCoordinate())
+            .build();
+
+          return BoundaryPolygonDto.builder()
+            .boundaryPolygonId(p.boundaryPolygonId())
+            .district(districtDto)
+            .boundaryType(p.boundaryType())
+            .geometryFormat(p.geometryFormat())
+            .geometry(geometry)
+            .build();
+        })
+        .toList();
+
+    } catch(Exception e) {
+      log.error("select autonomous polygons error", e);
+      throw e;
+    }
+  }
+
+  /*행정동 경계 좌표 조회*/
+  public List<BoundaryPolygonDto> getAdministrativePolygons() {
+
+    try {
+      List<BoundaryPolygonProjection> projections = boundaryPolygonRepository.findAdministrativePolygons();
+
+      return projections.stream()
+        .map(p -> {
+          DistrictDto districtDto = DistrictDto.builder()
             .hasAutonomousDistrictCode(true)
-            .districtCode(entity.getAdministrativeDistrict())
+            .districtCode(p.administrativeDistrict())
+            .districtNameEn(p.districtNameEn())
+            .districtNameKo(p.districtNameKo())
+            .autonomousDistrictCode(p.autonomousDistrict())
             .build();
-        }
 
-        return BoundaryPolygonDto.builder()
-          .boundaryPolygonId(entity.getBoundaryPolygonId())
-          .district(districtDto)
-          // TODO: 검증 필요
-          .geometry(BoundaryPolygon.toGeometryDto(entity))
-          .build();
-        }
-      ).toList();
+          BoundaryPolygonDto.Geometry geometry = BoundaryPolygonDto.Geometry.builder()
+            .geometryType(p.geometryType())
+            .coordinates(p.geometryCoordinate())
+            .build();
 
-    return polygonDtos;
+          return BoundaryPolygonDto.builder()
+            .boundaryPolygonId(p.boundaryPolygonId())
+            .district(districtDto)
+            .boundaryType(p.boundaryType())
+            .geometryFormat(p.geometryFormat())
+            .geometry(geometry)
+            .build();
+        })
+        .toList();
+
+    } catch(Exception e) {
+      log.error("select administrative polygons error", e);
+      throw e;
+    }
   }
 
 }

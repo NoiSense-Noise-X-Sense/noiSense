@@ -6,11 +6,8 @@ import com.dosion.noisense.module.dashboard.entity.*;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseYearlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseHourlyRepository;
 import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseSummaryRepository;
-import com.dosion.noisense.module.dashboard.repository.DashboardDistrictNoiseZoneRepository;
 import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.repository.DistrictRepository;
-import com.dosion.noisense.module.district.service.DistrictService;
-import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +16,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.web.client.RestTemplate;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
 @Service
@@ -43,9 +34,7 @@ public class DashboardStatService {
   private final DashboardDistrictNoiseSummaryRepository dashboardDistrictNoiseSummaryRepository;
   private final DashboardDistrictNoiseHourlyRepository dashboardDistrictNoiseHourlyRepository;
   private final DashboardDistrictNoiseYearlyRepository dashboardDistrictNoiseYearlyRepository;
-  //private final DashboardDistrictNoiseZoneRepository dashboardDistrictNoiseZoneRepository;
   private final ObjectMapper objectMapper;
-  private final RestTemplate restTemplate;
 
   private final BoardEsService boardEsService;
 
@@ -80,8 +69,6 @@ public class DashboardStatService {
         .map(AutonomousDistrict::getCode)
         .orElse("none");
 
-      log.info("!!!!!!!!district code: {}", districtCode);
-
       Integer peakHour = row[1] != null ? ((Number) row[1]).intValue() : null;
       BigDecimal peakNoise = row[2] != null ? new BigDecimal(row[2].toString()) : null;
       Integer calmHour = row[3] != null ? ((Number) row[3]).intValue() : null;
@@ -107,10 +94,7 @@ public class DashboardStatService {
         .build();
 
       summaries.add(summary);
-      log.info("summary!! : " + summary);
     }
-
-    log.info("summary row: " + summaries.size());
     dashboardDistrictNoiseSummaryRepository.saveAll(summaries);
   }
 
@@ -170,7 +154,6 @@ public class DashboardStatService {
     }
 
     dashboardDistrictNoiseHourlyRepository.saveAll(entities);
-    log.info("Inserted hourly stats: {}", entities.size());
   }
 
 
@@ -221,7 +204,7 @@ public class DashboardStatService {
     dashboardDistrictNoiseYearlyRepository.saveAll(entities);
   }
 
-  /*
+  /* 동별 조회 (보류)
   @Transactional
   public void updateZoneNoise() {
     dashboardDistrictNoiseZoneRepository.deleteAllInBatch();
