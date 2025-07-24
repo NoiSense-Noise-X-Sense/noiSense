@@ -1,9 +1,14 @@
 // 차트의 각 데이터 포인트를 위한 타입
 // 실제 데이터 구조에 맞게 수정해야 합니다. (예: x축이 날짜, y축이 소음)
 export interface ChartDataPoint {
-  xAxis: string;
-  avgNoise: number;
+  hour?: string;      // 백엔드에서 오는 '시간' 키 (선택적)
+  day?: string;       // 백엔드에서 오는 '일' 키 (선택적)
+  avgNoise: number | null; // null일 수 있는 소음 값
+
+  // top1, top2... bottom3 등 다른 키들도 받을 수 있도록 설정
+  [key: string]: any;
 }
+
 
 // 랭킹 항목의 타입
 export interface RankDto {

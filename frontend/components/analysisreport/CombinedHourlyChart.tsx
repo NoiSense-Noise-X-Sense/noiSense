@@ -1,77 +1,67 @@
-// components/CombinedHourlyChart.tsx
-
 "use client"
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
 import { Card } from "@/components/ui/card"
 
-export default function CombinedHourlyChart() {
-  const data = [
-    { hour: "00:00", top1: 78, top2: 75, top3: 72, bottom1: 45, bottom2: 48, bottom3: 51 },
-    { hour: "03:00", top1: 75, top2: 72, top3: 69, bottom1: 42, bottom2: 45, bottom3: 48 },
-    { hour: "06:00", top1: 82, top2: 79, top3: 76, bottom1: 55, bottom2: 58, bottom3: 61 },
-    { hour: "09:00", top1: 85, top2: 82, top3: 79, bottom1: 68, bottom2: 71, bottom3: 74 },
-    { hour: "12:00", top1: 88, top2: 85, top3: 82, bottom1: 72, bottom2: 75, bottom3: 78 },
-    { hour: "15:00", top1: 86, top2: 83, top3: 80, bottom1: 70, bottom2: 73, bottom3: 76 },
-    { hour: "18:00", top1: 90, top2: 87, top3: 84, bottom1: 75, bottom2: 78, bottom3: 81 },
-    { hour: "21:00", top1: 83, top2: 80, top3: 77, bottom1: 65, bottom2: 68, bottom3: 71 },
-    { hour: "24:00", top1: 76, top2: 73, top3: 70, bottom1: 48, bottom2: 51, bottom3: 54 },
-  ]
+interface ChartData {
+  xaxis: string; // 반드시 'xaxis' 필드
+  [region: string]: number | string; // 동적으로 지역명 key 허용
+}
+
+interface CombinedHourlyChartProps {
+  data: ChartData[];
+}
+
+export default function CombinedHourlyChart({ data }: CombinedHourlyChartProps) {
+  // 데이터가 있는지 확인
+  const hasData = Array.isArray(data) && data.length > 0;
+
+  // 동적 자치구 리스트 추출 (xaxis만 제외)
+  const regionList = hasData ? Object.keys(data[0]).filter(key => key !== "xaxis") : [];
 
   return (
     <Card className="p-6">
       <h2 className="text-xl font-semibold mb-4">시간대별 소음 순위</h2>
       <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          {/* ✅ 1. margin을 추가하여 차트 우측에 여백을 확보합니다. */}
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="hour"
-              tick={{ fontSize: 12 }}
-              // ✅ 2. interval을 "preserveEnd"로 설정하여 마지막 라벨을 항상 표시합니다.
-              interval="preserveEnd"
-            />
-            <YAxis label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }} tick={{ fontSize: 12 }} />
-            <Tooltip formatter={(value) => [`${value} dB`, "Noise Level"]} />
-            <Legend />
-
-            {/* Top 3 Lines - Solid */}
-            <Line type="monotone" dataKey="top1" stroke="#dc2626" strokeWidth={2} name="Top 1" />
-            <Line type="monotone" dataKey="top2" stroke="#ea580c" strokeWidth={2} name="Top 2" />
-            <Line type="monotone" dataKey="top3" stroke="#f59e0b" strokeWidth={2} name="Top 3" />
-
-            {/* Bottom 3 Lines - Dashed */}
-            <Line
-              type="monotone"
-              dataKey="bottom1"
-              stroke="#16a34a"
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              name="Bottom 1"
-            />
-            <Line
-              type="monotone"
-              dataKey="bottom2"
-              stroke="#0891b2"
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              name="Bottom 2"
-            />
-            <Line
-              type="monotone"
-              dataKey="bottom3"
-              stroke="#7c3aed"
-              strokeWidth={2}
-              strokeDasharray="5 5"
-              name="Bottom 3"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {hasData ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              {/* X축 key는 반드시 'xaxis' */}
+              <XAxis dataKey="xaxis" tick={{ fontSize: 12 }} interval="preserveEnd" />
+              <YAxis label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }} tick={{ fontSize: 12 }} />
+              <Tooltip formatter={(value: number) => [`${value} dB`, "Noise Level"]} />
+              <Legend />
+              {/* 모든 지역(key)에 대해 Line 컴포넌트 자동 생성 */}
+              {regionList.map((regionName, idx) => (
+                <Line
+                  key={regionName}
+                  type="monotone"
+                  dataKey={regionName}
+                  strokeWidth={2}
+                  connectNulls
+                  stroke={getColor(idx)}
+                  name={regionName}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-500">
+            시간대별 비교 데이터가 없습니다.
+          </div>
+        )}
       </div>
     </Card>
-  )
+  );
+}
+
+// 색상 팔레트: 필요에 따라 확장 가능
+function getColor(index: number): string {
+  const colors = [
+    "#dc2626", "#ea580c", "#2563eb", "#f59e0b", "#16a34a",
+    "#0891b2", "#7c3aed", "#be185d", "#84cc16", "#d946ef",
+    "#14b8a6", "#facc15",
+  ];
+  return colors[index % colors.length];
 }

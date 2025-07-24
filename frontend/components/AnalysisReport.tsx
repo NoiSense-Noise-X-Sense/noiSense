@@ -3,8 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { format } from "date-fns"
 
-// 중앙 타입 파일에서 모든 설계도를 가져옵니다.
-import { ReportDataDto, DistrictDto } from "@/types/Report";
+import { ReportDataDto, DistrictDto, ChartDataPoint } from "@/types/Report";
 
 import FilterControls from "./analysisreport/FilterControls"
 import KpiCards from "./analysisreport/KpiCards"
@@ -27,28 +26,24 @@ export default function AnalysisReport() {
   const [districts, setDistricts] = useState<DistrictDto[]>([]);
   const [isDistrictsLoading, setIsDistrictsLoading] = useState(true);
 
+  // 원본 데이터를 저장할 상태
   const [reportData, setReportData] = useState<ReportDataDto | null>(null);
+
   const [isReportLoading, setIsReportLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // 자치구 목록을 불러오는 로직
+
+
+  // 자치구 목록 로딩 (기존과 동일)
   useEffect(() => {
     const fetchDistricts = async () => {
       setIsDistrictsLoading(true);
       try {
         const response = await fetch("http://localhost:8080/api/v1/district/autonomousDistrict");
         if (!response.ok) throw new Error(`자치구 목록 로딩 실패: ${response.status}`);
-
         const result = await response.json();
-        if (result.data && Array.isArray(result.data) && result.data.length > 0) {
-          setDistricts(result.data);
-          setError(null);
-        } else if (result.success === false) {
-          setError(`API 오류: ${result.message || "알 수 없는 오류"}`);
-        } else {
-          setError("자치구 데이터 형식이 올바르지 않습니다.");
-        }
+        setDistricts(result.data || []);
       } catch (e: any) {
         setError(e.message || "자치구 목록을 불러오는 중 에러 발생");
       } finally {
@@ -58,37 +53,42 @@ export default function AnalysisReport() {
     fetchDistricts();
   }, []);
 
-  // 리포트 데이터를 불러오는 로직
+  // 리포트 데이터 로딩 로직 (가공 부분 제거)
   useEffect(() => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-    setIsReportLoading(true);
-    setError(null);
-    debounceTimeout.current = setTimeout(() => {
-      const fetchReportData = async () => {
-        if (!filters.startDate || !filters.endDate) {
-          setError("날짜를 올바르게 선택해주세요.");
-          setIsReportLoading(false);
-          return;
-        }
-        const params = new URLSearchParams();
-        params.append("startDate", format(filters.startDate, "yyyy-MM-dd"));
-        params.append("endDate", format(filters.endDate, "yyyy-MM-dd"));
-        params.append("autonomousDistrictCode", filters.district === "all" ? "all" : filters.district);
 
-        try {
-          const response = await fetch(`http://localhost:8080/api/v1/report/getReport?${params.toString()}`);
-          if (!response.ok) throw new Error(`서버 응답 오류: ${response.status}`);
-          const result = await response.json();
-          setReportData(result.data || result);
-        } catch (e: any) {
-          setError(e.message || "리포트 데이터를 불러오는 데 실패했습니다.");
-          setReportData(null);
-        } finally {
-          setIsReportLoading(false);
-        }
-      };
-      fetchReportData();
-    }, 300);
+    const fetchReportData = async () => {
+      setIsReportLoading(true);
+      setError(null);
+      setReportData(null); // 데이터 초기화
+
+      if (!filters.startDate || !filters.endDate) {
+        setError("날짜를 올바르게 선택해주세요.");
+        setIsReportLoading(false);
+        return;
+      }
+
+      const params = new URLSearchParams({
+        startDate: format(filters.startDate, "yyyy-MM-dd"),
+        endDate: format(filters.endDate, "yyyy-MM-dd"),
+        autonomousDistrictCode: filters.district,
+      });
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/report/getReport?${params.toString()}`);
+        if (!response.ok) throw new Error(`서버 응답 오류: ${response.status}`);
+        const result = await response.json();
+        setReportData(result.data || result); // 원본 데이터를 그대로 저장
+
+      } catch (e: any) {
+        setError(e.message || "리포트 데이터를 불러오는 데 실패했습니다.");
+        setReportData(null);
+      } finally {
+        setIsReportLoading(false);
+      }
+    };
+
+    debounceTimeout.current = setTimeout(fetchReportData, 300);
 
     return () => {
       if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
@@ -96,10 +96,10 @@ export default function AnalysisReport() {
   }, [filters]);
 
   return (
+
     <div className="min-h-screen bg-gray-50 p-6 select-none">
       <div className="max-w-7xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold text-gray-900 text-center">소음 데이터 리포트</h1>
-
         <div id="pdf-content">
           <FilterControls
             filters={filters}
@@ -127,23 +127,38 @@ export default function AnalysisReport() {
                   bottomRankDtoList={reportData.bottomRankDtoList || []}
                   deviationRankDtoList={reportData.deviationRankDtoList || []}
                 />
-                {/* 1. 종합 데이터 차트: MainChart */}
-                {/* hourlyData와 dailyData를 각각 전달하여 탭 기능을 활성화합니다. */}
+
+                {/* --- ✨✨✨ 여기가 최종 수정 부분입니다 ✨✨✨ --- */}
+                {/*
+                  데이터를 MainChart로 전달하기 직전에, .map()을 사용하여
+                  MainChart가 기대하는 'xAxis' (대문자 A) 키를 만들어줍니다.
+                */}
                 <MainChart
-                  hourlyData={reportData.totalChartDto?.overallHourAvgNoiseData || []}
-                  dailyData={reportData.totalChartDto?.overallDayAvgNoiseData || []}
+                  hourlyData={reportData.totalChartDto?.overallHourAvgNoiseData?.map(d => ({ ...d, xAxis: d.hour })) || []}
+                  dailyData={reportData.totalChartDto?.overallDayAvgNoiseData?.map(d => ({ ...d, xAxis: d.day })) || []}
                 />
+                {/* --- 여기까지가 최종 수정 부분입니다 --- */}
 
-                {/* 2. 비교용 차트: CombinedHourlyChart (기존과 동일) */}
-                {/* 이 차트들은 원래대로 둡니다. */}
+                {/* 다른 차트들은 원본 데이터를 그대로 사용해도 괜찮습니다. */}
                 <CombinedHourlyChart
-                  data={reportData.totalChartDto?.overallHourAvgNoiseData || []}
+                  data={
+                    (reportData.totalChartDto?.trendPointHourAvgNoiseData || [])
+                      .map(item =>
+                        item && item.avgNoiseByRegion
+                          ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
+                          : {}
+                      )
+                  }
                 />
-
-                {/* 3. 비교용 차트: CombinedDailyChart (기존과 동일) */}
                 <CombinedDailyChart
-                  data={reportData.totalChartDto?.TrendPointDayOfWeekAvgNoiseData || []}
-                />
+                  data={
+                    (reportData.totalChartDto?.trendPointDayOfWeekAvgNoiseData || [])
+                      .map(item =>
+                        item && item.avgNoiseByRegion
+                          ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
+                          : {}
+                      )
+                  }
               </>
             ) : (
               <div className="text-center py-20 text-gray-500">표시할 데이터가 없습니다.</div>
