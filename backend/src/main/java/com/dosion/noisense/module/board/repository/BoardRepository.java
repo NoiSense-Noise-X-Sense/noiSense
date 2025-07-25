@@ -25,7 +25,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
   @Query("SELECT new com.dosion.noisense.web.board.dto.BoardDto(" +
     "b.id, b.userId, b.nickname, b.title, b.content, " +
     "b.emotionalScore, b.empathyCount, b.viewCount, " +
-    "b.autonomousDistrict, b.administrativeDistrict, " +
+    "b.autonomousDistrictCode, b.administrativeDistrictCode, " +
     "b.createdDate, b.modifiedDate) " +
     "FROM Board b " +
     "ORDER BY b.createdDate DESC")
