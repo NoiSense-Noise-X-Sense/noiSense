@@ -42,7 +42,7 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
    *  행정동까지 필요하면 변수 추가
    * */
 
-  public Double calcPerceivedNoise(double avgNoise, LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictKor, String administrativeDistrictKor) {
+  public Double calcPerceivedNoise(double avgNoise, LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode) {
     /*
     log.info("PerceivedNoiseCalculator.calcPerceivedNoise");
     log.info("avgNoise ====" + avgNoise);
@@ -69,7 +69,7 @@ public class PerceivedNoiseCalculator { // 체감 소음 계산
     timeWeights.put(18, 1.1);
 
     // 게시글
-    List<EmotionBoardDto> boardList = boardRepository.findEmotionScoresByCriteria(startDate, endDate, autonomousDistrictKor, administrativeDistrictKor);
+    List<EmotionBoardDto> boardList = boardRepository.findEmotionScoresByCriteria(startDate, endDate, autonomousDistrictCode, administrativeDistrictCode);
     // log.info("boardList ====" + boardList.toString());
 
     // 게시글이 없으면 평균 소음 반환

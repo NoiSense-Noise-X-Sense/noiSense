@@ -58,9 +58,7 @@ public class ReportService {
 
     // 체감 소음
     //Double perceivedNoise = avgNoise;
-    String autonomousDistrictKor = "all".equals(autonomousDistrictCode) ? "all" : districtRepository.findAutonomousNameKoByCode(autonomousDistrictCode);
-    // log.info("체감 소음에 보낼 행정구 : {}", autonomousDistrictKor);
-    Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), autonomousDistrictKor, "all");
+    Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(avgNoise, startDate.atStartOfDay(), endDate.atTime(LocalTime.MAX), autonomousDistrictCode, "all");
 
     /* 랭킹 데이터
     시끄러운 지역(Top 3) -> String, Double

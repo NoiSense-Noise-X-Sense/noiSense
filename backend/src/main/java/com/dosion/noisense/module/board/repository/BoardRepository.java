@@ -38,16 +38,16 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     "WHERE b.createdDate BETWEEN :startDate AND :endDate " +
     "AND ( " +
     // 1. autonomousDistrict가 'all'인 경우 (모든 데이터 포함)
-    "   (:autonomousDistrictKor = 'all') " +
+    "   (:autonomousDistrictCode = 'all') " +
     // 2. OR: autonomousDistrict는 값이 있고, administrativeDistrict가 'all'인 경우 (자치구로만 필터링)
-    "   OR (:administrativeDistrictKor = 'all' AND b.autonomousDistrict = :autonomousDistrictKor) " +
+    "   OR (:administrativeDistrictCode = 'all' AND b.autonomousDistrict = :autonomousDistrictCode) " +
     // 3. OR: 두 파라미터 모두 값이 있는 경우 (자치구와 행정동 모두로 필터링)
-    "   OR (b.autonomousDistrict = :autonomousDistrictKor AND b.administrativeDistrict = :administrativeDistrictKor) " +
+    "   OR (b.autonomousDistrict = :autonomousDistrictCode AND b.administrativeDistrict = :administrativeDistrictCode) " +
     ")")
   List<EmotionBoardDto> findEmotionScoresByCriteria(
     @Param("startDate") LocalDateTime startDate,
     @Param("endDate") LocalDateTime endDate,
-    @Param("autonomousDistrictKor") String autonomousDistrictKor,
-    @Param("administrativeDistrictKor") String administrativeDistrictKor
+    @Param("autonomousDistrictCode") String autonomousDistrictCode,
+    @Param("administrativeDistrictCode") String administrativeDistrictCode
   );
 }

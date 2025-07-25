@@ -43,7 +43,7 @@ public class MapService {
     // log.info("avgNoiseRegionDtoList : {}", avgNoiseRegionDtoList);
     for (AvgNoiseRegionDto dto : avgNoiseRegionDtoList) {
       // Double perceivedNoise = 0.0;
-      Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(dto.getAvgNoise(), startDate, endDate, dto.getAutonomousDistrictKor(), dto.getAdministrativeDistrictKor());
+      Double perceivedNoise = perceivedNoiseCalculator.calcPerceivedNoise(dto.getAvgNoise(), startDate, endDate, dto.getAutonomousDistrictCode(), dto.getAdministrativeDistrictCode());
       result.add(MapDto.builder()
         .avgNoise(dto.getAvgNoise())
         .perceivedNoise(perceivedNoise)
