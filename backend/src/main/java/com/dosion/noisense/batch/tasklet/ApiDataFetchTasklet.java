@@ -22,6 +22,7 @@ public class ApiDataFetchTasklet implements Tasklet {
   @Override
   public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
     // ✅ TODO: 여기에 실제 API 호출 → 파싱 → DB 저장 로직 구현 예정
+    // S-DoT 정기 데이터 API호출을위한 메서드 호출
     sensorDataApiService.fetchRecentData();
 
     // 예시: 수집 완료 후 로그 테이블에 성공 기록

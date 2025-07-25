@@ -1,6 +1,6 @@
 package com.dosion.noisense.module.report.service;
 
-import com.dosion.noisense.module.report.repository.BoardRepository;
+import com.dosion.noisense.module.board.repository.BoardRepository;
 import com.dosion.noisense.web.report.dto.EmotionBoardDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
