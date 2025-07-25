@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: noisense-batch-job
 spec:
-  schedule: "0 * * * *"      # 매 시간 정각(0분)에 1회 실행
+  schedule: "30 9,15 * * *"      # 매일 9시 30분, 15시 30분에 실행 -> 오전에 api data 업데이트가 안되어있을 시 오후에 한 번 더 확인하기위해 15시 30분에도 실행
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
