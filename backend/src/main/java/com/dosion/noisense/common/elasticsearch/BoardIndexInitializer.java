@@ -30,7 +30,7 @@ public class BoardIndexInitializer implements ApplicationRunner {
         File file = new File("../Elasticsearch/board-index.json");
         if (!file.exists()) {
           log.error("❌ board-index.json 파일을 찾을 수 없습니다: {}", file.getAbsolutePath());
-          return;
+          throw new RuntimeException("board-index.json 파일을 찾을 수 없음: " + file.getAbsolutePath());
         }
 
         String json = new BufferedReader(new FileReader(file))
@@ -46,13 +46,15 @@ public class BoardIndexInitializer implements ApplicationRunner {
           log.info("✅ Elasticsearch 'board-index' 생성 완료.");
         } else {
           log.warn("⚠️ Elasticsearch 'board-index' 생성 실패 (ack=false).");
+          throw new RuntimeException("Elasticsearch 'board-index' 생성 실패 (ack=false)");
         }
       } else {
         log.info("📌 Elasticsearch 'board-index' 이미 존재함.");
       }
 
-    } catch (IOException e) {
-      log.error("❌ Elasticsearch 인덱스 생성 실패", e.getCause());
+    } catch (Exception e) {
+      log.error("❌ Elasticsearch 인덱스 생성 실패", e);
+      throw new RuntimeException("Elasticsearch 인덱스 생성 중 오류", e);
     }
   }
 }

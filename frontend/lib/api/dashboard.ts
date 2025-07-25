@@ -29,3 +29,9 @@ export async function fetchComplaints(district: string) {
   if (!res.ok) throw new Error('Failed to fetch complaints data');
   return res.json();
 }
+
+export async function fetchDistrictList() {
+  const res = await fetch(`${BASE_URL}/api/dashboard/districts`);
+  if (!res.ok) throw new Error('Failed to fetch district list');
+  return res.json(); // [{ code: "11230", nameKo: "강남구", nameEn: "Gangnam-gu" }, ...]
+}

@@ -13,5 +13,4 @@ public interface DashboardDistrictNoiseHourlyRepository extends JpaRepository<Da
 
   List<DashboardDistrictNoiseHourly> findByAutonomousDistrictCodeOrderByHourAsc(String autonomousDistrictCode);
 
-//  List<DashboardDistrictNoiseHourly> findByIdAutonomousDistrictCodeOrderByIdHourAsc(String autonomousDistrictCode);
 }

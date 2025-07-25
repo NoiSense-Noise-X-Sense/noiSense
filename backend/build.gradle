@@ -27,7 +27,10 @@ configurations {
 }
 
 repositories {
-  mavenCentral()
+	mavenCentral()
+  maven {
+    url "https://repo.osgeo.org/repository/release/"
+  }
 }
 
 dependencies {
@@ -64,21 +67,25 @@ dependencies {
   implementation 'org.json:json:20231013'
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
-
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-//  Mock Test
-  testImplementation 'org.postgresql:postgresql:42.7.3'
-  testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.19.0'
-  testImplementation 'org.mockito:mockito-core:5.11.0'
-  testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
   // 인증 우회 시 사용
   testImplementation 'org.springframework.security:spring-security-test'
 
-  // 배치
-  implementation 'org.springframework.boot:spring-boot-starter-batch'
+  testCompileOnly 'org.projectlombok:lombok'
+  testAnnotationProcessor 'org.projectlombok:lombok'
+
+  // 좌표계 변환 시 사용
+  testImplementation("org.geotools:gt-referencing:33.2") {
+    exclude(group: "javax.media", module: "jai_core")
+  }
+  testImplementation 'org.locationtech.jts:jts-core:1.20.0' // Geometry 연산용
+
+  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
 }
+
+
 
 tasks.withType(JavaCompile) {
   options.encoding = 'UTF-8'

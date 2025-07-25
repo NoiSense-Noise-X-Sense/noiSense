@@ -52,5 +52,5 @@ public class CustomUserDetails implements UserDetails {
     return users.getUserNm();
   }
 
-
+  public String getNickname() { return users.getNickname(); }
 }
