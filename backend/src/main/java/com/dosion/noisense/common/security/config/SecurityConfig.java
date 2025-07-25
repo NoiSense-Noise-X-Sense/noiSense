@@ -57,8 +57,9 @@ public class SecurityConfig {
           , "/exception",
           "/swagger-ui/**",
           "/swagger-ui.html"
-          ,"/api/batch/run-initial-load"
-          ,"/api/report/getReport"
+          ,"/api/v1/batch/run-initial-load"
+          ,"/api/v1/report/getReport"
+          ,"/api/v1/district/**"
         , "/api/map/getMap").permitAll()
 
         .requestMatchers(
@@ -68,7 +69,6 @@ public class SecurityConfig {
           "/oauth2/**",
           "/login/**",
           "/actuator/prometheus",
-          "/api/batch/run-initial-load",
           "/api/dashboard/**",
           "/api/es/board/frequent-words"
         ).permitAll()
