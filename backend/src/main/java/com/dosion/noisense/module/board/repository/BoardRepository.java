@@ -40,9 +40,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     // 1. autonomousDistrict가 'all'인 경우 (모든 데이터 포함)
     "   (:autonomousDistrictCode = 'all') " +
     // 2. OR: autonomousDistrict는 값이 있고, administrativeDistrict가 'all'인 경우 (자치구로만 필터링)
-    "   OR (:administrativeDistrictCode = 'all' AND b.autonomousDistrict = :autonomousDistrictCode) " +
+    "   OR (:administrativeDistrictCode = 'all' AND b.autonomousDistrictCode = :autonomousDistrictCode) " +
     // 3. OR: 두 파라미터 모두 값이 있는 경우 (자치구와 행정동 모두로 필터링)
-    "   OR (b.autonomousDistrict = :autonomousDistrictCode AND b.administrativeDistrict = :administrativeDistrictCode) " +
+    "   OR (b.autonomousDistrictCode = :autonomousDistrictCode AND b.administrativeDistrictCode = :administrativeDistrictCode) " +
     ")")
   List<EmotionBoardDto> findEmotionScoresByCriteria(
     @Param("startDate") LocalDateTime startDate,
