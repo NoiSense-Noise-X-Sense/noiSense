@@ -1,4 +1,4 @@
-package com.dosion.noisense.module.report.entity;
+package com.dosion.noisense.module.api.entity;
 
 import jakarta.persistence.Embeddable;
 import java.io.Serializable;

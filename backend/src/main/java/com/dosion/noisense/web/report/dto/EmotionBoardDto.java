@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EmotionBoardDto {
 
-  private Double emotionalScore;
+  private Long emotionalScore;
 
   private LocalDateTime createdDate;
 

@@ -26,6 +26,24 @@ configurations {
   }
 }
 
+
+// QueryDSL 설정 추가
+def querydslDir = layout.buildDirectory.dir("generated/querydsl")
+
+sourceSets {
+  main.java.srcDirs += [querydslDir]
+}
+
+tasks.withType(JavaCompile) {
+  options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+  delete(file(querydslDir))
+}
+// QueryDsl 설정 끝
+
+
 repositories {
 	mavenCentral()
   maven {
@@ -56,18 +74,18 @@ dependencies {
   implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
   implementation 'co.elastic.clients:elasticsearch-java:8.12.0'
 
-  // queryDsl
-  implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-  annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-  annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-  annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
   // OAuth2
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
   // 게시판 정렬
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+  // queryDsl
+  implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+  annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
+  annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+  annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
   // api하면서 필요했던 것들
   implementation 'org.json:json:20231013'
@@ -82,16 +100,15 @@ dependencies {
   testCompileOnly 'org.projectlombok:lombok'
   testAnnotationProcessor 'org.projectlombok:lombok'
 
-  implementation 'org.springframework.boot:spring-boot-starter-batch'
-
   // 좌표계 변환 시 사용
   testImplementation("org.geotools:gt-referencing:33.2") {
     exclude(group: "javax.media", module: "jai_core")
   }
   testImplementation 'org.locationtech.jts:jts-core:1.20.0' // Geometry 연산용
+
+  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
 
 
 tasks.withType(JavaCompile) {
@@ -101,6 +118,8 @@ tasks.withType(JavaCompile) {
 tasks.named('test') {
   useJUnitPlatform()
 }
+
+tasks.register("prepareKotlinBuildScriptModel"){}
 
 bootRun { // 개발 서버 실행 시 사용
   mainClass.set('com.dosion.noisense.BackendApplication')

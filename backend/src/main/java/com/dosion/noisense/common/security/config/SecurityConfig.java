@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
 @Configuration
@@ -46,6 +47,7 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
       .cors(Customizer.withDefaults()) // CORS 설정
+      .cors(withDefaults())
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/index.html", "/*.html", "/favicon.ico",
@@ -54,7 +56,10 @@ public class SecurityConfig {
           , "/v3/api-docs/**", "/configuration/**"
           , "/exception",
           "/swagger-ui/**",
-          "/swagger-ui.html").permitAll()
+          "/swagger-ui.html"
+          ,"/api/batch/run-initial-load"
+          ,"/api/report/getReport"
+        , "/api/map/getMap").permitAll()
 
         .requestMatchers(
           "/api/auth/sign-up",
@@ -63,10 +68,9 @@ public class SecurityConfig {
           "/oauth2/**",
           "/login/**",
           "/actuator/prometheus",
-          "/api/v1/batch/run-initial-load",
+          "/api/batch/run-initial-load",
           "/api/dashboard/**",
-          "/api/v1/district/**",
-          "/api/v1/report/**"
+          "/api/es/board/frequent-words"
         ).permitAll()
 
         .requestMatchers("/api/**").authenticated()

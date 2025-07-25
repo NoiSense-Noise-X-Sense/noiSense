@@ -52,4 +52,7 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
   // 영문 또는 한글명으로 찾기 (엔티티명에 맞게 JPQL로 수정)
   @Query("SELECT d FROM AutonomousDistrict d WHERE d.nameEn = :name OR d.nameKo = :name")
   Optional<AutonomousDistrict> findByNameEnOrNameKo(@Param("name") String name);
+
+  @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
+  String findAutonomousNameKoByCode(@Param("code") String code);
 }
