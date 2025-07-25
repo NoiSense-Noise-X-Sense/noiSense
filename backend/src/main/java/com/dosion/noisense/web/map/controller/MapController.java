@@ -22,7 +22,7 @@ import java.util.List;
 @Tag(name = "Noise-Map-Controller", description = "소음 지도")
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/map")
+@RequestMapping("/api/v1/map")
 public class MapController {
 
   private final MapService mapService;

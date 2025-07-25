@@ -23,7 +23,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
 import java.util.Arrays;
+
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
@@ -57,9 +59,10 @@ public class SecurityConfig {
           , "/exception",
           "/swagger-ui/**",
           "/swagger-ui.html"
-          ,"/api/batch/run-initial-load"
-          ,"/api/report/getReport"
-        , "/api/map/getMap").permitAll()
+          , "/api/batch/run-initial-load"
+          , "/api/v1/report/*"
+          , "/api/v1/map/getMap"
+          , "/api/v1/district/autonomousDistrict").permitAll()
 
         .requestMatchers(
           "/api/auth/sign-up",
