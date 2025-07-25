@@ -16,7 +16,7 @@ export default function CombinedHourlyChart({ data }: CombinedHourlyChartProps) 
   // 데이터가 있는지 확인
   const hasData = Array.isArray(data) && data.length > 0;
 
-  // 동적 자치구 리스트 추출 (xaxis만 제외)
+  // 동적 자치구 리스트 추출 
   const regionList = hasData ? Object.keys(data[0]).filter(key => key !== "xaxis") : [];
 
   return (
@@ -56,7 +56,7 @@ export default function CombinedHourlyChart({ data }: CombinedHourlyChartProps) 
   );
 }
 
-// 색상 팔레트: 필요에 따라 확장 가능
+// 색상 팔레트
 function getColor(index: number): string {
   const colors = [
     "#dc2626", "#ea580c", "#2563eb", "#f59e0b", "#16a34a",

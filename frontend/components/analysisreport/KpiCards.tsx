@@ -53,7 +53,7 @@ const getNoiseLevel = (value: number): keyof typeof NOISE_LEVELS => {
 
 function ThemedLcdClock({ time, amPm, icon }: { time: string; amPm: string; icon: React.ReactNode; }) {
   return (
-    // 👇 [수정] gap-3를 gap-2로 줄여 간격을 좁힙니다.
+
     <div className="grid grid-cols-[auto_1fr] place-items-center gap-2 h-20 w-full">
       {/* 왼쪽 셀: 아이콘과 AM/PM 그룹 */}
       <div className="flex flex-col items-center justify-center text-slate-500">
@@ -61,7 +61,7 @@ function ThemedLcdClock({ time, amPm, icon }: { time: string; amPm: string; icon
         <p className="font-sans font-bold text-xl">{amPm}</p>
       </div>
 
-      {/* 오른쪽 셀: 시간 텍스트 (볼드체 제거) */}
+      {/* 오른쪽 셀: 시간 텍스트 */}
       <p className="font-dseg text-6xl text-slate-800">
         {time}
       </p>

@@ -136,6 +136,7 @@ public class SensorDataApiService {
   }
 
   // 정기 데이터 일 때 사용(최근 데이터만)
+  // cron-job으로 실행
   @Transactional
   public void fetchRecentData() {
 
@@ -147,7 +148,7 @@ public class SensorDataApiService {
 
     log.info("정기적인 S-DoT 최신 데이터 수집을 시작합니다...");
     Long startTime = System.currentTimeMillis();
-    log.info("최초 데이터 수집 시작 시간: {}", timeFormatter(startTime));
+    log.info("데이터 수집 시작 시간: {}", timeFormatter(startTime));
 
     // 증분 업데이트를 위해 DB에서 가장 마지막 시간을 조회
     Set<LocalDateTime> lastKnownTimes = sensorDataRepository.findLatestSensingTime();
@@ -215,12 +216,6 @@ public class SensorDataApiService {
     } catch (Exception e) {
       log.error("데이터 페이지({} ~ {}) 처리 중 오류 발생. 해당 페이지를 건너뜁니다.", startIndex, endIndex, e);
     }
-  }
-
-
-  // 9시 30분, 15시 30분에 한 번씩 부르기
-  public void scheduledBatchExecution() {
-    fetchRecentData();
   }
 
   // lastKnownTimes 받도록 함

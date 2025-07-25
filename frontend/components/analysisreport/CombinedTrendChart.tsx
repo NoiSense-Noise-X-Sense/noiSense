@@ -28,7 +28,6 @@ const transformDataForChart = (type: string, data: TrendChartItem[]) => {
         return {chartData: [], lineKeys: []};
     }
     const chartData = data.map(item => ({
-        // Recharts의 x축 키는 보통 'name' 사용
         name: type === 'dayOfWeek' ? dayOfWeekMap[item.xaxis] : item.xaxis+'시',
         ...item.avgNoiseByRegion,
     }));

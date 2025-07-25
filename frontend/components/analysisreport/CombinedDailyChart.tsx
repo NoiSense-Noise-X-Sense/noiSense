@@ -17,7 +17,7 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
   console.log("CombinedDailyChart data:", data);
 
   const hasData = data && data.length > 0;
-  // 지역명 리스트 추출 (xaxis 제외)
+  // 지역명 리스트 추출
   const regionList = hasData ? Object.keys(data[0]).filter(key => key !== "xaxis") : [];
 
   // 요일 숫자를 한글 요일로 변환하는 매핑
@@ -72,7 +72,7 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
   )
 }
 
-// 색상 팔레트 함수 추가
+// 색상 팔레트 함수
 function getColor(index: number): string {
   const colors = [
     "#dc2626", "#ea580c", "#2563eb", "#f59e0b", "#16a34a",

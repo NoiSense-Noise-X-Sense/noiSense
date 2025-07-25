@@ -5,13 +5,12 @@ import { RankItem, DeviationRankItem } from "@/types/ReportIndex";
 import { TrendingUp, TrendingDown, TrendingUpDown } from 'lucide-react';
 import React from "react";
 
-// --- 이 파일 안에서만 사용할 Helper 로직 ---
 
 type ListType = 'top' | 'bottom' | 'deviation';
 
 // 순위 항목의 스타일을 반환하는 함수
 function getRankItemStyle(listType: ListType, rank: number): string {
-    // ✅ (새로 수정) 모든 항목에 'border' 클래스를 추가하고, 각 순위별로 테두리 색상을 지정합니다.
+
     const baseStyle = "flex items-center justify-between p-3 rounded-md font-medium text-gray-800 transition-all duration-200 ease-in-out hover:scale-[1.02] hover:shadow-md border";
 
     if (listType === 'top') {

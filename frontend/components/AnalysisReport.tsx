@@ -35,7 +35,7 @@ export default function AnalysisReport() {
 
 
 
-  // 자치구 목록 로딩 (기존과 동일)
+  // 자치구 목록 로딩
   useEffect(() => {
     const fetchDistricts = async () => {
       setIsDistrictsLoading(true);
@@ -53,7 +53,7 @@ export default function AnalysisReport() {
     fetchDistricts();
   }, []);
 
-  // 리포트 데이터 로딩 로직 (가공 부분 제거)
+  // 리포트 데이터 로딩 로직
   useEffect(() => {
     if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
 
@@ -117,7 +117,9 @@ export default function AnalysisReport() {
                 <KpiCards
                   avgNoise={reportData.avgNoise}
                   perceivedNoise={reportData.perceivedNoise}
-                  maxNoiseRegion={reportData.maxNoiseRegion}
+                  maxNoiseRegion={
+                    districts.find(d => d.code === reportData.maxNoiseRegion)?.nameKo || reportData.maxNoiseRegion
+                  }
                   maxNoiseTime={reportData.maxNoiseTime}
                   maxNoiseTimeValue={reportData.maxNoiseTimeValue}
                   selectedDistrict={filters.district}
@@ -128,18 +130,16 @@ export default function AnalysisReport() {
                   deviationRankDtoList={reportData.deviationRankDtoList || []}
                 />
 
-                {/* --- ✨✨✨ 여기가 최종 수정 부분입니다 ✨✨✨ --- */}
                 {/*
                   데이터를 MainChart로 전달하기 직전에, .map()을 사용하여
-                  MainChart가 기대하는 'xAxis' (대문자 A) 키를 만들어줍니다.
+                  MainChart가 기대하는 'xAxis'키를 만들어 줌.
                 */}
                 <MainChart
                   hourlyData={reportData.totalChartDto?.overallHourAvgNoiseData?.map(d => ({ ...d, xAxis: d.hour })) || []}
                   dailyData={reportData.totalChartDto?.overallDayAvgNoiseData?.map(d => ({ ...d, xAxis: d.day })) || []}
                 />
-                {/* --- 여기까지가 최종 수정 부분입니다 --- */}
 
-                {/* 다른 차트들은 원본 데이터를 그대로 사용해도 괜찮습니다. */}
+                {/* 다른 차트들은 원본 데이터를 그대로 사용 가능함 */}
                 <CombinedHourlyChart
                   data={
                     (reportData.totalChartDto?.trendPointHourAvgNoiseData || [])

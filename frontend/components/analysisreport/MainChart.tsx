@@ -17,9 +17,6 @@ export default function MainChart({ hourlyData, dailyData }: MainChartProps) {
   const currentTitle = activeTab === "hourly" ? "시간대별 평균 소음" : "일별 평균 소음"
   const hasValidData = currentData.some(d => d.avgNoise !== null);
 
-  // --- ✨✨✨ 여기가 첫 번째 핵심 수정 부분입니다 ✨✨✨ ---
-  // 부모에게서 받는 데이터 키(xaxis)와 일치시키기 위해,
-  // X축에서 사용할 데이터 키를 동적으로 결정합니다.
   const xDataKey = activeTab === "hourly" ? "xaxis" : "xaxis" // 'dailyData'도 'xaxis' 키를 사용하므로 통일
 
   return (
@@ -53,8 +50,6 @@ export default function MainChart({ hourlyData, dailyData }: MainChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={currentData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              {/* --- ✨✨✨ 여기가 두 번째 핵심 수정 부분입니다 ✨✨✨ --- */}
-              {/* dataKey를 'xAxis'에서 실제 데이터 키인 'xaxis'(소문자)로 변경합니다. */}
               <XAxis dataKey="xaxis" tick={{ fontSize: 12 }} interval={activeTab === "hourly" ? "preserveEnd" : 0} />
               <YAxis
                 type="number"

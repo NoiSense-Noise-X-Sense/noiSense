@@ -18,10 +18,10 @@ const data = [
     { name: "High", value: 25 },
 ];
 
-// ✅ 2. 바늘을 그리는 로직이 maxValue를 사용하도록 수정합니다.
+// ✅ 2. 바늘을 그리는 로직이 maxValue를 사용하도록 수정.
 const needle = (value: number, maxValue: number, cx: number, cy: number, iR: number, oR: number, color: string) => {
     const safeValue = (typeof value !== 'number' || isNaN(value)) ? 0 : value;
-    // 고정된 GAUGE_MAX_VALUE 대신, prop으로 받은 maxValue를 사용합니다.
+    // 고정된 GAUGE_MAX_VALUE 대신, prop으로 받은 maxValue를 사용.
     const angle = 180 - (safeValue / maxValue) * 180; 
     
     const length = (iR + oR) / 2;
@@ -39,7 +39,7 @@ const needle = (value: number, maxValue: number, cx: number, cy: number, iR: num
     );
 };
 
-// ✅ 3. 컴포넌트가 value와 maxValue를 모두 props로 받도록 수정합니다.
+// ✅ 3. 컴포넌트가 value와 maxValue를 모두 props로 받도록 수정.
 export default function NoiseGauge({ value, maxValue }: GaugeProps) {
     return (
         <div className="w-full h-20">
@@ -57,7 +57,7 @@ export default function NoiseGauge({ value, maxValue }: GaugeProps) {
                         isAnimationActive={false}
                         label={(props) => {
                             const { cx, cy, innerRadius, outerRadius } = props;
-                            // needle 함수에 maxValue를 전달합니다.
+                            // needle 함수에 maxValue를 전달.
                             return needle(value, maxValue, cx as number, cy as number, innerRadius as number, outerRadius as number, "#374151");
                         }}
                         labelLine={false}

@@ -12,7 +12,6 @@ const CustomDatePickerInput = forwardRef<HTMLButtonElement, CustomInputProps>(
     <div className="relative w-full">
       <button
         type="button"
-        // 이 부분을 수정했습니다: bg-white 추가!
         className="w-full cursor-pointer pl-3 pr-10 py-2 text-left border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 bg-white"
         onClick={onClick}
         ref={ref}

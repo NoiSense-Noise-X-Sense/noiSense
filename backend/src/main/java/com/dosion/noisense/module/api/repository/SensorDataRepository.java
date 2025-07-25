@@ -18,4 +18,9 @@ public interface SensorDataRepository extends JpaRepository<SensorData, Long>, S
   Set<LocalDateTime> findLatestSensingTime();
 
 
+    List<Object[]> findDistrictPeakAndCalmHourWithAvg(LocalDateTime startDate, LocalDateTime endDate);
+
+  List<Object[]> findDistrictNoiseHourly(LocalDateTime yesterdayStart, LocalDateTime yesterdayEnd, LocalDateTime weekStart, LocalDateTime batchEnd, LocalDateTime monthStart, LocalDateTime batchEnd1);
+
+  List<Object[]> findYearlyNoiseStats();
 }
