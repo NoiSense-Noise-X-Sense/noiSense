@@ -1,6 +1,8 @@
 package com.dosion.noisense.module.board.service;
 
 import com.dosion.noisense.common.ai.service.EmotionScoreService;
+import com.dosion.noisense.module.api.entity.AutonomousDistrictEntity;
+import com.dosion.noisense.module.api.repository.AutonomousDistrictRepository;
 import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.entity.BoardEmpathy;
@@ -8,6 +10,7 @@ import com.dosion.noisense.module.board.repository.BoardEmpathyRepository;
 import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.module.board.entity.Board;
 import com.dosion.noisense.module.board.repository.BoardRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +32,16 @@ public class BoardService {
   private final BoardEmpathyRepository boardEmpathyRepository;
   private final BoardEsService boardEsService;
   private final EmotionScoreService emotionScoreService;
+  private final AutonomousDistrictRepository autonomousDistrictRepository;
+  private Map<String, String> codeToNameMap;
+
 
   /** 게시글 작성 **/
   @Transactional
   public BoardDto createBoard(BoardDto boardDto) {
     //AI 감정점수 분석
     int score = emotionScoreService.evaluateEmotionScore(boardDto.getContent());
+
     Board board = Board.builder()
       .userId(boardDto.getUserId())
       .nickname(boardDto.getNickname())
@@ -41,8 +50,8 @@ public class BoardService {
       .emotionalScore((long) score)
       .empathyCount(boardDto.getEmpathyCount())
       .viewCount(boardDto.getViewCount() != null ? boardDto.getViewCount() : 0L)
-      .autonomousDistrict(boardDto.getAutonomousDistrict())
-      .administrativeDistrict(boardDto.getAdministrativeDistrict())
+      .autonomousDistrictCode(boardDto.getAutonomousDistrict()) // 코드(UUID)만 저장
+      .administrativeDistrictCode(boardDto.getAdministrativeDistrict())
       .createdDate(LocalDateTime.now())
       .modifiedDate(LocalDateTime.now())
       .build();
@@ -57,13 +66,13 @@ public class BoardService {
       .content(savedBoard.getContent())
       .username(savedBoard.getNickname())
       .userId(savedBoard.getUserId())
-      .autonomousDistrict(savedBoard.getAutonomousDistrict())
+      .autonomousDistrict(savedBoard.getAutonomousDistrictCode())
       .createdDate(savedBoard.getCreatedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .modifiedDate(savedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .view_count(savedBoard.getViewCount())
       .build());
 
-    return resultDto;
+    return toDTO(savedBoard);
   }
 
   /** 게시글 상세 조회 및 조회수 증가 **/
@@ -113,8 +122,8 @@ public class BoardService {
 
     board.setEmpathyCount(boardDto.getEmpathyCount());
     board.setViewCount(boardDto.getViewCount());
-    board.setAutonomousDistrict(boardDto.getAutonomousDistrict());
-    board.setAdministrativeDistrict(boardDto.getAdministrativeDistrict());
+    board.setAutonomousDistrictCode(boardDto.getAutonomousDistrict());
+    board.setAdministrativeDistrictCode(boardDto.getAdministrativeDistrict());
     board.setModifiedDate(LocalDateTime.now());
 
     Board updatedBoard = boardRepository.save(board);
@@ -162,10 +171,23 @@ public class BoardService {
       boardEmpathyRepository.save(boardEmpathy);
       board.setEmpathyCount(board.getEmpathyCount() + 1);
     }
+    boardRepository.save(board); // 공감 수 저장
+  }
+
+  @PostConstruct
+  public void initCodeToNameMap() {
+    this.codeToNameMap = autonomousDistrictRepository.findAll().stream()
+      .collect(Collectors.toMap(
+        AutonomousDistrictEntity::getCode,
+        AutonomousDistrictEntity::getNameKo
+      ));
   }
 
   /** Entity → DTO 변환 **/
   private BoardDto toDTO(Board board) {
+    String code = board.getAutonomousDistrictCode();
+    String nameKo = codeToNameMap.getOrDefault(code, "알 수 없음");
+
     return BoardDto.builder()
       .boardId(board.getId())
       .userId(board.getUserId())
@@ -175,8 +197,9 @@ public class BoardService {
       .emotionalScore(board.getEmotionalScore())
       .empathyCount(board.getEmpathyCount())
       .viewCount(board.getViewCount())
-      .autonomousDistrict(board.getAutonomousDistrict())
-      .administrativeDistrict(board.getAdministrativeDistrict())
+      .autonomousDistrict(code)         // 자치구 코드
+      .autonomousDistrictName(nameKo)   // 자치구 한글 이름 (응답용)
+      .administrativeDistrict(board.getAdministrativeDistrictCode())
       .createdDate(board.getCreatedDate())
       .modifiedDate(board.getModifiedDate())
       .build();
