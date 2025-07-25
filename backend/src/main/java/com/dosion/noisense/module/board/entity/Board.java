@@ -3,6 +3,7 @@ package com.dosion.noisense.module.board.entity;
 import com.dosion.noisense.module.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Comment;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,11 +49,13 @@ public class Board {
   @Column(name = "view_count", nullable = false)
   private Long viewCount = 0L;
 
-  @Column(name = "autonomous_district")
-  private String autonomousDistrict;
+  @Column(name = "autonomous_district_code", length = 10, nullable = false)
+  @Comment("자치구 코드")
+  private String autonomousDistrictCode;
 
-  @Column(name = "administrative_district")
-  private String administrativeDistrict;
+  @Column(name = "administrative_district_code", length = 10, nullable = false)
+  @Comment("행정동 코드")
+  private String administrativeDistrictCode;
 
   @Column(name = "created_date")
   private LocalDateTime createdDate;
