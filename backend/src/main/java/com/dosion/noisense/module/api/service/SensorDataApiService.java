@@ -215,16 +215,6 @@ public class SensorDataApiService {
     }
   }
 
-
-  // 9시 30분, 15시 30분에 한 번씩 부르기
-  // S-DoT Data가 하루에 한 번만 업데이트 됨
-  // 오전에 누락 될 수 있으니 15시에 한 번 더
-//  @Scheduled(cron = "0 */1 * * * *")
-  @Scheduled(cron = "0 30 9,15 * * *")
-  public void scheduledBatchExecution() {
-    fetchRecentData();
-  }
-
   // lastKnownTimes 받도록 함
   private void processFirstPageForDistrict(String districtNameEn, String districtNameKo, LocalDateTime lastestTime, Long startTime, int startIndex, int endIndex ) throws Exception {
 
