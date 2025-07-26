@@ -3,154 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBoard } from "@/lib/boardApi";
+import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
-// 자치구 매핑 (한글명 → 코드)
-const autonomousDistrictMapping: { [key: string]: string } = {
-  "종로구": "11010",
-  "중구": "11020",
-  "용산구": "11030",
-  "성동구": "11040",
-  "광진구": "11050",
-  "동대문구": "11060",
-  "중랑구": "11070",
-  "성북구": "11080",
-  "강북구": "11090",
-  "도봉구": "11100",
-  "노원구": "11110",
-  "은평구": "11120",
-  "서대문구": "11130",
-  "마포구": "11140",
-  "양천구": "11150",
-  "강서구": "11160",
-  "구로구": "11170",
-  "금천구": "11180",
-  "영등포구": "11190",
-  "동작구": "11200",
-  "관악구": "11210",
-  "서초구": "11220",
-  "강남구": "11230",
-  "송파구": "11240",
-  "강동구": "11250"
-};
-
-// 행정동 매핑 (한글명 → 코드)
-const administrativeDistrictMapping: { [key: string]: string } = {
-  "사직동": "11010530",
-  "삼청동": "11010540",
-  "부암동": "11010550",
-  "평창동": "11010560",
-  "무악동": "11010570",
-  "교남동": "11010580",
-  "가회동": "11010600",
-  "종로1·2·3·4가동": "11010610",
-  "종로5·6가동": "11010630",
-  "이화동": "11010640",
-  "창신1동": "11010670",
-  "창신2동": "11010680",
-  "창신3동": "11010690",
-  "숭인1동": "11010700",
-  "숭인2동": "11010710",
-  "청운효자동": "11010720",
-  "혜화동": "11010730",
-  "소공동": "11020520",
-  "회현동": "11020540",
-  "명동": "11020550",
-  "필동": "11020570",
-  "장충동": "11020580",
-  "광희동": "11020590",
-  "을지로동": "11020600",
-  "신당5동": "11020650",
-  "황학동": "11020670",
-  "중림동": "11020680",
-  "신당동": "11020690",
-  "다산동": "11020700",
-  "약수동": "11020710",
-  "청구동": "11020720",
-  "동화동": "11020730",
-  "후암동": "11030510",
-  "용산2가동": "11030520",
-  "남영동": "11030530",
-  "원효로2동": "11030570",
-  "효창동": "11030580",
-  "용문동": "11030590",
-  "이촌1동": "11030630",
-  "이촌2동": "11030640",
-  "이태원1동": "11030650",
-  "이태원2동": "11030660",
-  "서빙고동": "11030690",
-  "보광동": "11030700",
-  "청파동": "11030710",
-  "원효로1동": "11030720",
-  "한강로동": "11030730",
-  "한남동": "11030740",
-  "왕십리2동": "11040520",
-  "마장동": "11040540",
-  "사근동": "11040550",
-  "행당1동": "11040560",
-  "행당2동": "11040570",
-  "응봉동": "11040580",
-  "금호1가동": "11040590",
-  "금호4가동": "11040620",
-  "성수1가1동": "11040650",
-  "성수1가2동": "11040660",
-  "성수2가1동": "11040670",
-  "성수2가3동": "11040680",
-  "송정동": "11040690",
-  "용답동": "11040700",
-  "왕십리도선동": "11040710",
-  "금호2·3가동": "11040720",
-  "옥수동": "11040730",
-  "화양동": "11050530",
-  "군자동": "11050540",
-  "중곡1동": "11050550",
-  "중곡2동": "11050560",
-  "중곡3동": "11050570",
-  "중곡4동": "11050580",
-  "능동": "11050590",
-  "구의1동": "11050600",
-  "구의2동": "11050610",
-  "구의3동": "11050620",
-  "광장동": "11050630",
-  "자양1동": "11050640",
-  "자양2동": "11050650",
-  "자양3동": "11050660",
-  "자양4동": "11050670",
-  "회기동": "11060710",
-  "휘경1동": "11060720",
-  "휘경2동": "11060730",
-  "청량리동": "11060800",
-  "용신동": "11060810",
-  "제기동": "11060820",
-  "전농1동": "11060830",
-  "전농2동": "11060840",
-  "답십리2동": "11060860",
-  "장안1동": "11060870",
-  "장안2동": "11060880",
-  "이문1동": "11060890",
-  "이문2동": "11060900",
-  "답십리1동": "11060910",
-  "면목2동": "11070520",
-  "면목4동": "11070540",
-  "면목5동": "11070550",
-  "면목7동": "11070570",
-  "역삼동": "1123010100",
-  "신사동": "1123010200",
-  "논현동": "1123010300",
-  "압구정동": "1123010400",
-  "청담동": "1123010500",
-  "삼성동": "1123010600",
-  "대치동": "1123010700",
-  "개포동": "1123010800",
-  "세곡동": "1123010900",
-  "자곡동": "1123011000",
-  "봉천동": "1121010100",
-  "신림동": "1121010200",
-  "남현동": "1121010300"
-};
 
 const seoulDistricts = [
   "전체",
@@ -210,14 +67,9 @@ const dongsByDistrict: { [key: string]: string[] } = {
   전체: ["전체"],
 };
 
-import { getCurrentUser } from "@/lib/auth";
 
-interface WritePostProps {
-  onBack: () => void;
-  onSubmit: () => void;
-}
 
-export default function WritePost({ onBack, onSubmit }: WritePostProps) {
+export default function WritePost() {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -234,32 +86,28 @@ export default function WritePost({ onBack, onSubmit }: WritePostProps) {
       setError("로그인 정보가 없습니다. 다시 로그인 해주세요.");
       return;
     }
-
-    if (!title.trim() || !content.trim() || !autonomousDistrict || !administrativeDistrict) {
-      setError("모든 필드를 입력해주세요.");
+    if (!title.trim() || !content.trim()) {
+      setError("제목과 내용을 모두 입력해주세요.");
       return;
     }
-
+    if (!autonomousDistrict || !administrativeDistrict) {
+      setError("지역을 선택해주세요.");
+      return;
+    }
     setLoading(true);
     try {
-      // 한글명을 코드로 변환
-      const autonomousDistrictCode = autonomousDistrictMapping[autonomousDistrict] || autonomousDistrict;
-      const administrativeDistrictCode = administrativeDistrictMapping[administrativeDistrict] || administrativeDistrict;
-
       await createBoard({
-        title: title.trim(),
-        content: content.trim(),
-        autonomousDistrict: autonomousDistrictCode,
-        administrativeDistrict: administrativeDistrictCode,
         userId: user.userId,
         nickname: user.nickname,
-        emotionalScore: 0,
+        title,
+        content,
+        autonomousDistrict,
+        administrativeDistrict,
+        emotionalScore: 0
       });
-
-      onSubmit();
-    } catch (err) {
+      router.push("/boards");
+    } catch (e) {
       setError("게시글 작성에 실패했습니다.");
-      console.error("게시글 작성 오류:", err);
     } finally {
       setLoading(false);
     }
@@ -267,12 +115,7 @@ export default function WritePost({ onBack, onSubmit }: WritePostProps) {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">게시글 작성</h1>
-        <Button variant="outline" onClick={onBack}>
-          뒤로가기
-        </Button>
-      </div>
+      <h1 className="text-2xl font-bold mb-4">게시글 작성</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           placeholder="제목을 입력하세요"
