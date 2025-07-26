@@ -63,6 +63,12 @@ public class CommentService {
     return toDto(comment);
   }
 
+  /** 특정 유저의 댓글 개수 조회 **/
+  @Transactional(readOnly = true)
+  public long countCommentsByUserId(Long userId) {
+    return commentRepository.countByUserId(userId);
+  }
+
 
   /** Entity → DTO 변환 **/
   public CommentDto toDto(Comment entity) {
