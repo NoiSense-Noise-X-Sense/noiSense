@@ -23,7 +23,7 @@ import { getBoardById, BoardPost, getComments, createComment, deleteComment, tog
 // 자치구 매핑 (코드 → 한글명)
 const autonomousDistrictMapping: { [key: string]: string } = {
   "11010": "종로구",
-  "11020": "중구", 
+  "11020": "중구",
   "11030": "용산구",
   "11040": "성동구",
   "11050": "광진구",
@@ -52,7 +52,7 @@ const autonomousDistrictMapping: { [key: string]: string } = {
 // 행정동 매핑 (코드 → 한글명)
 const administrativeDistrictMapping: { [key: string]: string } = {
   "11010530": "사직동",
-  "11010540": "삼청동", 
+  "11010540": "삼청동",
   "11010550": "부암동",
   "11010560": "평창동",
   "11010570": "무악동",
@@ -173,21 +173,7 @@ const getAdministrativeDistrictName = (code: string): string => {
   return administrativeDistrictMapping[code] || code;
 };
 
-// accessToken에서 user 정보 추출 함수 (WritePost.tsx와 동일)
-function getUserFromToken() {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("accessToken");
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return {
-      userId: payload["user-id"], // JWT payload 구조에 맞게 수정
-      nickname: payload["username"],
-    };
-  } catch {
-    return null;
-  }
-}
+import { getCurrentUser, CurrentUser } from "@/lib/auth";
 
 export default function PostDetail({
                                      postId,
@@ -239,6 +225,26 @@ export default function PostDetail({
   const [commentLoading, setCommentLoading] = useState(false);
   const [commentError, setCommentError] = useState<string | null>(null);
   const [commentSubmitLoading, setCommentSubmitLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  const [userLoading, setUserLoading] = useState(true);
+
+  // 현재 로그인한 유저 정보 불러오기
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      setUserLoading(true);
+      try {
+        const user = await getCurrentUser();
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('Failed to fetch current user:', error);
+        setCurrentUser(null);
+      } finally {
+        setUserLoading(false);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   // 댓글 목록 불러오기
   useEffect(() => {
@@ -255,8 +261,6 @@ export default function PostDetail({
       .finally(() => setCommentLoading(false));
   }, [post]);
 
-  // 현재 로그인한 유저 정보
-  const currentUser = typeof window !== "undefined" ? getUserFromToken() : null;
   const isAuthor = !!(currentUser && post && currentUser.userId === post.userId);
 
   const handleCommentSubmit = async () => {

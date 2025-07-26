@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // 자치구 매핑 (한글명 → 코드)
 const autonomousDistrictMapping: { [key: string]: string } = {
   "종로구": "11010",
-  "중구": "11020", 
+  "중구": "11020",
   "용산구": "11030",
   "성동구": "11040",
   "광진구": "11050",
@@ -40,7 +40,7 @@ const autonomousDistrictMapping: { [key: string]: string } = {
 // 행정동 매핑 (한글명 → 코드)
 const administrativeDistrictMapping: { [key: string]: string } = {
   "사직동": "11010530",
-  "삼청동": "11010540", 
+  "삼청동": "11010540",
   "부암동": "11010550",
   "평창동": "11010560",
   "무악동": "11010570",
@@ -210,21 +210,7 @@ const dongsByDistrict: { [key: string]: string[] } = {
   전체: ["전체"],
 };
 
-// accessToken에서 user 정보 추출 함수
-function getUserFromToken() {
-  if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("accessToken");
-  if (!token) return null;
-  try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return {
-      userId: payload["user-id"],
-      nickname: payload.username,
-    };
-  } catch {
-    return null;
-  }
-}
+import { getCurrentUser } from "@/lib/auth";
 
 interface WritePostProps {
   onBack: () => void;
@@ -243,7 +229,7 @@ export default function WritePost({ onBack, onSubmit }: WritePostProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    const user = getUserFromToken();
+    const user = await getCurrentUser();
     if (!user) {
       setError("로그인 정보가 없습니다. 다시 로그인 해주세요.");
       return;

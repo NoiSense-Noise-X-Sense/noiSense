@@ -230,7 +230,7 @@ export default function MyPage({ onPostClick }: { onPostClick?: (postId: number)
   }
 
   const moveBoardPage = (boardId: number) => {
-    router.push(`/board/edit/${boardId}`);
+    router.push(`/boards/edit/${boardId}`);
   }
 
   // 로딩 및 에러 UI
