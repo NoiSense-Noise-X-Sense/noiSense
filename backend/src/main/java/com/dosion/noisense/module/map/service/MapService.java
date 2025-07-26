@@ -2,7 +2,7 @@ package com.dosion.noisense.module.map.service;
 
 
 import com.dosion.noisense.common.util.PerceivedNoiseCalculator;
-import com.dosion.noisense.module.api.repository.SensorDataRepository;
+import com.dosion.noisense.module.sensor.repository.HourDistrictSummaryRepository;
 import com.dosion.noisense.web.map.dto.MapDto;
 import com.dosion.noisense.web.report.dto.AvgNoiseRegionDto;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MapService {
 
-  private final SensorDataRepository sensorDataRepository;
+  private final HourDistrictSummaryRepository hourDistrictSummaryRepository;
 
   private final PerceivedNoiseCalculator perceivedNoiseCalculator;
 
   public List<MapDto> getMapData(LocalDateTime startDate, LocalDateTime endDate, String autonomousDistrictCode, String administrativeDistrictCode, List<String> regionList) {
     log.info("getMapData");
+    long startTime = System.nanoTime();
 
 /*     지역을 Region Enum에 담기
     List<Region> regionTypeList = new ArrayList<>();
@@ -39,7 +40,7 @@ public class MapService {
 
     List<MapDto> result = new ArrayList<>();
 
-    List<AvgNoiseRegionDto> avgNoiseRegionDtoList = sensorDataRepository.findAverageNoiseByRegion(startDate, endDate, autonomousDistrictCode, administrativeDistrictCode, lowerCaseRegionList);
+    List<AvgNoiseRegionDto> avgNoiseRegionDtoList = hourDistrictSummaryRepository.findAverageNoiseByRegion(startDate, endDate, autonomousDistrictCode, administrativeDistrictCode, lowerCaseRegionList);
     // log.info("avgNoiseRegionDtoList : {}", avgNoiseRegionDtoList);
     for (AvgNoiseRegionDto dto : avgNoiseRegionDtoList) {
       // Double perceivedNoise = 0.0;
@@ -55,6 +56,9 @@ public class MapService {
         .administrativeDistrictEng(dto.getAdministrativeDistrictEng())
         .build());
     }
+
+    long endTime = System.nanoTime();
+    log.info("getMapData time : {} ms", (endTime - startTime) / 1000000);
 
     return result;
   }
