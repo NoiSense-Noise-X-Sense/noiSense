@@ -71,6 +71,47 @@ public class BoardDto {
     this.isEmpathized = isEmpathized;
   }
 
+  // int 타입 지원 (JPA 쿼리에서 int로 들어오는 경우 대응)
+  public BoardDto(Long boardId, Long userId, String nickname, String title, String content,
+                  Long emotionalScore, Long empathyCount, Long viewCount, int commentCount,
+                  String autonomousDistrict, String administrativeDistrict,
+                  LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    this.boardId = boardId;
+    this.userId = userId;
+    this.nickname = nickname;
+    this.title = title;
+    this.content = content;
+    this.emotionalScore = emotionalScore;
+    this.empathyCount = empathyCount;
+    this.viewCount = viewCount;
+    this.commentCount = (long) commentCount;
+    this.autonomousDistrict = autonomousDistrict;
+    this.administrativeDistrict = administrativeDistrict;
+    this.createdDate = createdDate;
+    this.modifiedDate = modifiedDate;
+  }
+
+  // Long 타입 지원 (JPA 쿼리에서 Long으로 들어오는 경우 대응)
+  public BoardDto(Long boardId, Long userId, String nickname, String title, String content,
+                  Long emotionalScore, Long empathyCount, Long viewCount, Long commentCount,
+                  String autonomousDistrict, String administrativeDistrict,
+                  LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    this.boardId = boardId;
+    this.userId = userId;
+    this.nickname = nickname;
+    this.title = title;
+    this.content = content;
+    this.emotionalScore = emotionalScore;
+    this.empathyCount = empathyCount;
+    this.viewCount = viewCount;
+    this.commentCount = commentCount != null ? commentCount : 0L;
+    this.autonomousDistrict = autonomousDistrict;
+    this.administrativeDistrict = administrativeDistrict;
+    this.createdDate = createdDate;
+    this.modifiedDate = modifiedDate;
+  }
+
+
   public Boolean getIsEmpathized() {
     return isEmpathized;
   }

@@ -31,6 +31,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
   @Query("SELECT new com.dosion.noisense.web.board.dto.BoardDto(" +
     "b.id, b.userId, b.nickname, b.title, b.content, " +
     "b.emotionalScore, b.empathyCount, b.viewCount, " +
+    "(SELECT COUNT(c) FROM Comment c WHERE c.board.id = b.id), " + // 댓글 수
     "b.autonomousDistrictCode, b.administrativeDistrictCode, " +
     "b.createdDate, b.modifiedDate) " +
     "FROM Board b " +
@@ -38,12 +39,5 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     "ORDER BY b.createdDate DESC")
   Page<BoardDto> findByUserIdPaging(Long userId, Pageable pageable);
 
-  @EntityGraph(attributePaths = {"users", "board"})
-  List<Comment> findByBoardId(Long boardId);
-
-
   void deleteByUserId(Long userId);
-
-  long countByUserId(Long userId);
-
 }
