@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -8,295 +8,252 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
 import { User, MapPin, FileText, Trash2, Edit, Heart, LogOut, ChevronLeft, ChevronRight } from "lucide-react"
 import { getUserInfo, updateUserInfo, logout, deleteUser, getUserActivityStats, UserData, UserActivityStats } from "@/lib/api/user"
-import { getMyBoards, deleteBoard, BoardDto, PageResponse } from "@/lib/api/board"
+import { getMyBoards, deleteBoard, BoardDto } from "@/lib/api/board"
 import { getAutonomousDistricts, getDongsByGu, DistrictDto } from "@/lib/api/district"
 
+// 1. 상태 관리 구조 개선: 연관 상태를 객체로 그룹화
+type ProfileState = {
+  nickname: string
+  email: string
+  isEditing: boolean
+}
+
+type DistrictState = {
+  selectedGuCode: string
+  selectedDongCode: string
+  guList: DistrictDto[]
+  dongList: DistrictDto[]
+  guLoading: boolean
+  dongLoading: boolean
+}
+
+type PostsState = {
+  data: BoardDto[]
+  currentPage: number
+  totalPages: number
+  totalElements: number
+  loading: boolean
+  error: string | null
+}
+
+type ActivityStatsState = {
+  data: UserActivityStats | null
+  loading: boolean
+  error: string | null
+}
+
+type PageType =
+  | "main"
+  | "login"
+  | "mypage"
+  | "board"
+  | "WritePost";
 
 export default function MyPage() {
   const router = useRouter()
-  const [nickname, setNickname] = useState("")
-  const [email, setEmail] = useState("")
-  const [selectedDistrict, setSelectedDistrict] = useState("")
-  // 기본 동(구에 맞는 첫 번째 동으로)
-  const [selectedDong, setSelectedDong] = useState("")
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
 
-  // District API data
-  const [autonomousDistricts, setAutonomousDistricts] = useState<DistrictDto[]>([])
-  const [availableDongs, setAvailableDongs] = useState<DistrictDto[]>([])
-  const [districtsLoading, setDistrictsLoading] = useState(false)
-  const [dongsLoading, setDongsLoading] = useState(false)
-  const [selectedDistrictObj, setSelectedDistrictObj] = useState<DistrictDto | null>(null)
+  // 페이지 전역 상태
+  const [pageLoading, setPageLoading] = useState(true)
+  const [pageError, setPageError] = useState<string | null>(null)
 
-  // Separate state for displaying in statistics (only updates after successful API call)
-  const [displayDistrictObj, setDisplayDistrictObj] = useState<DistrictDto | null>(null)
-  const [displayDong, setDisplayDong] = useState("")
-  const [displayDongs, setDisplayDongs] = useState<DistrictDto[]>([])
-  const [myPosts, setMyPosts] = useState<BoardDto[]>([])
-  const [postsLoading, setPostsLoading] = useState(true)
-  const [postsError, setPostsError] = useState("")
-  const [currentPage, setCurrentPage] = useState(0)
-  const [pageSize, setPageSize] = useState(5)
-  const [totalPages, setTotalPages] = useState(0)
-  const [totalElements, setTotalElements] = useState(0)
+  // 상태 객체화
+  const [profile, setProfile] = useState<ProfileState>({ nickname: "", email: "", isEditing: false })
+  const [districts, setDistricts] = useState<DistrictState>({
+    selectedGuCode: "",
+    selectedDongCode: "",
+    guList: [],
+    dongList: [],
+    guLoading: true,
+    dongLoading: false,
+  })
+  const [posts, setPosts] = useState<PostsState>({
+    data: [],
+    currentPage: 0,
+    totalPages: 0,
+    totalElements: 0,
+    loading: true,
+    error: null,
+  })
+  const [activityStats, setActivityStats] = useState<ActivityStatsState>({ data: null, loading: true, error: null })
 
-  // Activity stats state
-  const [activityStats, setActivityStats] = useState<UserActivityStats | null>(null)
-  const [activityStatsLoading, setActivityStatsLoading] = useState(true)
-  const [activityStatsError, setActivityStatsError] = useState("")
+  const PAGE_SIZE = 5
 
-  const [isEditing, setIsEditing] = useState(false)
-
-  // Load dongs for selected district
-  const loadDongsForDistrict = async (districtCode: string, userDong?: string) => {
+  // 2. 로직 콜백으로 래핑: 함수 재생성 방지 및 의존성 명확화
+  const fetchMyPosts = useCallback(async (page: number) => {
+    setPosts(prev => ({ ...prev, loading: true }))
     try {
-      setDongsLoading(true)
-      const dongs = await getDongsByGu(districtCode)
-      setAvailableDongs(dongs)
-
-      // If user has a saved dong (districtCode), keep it selected, otherwise select the first dong
-      if (userDong && dongs.some(d => d.districtCode === userDong)) {
-        // User dong is already a districtCode, use it directly
-        setSelectedDong(userDong)
-      } else if (dongs.length > 0 && !selectedDong) {
-        setSelectedDong(dongs[0].districtCode)
-      }
-    } catch (err) {
-      console.error('Error loading dongs for district:', districtCode, err)
-      setAvailableDongs([])
-    } finally {
-      setDongsLoading(false)
-    }
-  }
-
-  // Fetch user activity stats
-  const fetchActivityStats = async () => {
-    try {
-      setActivityStatsLoading(true)
-      setActivityStatsError("")
-      const stats = await getUserActivityStats()
-      setActivityStats(stats)
-    } catch (err) {
-      console.error('Error fetching activity stats:', err)
-      setActivityStatsError('활동 통계를 불러오는데 실패했습니다.')
-    } finally {
-      setActivityStatsLoading(false)
-    }
-  }
-
-  // 사용자 정보 가져오기
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        setIsLoading(true)
-
-        // Load districts and user info in parallel
-        const [userData, districts] = await Promise.all([
-          getUserInfo(),
-          getAutonomousDistricts()
-        ])
-
-        // Set districts data
-        setAutonomousDistricts(districts)
-
-        // 사용자 정보 설정
-        setNickname(userData.nickname || "")
-        setEmail(userData.email || "")
-
-        // Find the district object that matches user's stored district code
-        const userDistrictObj = districts.find(d => d.districtCode === userData.autonomousDistrict)
-        setSelectedDistrictObj(userDistrictObj || null)
-
-        // Set selected district using districtCode if user has one
-        setSelectedDistrict(userData.autonomousDistrict || "")
-        setSelectedDong(userData.administrativeDistrict || "")
-
-        // Initialize display state for statistics section
-        setDisplayDistrictObj(userDistrictObj || null)
-        setDisplayDong(userData.administrativeDistrict || "")
-
-        // If user has a district, load the dongs for that district
-        if (userDistrictObj && userDistrictObj.districtCode) {
-          await loadDongsForDistrict(userDistrictObj.districtCode, userData.administrativeDistrict)
-          // Also load dongs for display in statistics section
-          try {
-            const displayDongsData = await getDongsByGu(userDistrictObj.districtCode)
-            setDisplayDongs(displayDongsData)
-          } catch (err) {
-            console.error('Error loading display dongs:', err)
-            setDisplayDongs([])
-          }
-        }
-
-        setIsLoading(false)
-      } catch (err) {
-        console.error('Error fetching user info:', err)
-
-        // Provide more specific error messages based on the error type
-        let errorMessage = 'Failed to load user information'
-        if (err instanceof Error) {
-          if (err.message.includes('Failed to fetch autonomous districts')) {
-            errorMessage = '지역 정보를 불러오는데 실패했습니다. 네트워크 연결을 확인해주세요.'
-          } else if (err.message.includes('로그인 만료')) {
-            errorMessage = '로그인이 만료되었습니다. 다시 로그인해주세요.'
-          } else if (err.message.includes('Failed to fetch')) {
-            errorMessage = '서버와의 연결에 실패했습니다. 잠시 후 다시 시도해주세요.'
-          }
-        }
-
-        setError(errorMessage)
-        setIsLoading(false)
-      }
-    }
-
-    fetchUserInfo()
-  }, [])
-
-  // 사용자 게시글 가져오기
-  const fetchMyPosts = async (page = currentPage) => {
-    try {
-      setPostsLoading(true)
-
-      const postsData = await getMyBoards(page, pageSize)
-
-      // 게시글 정보 설정
-      setMyPosts(postsData.content)
-      setCurrentPage(postsData.pageable.pageNumber)
-      setTotalPages(postsData.totalPages)
-      setTotalElements(postsData.totalElements)
-
-      setPostsLoading(false)
+      const postsData = await getMyBoards(page, PAGE_SIZE)
+      setPosts(prev => ({
+        ...prev,
+        data: postsData.content,
+        currentPage: postsData.pageable.pageNumber,
+        totalPages: postsData.totalPages,
+        totalElements: postsData.totalElements,
+        loading: false,
+        error: null,
+      }))
     } catch (err) {
       console.error('Error fetching user posts:', err)
-      setPostsError('Failed to load user posts')
-      setPostsLoading(false)
+      setPosts(prev => ({ ...prev, loading: false, error: '게시글을 불러오는 데 실패했습니다.' }))
     }
-  }
-
-  // 페이지 변경 핸들러
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setCurrentPage(newPage)
-      fetchMyPosts(newPage)
-    }
-  }
-
-  useEffect(() => {
-    fetchMyPosts()
-    fetchActivityStats()
   }, [])
 
-  // 구 변경 시 동도 같이 갱신 (해당 구 첫 번째 동으로)
-  const handleDistrictChange = async (districtCode: string) => {
-    setSelectedDistrict(districtCode)
-
-    // Find the district object that matches the selected district code
-    const districtObj = autonomousDistricts.find(d => d.districtCode === districtCode)
-    setSelectedDistrictObj(districtObj || null)
-
-    // Clear current dong selection
-    setSelectedDong("")
-    setAvailableDongs([])
-
-    // Load dongs for the selected district (no user dong since district changed)
-    if (districtObj && districtObj.districtCode) {
-      await loadDongsForDistrict(districtObj.districtCode)
+  const fetchActivityStats = useCallback(async () => {
+    setActivityStats(prev => ({ ...prev, loading: true }))
+    try {
+      const stats = await getUserActivityStats()
+      setActivityStats({ data: stats, loading: false, error: null })
+    } catch (err) {
+      console.error('Error fetching activity stats:', err)
+      setActivityStats({ data: null, loading: false, error: '활동 통계를 불러오는 데 실패했습니다.' })
     }
+  }, [])
+
+  const loadDongsForGu = useCallback(async (guCode: string) => {
+    if (!guCode) return
+    setDistricts(prev => ({ ...prev, dongLoading: true, dongList: [] }))
+    try {
+      const dongs = await getDongsByGu(guCode)
+      setDistricts(prev => ({ ...prev, dongList: dongs, dongLoading: false }))
+      // '구' 변경 시 첫번째 '동'을 기본으로 선택
+      if (dongs.length > 0) {
+        setDistricts(prev => ({ ...prev, selectedDongCode: dongs[0].districtCode }))
+      }
+    } catch (err) {
+      console.error('Error loading dongs for district:', err)
+      setDistricts(prev => ({ ...prev, dongLoading: false }))
+    }
+  }, [])
+
+  // 3. 데이터 로딩 로직 통합: 초기 렌더링 시 필요한 모든 데이터를 한곳에서 호출
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        setPageLoading(true)
+        // 병렬 API 호출로 로딩 시간 최적화
+        const [userData, guData] = await Promise.all([getUserInfo(), getAutonomousDistricts()])
+
+        setProfile(prev => ({ ...prev, nickname: userData.nickname || "", email: userData.email || "" }))
+        setDistricts(prev => ({
+          ...prev,
+          guList: guData,
+          selectedGuCode: userData.autonomousDistrict || "",
+          selectedDongCode: userData.administrativeDistrict || "",
+          guLoading: false,
+        }))
+
+        // 사용자의 '구' 정보가 있으면 해당 '동' 목록 로드
+        if (userData.autonomousDistrict) {
+          setDistricts(prev => ({...prev, dongLoading: true}));
+          const dongs = await getDongsByGu(userData.autonomousDistrict);
+          setDistricts(prev => ({...prev, dongList: dongs, dongLoading: false}));
+        }
+
+        // 다른 데이터들도 병렬로 호출
+        Promise.all([fetchMyPosts(0), fetchActivityStats()])
+
+      } catch (err) {
+        console.error('Error fetching initial data:', err)
+        setPageError('페이지를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.')
+      } finally {
+        setPageLoading(false)
+      }
+    }
+    fetchInitialData()
+  }, [fetchMyPosts, fetchActivityStats])
+
+
+  const handleGuChange = (guCode: string) => {
+    setDistricts(prev => ({ ...prev, selectedGuCode: guCode, selectedDongCode: "" }))
+    loadDongsForGu(guCode)
   }
 
   const handleSaveProfile = async () => {
+    setPageLoading(true)
     try {
-      setIsLoading(true)
-
-      // Use the districtCode directly as required
       const userData: Partial<UserData> = {
-        nickname,
-        email,
-        autonomousDistrict: selectedDistrict,
-        administrativeDistrict: selectedDong
+        nickname: profile.nickname,
+        email: profile.email,
+        autonomousDistrict: districts.selectedGuCode,
+        administrativeDistrict: districts.selectedDongCode,
       }
-
-      const updatedUser = await updateUserInfo(userData)
-      console.log("Profile updated successfully:", updatedUser)
-
-      // Update display state for statistics section after successful API call
-      const updatedDistrictObj = autonomousDistricts.find(d => d.districtCode === updatedUser.autonomousDistrict)
-      setDisplayDistrictObj(updatedDistrictObj || null)
-      setDisplayDong(updatedUser.administrativeDistrict || "")
-
-      // Update displayDongs for statistics section
-      if (updatedDistrictObj && updatedDistrictObj.districtCode) {
-        try {
-          const updatedDisplayDongs = await getDongsByGu(updatedDistrictObj.districtCode)
-          setDisplayDongs(updatedDisplayDongs)
-        } catch (err) {
-          console.error('Error loading updated display dongs:', err)
-        }
-      }
-
-      setIsEditing(false)
-      setIsLoading(false)
+      await updateUserInfo(userData)
+      setProfile(prev => ({ ...prev, isEditing: false }))
+      // 저장 성공 후 활동 통계 정보도 다시 불러와서 '내 지역' 정보 갱신
+      await fetchActivityStats()
     } catch (err) {
       console.error('Error updating user info:', err)
-      setError('Failed to update user information')
-      setIsLoading(false)
+      setPageError('프로필 업데이트에 실패했습니다.')
+    } finally {
+      setPageLoading(false)
     }
-    fetchActivityStats();
-  }
-
-
-
-  const moveBoardPage = (boardId: number) => {
-     router.push(`/board/edit/${boardId}`);
   }
 
   const handleDeletePost = async (postId: number) => {
-    if (confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+    // 4. UX 개선: confirm 대신 UI 라이브러리의 AlertDialog 사용을 권장
+    // const confirmed = await showAlertDialog({ title: "삭제 확인", description: "정말로 이 게시글을 삭제하시겠습니까?" });
+    if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
       const success = await deleteBoard(postId)
       if (success) {
-        // Remove the deleted post from the current list
-        setMyPosts(prevPosts => prevPosts.filter(post => post.boardId !== postId))
-        // Update total elements count
-        setTotalElements(prev => prev - 1)
         alert("게시글이 성공적으로 삭제되었습니다.")
+        // 게시글 목록을 다시 불러와서 UI 갱신
+        fetchMyPosts(posts.currentPage)
       } else {
-        alert("게시글 삭제에 실패했습니다. 다시 시도해주세요.")
+        alert("게시글 삭제에 실패했습니다.")
       }
     }
   }
 
   const handleLogout = async () => {
-    if (confirm("로그아웃 하시겠습니까?")) {
-      const success = await logout()
-      if (success) {
-        // Redirect to main page
-        window.location.reload();
-      } else {
-        alert("로그아웃에 실패했습니다. 다시 시도해주세요.")
-      }
+    if (window.confirm("로그아웃 하시겠습니까?")) {
+      await logout()
+      // 페이지 전체 리로드 대신 router로 이동하는 것이 더 부드러운 사용자 경험을 제공
+      router.push("/")
+      // router.refresh() // 필요 시 서버 데이터를 다시 가져오기 위해 사용
     }
   }
 
   const handleWithdraw = async () => {
-    if (confirm("정말로 회원탈퇴를 하시겠습니까?")) {
-      const success = await deleteUser()
-      if (success) {
-        // Navigate to main page
-        window.location.href = "/"
-      } else {
-        alert("회원탈퇴에 실패했습니다. 다시 시도해주세요.")
-      }
+    if (window.confirm("정말로 회원탈퇴를 하시겠습니까?")) {
+      await deleteUser()
+      alert("회원탈퇴가 완료되었습니다.")
+      router.push("/")
     }
+  }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 0 && newPage < posts.totalPages) {
+      fetchMyPosts(newPage)
+    }
+  }
+
+  const moveBoardPage = (boardId: number) => {
+    router.push(`/board/edit/${boardId}`);
+  }
+
+  // 로딩 및 에러 UI
+  if (pageLoading && !posts.data.length) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500"></div>
+      </div>
+    )
+  }
+
+  if (pageError) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-center">
+        <p className="text-red-600 mb-4">{pageError}</p>
+        <Button onClick={() => window.location.reload()} variant="outline">다시 시도</Button>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Header */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">마이페이지</h1>
           <p className="text-gray-600">프로필 관리 및 내 활동 확인</p>
@@ -306,173 +263,70 @@ export default function MyPage() {
           {/* Profile Section */}
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
-                프로필 관리
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2"><User /> 프로필 관리</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {isLoading ? (
-                <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="nickname">닉네임</Label>
+                  <Input id="nickname" value={profile.nickname} onChange={(e) => setProfile(p => ({ ...p, nickname: e.target.value }))} disabled={!profile.isEditing} />
                 </div>
-              ) : error ? (
-                <div className="text-center p-4 bg-red-50 rounded-lg text-red-600">
-                  {error}
-                  <Button
-                    onClick={() => window.location.reload()}
-                    variant="outline"
-                    className="mt-2"
-                  >
-                    다시 시도
-                  </Button>
+                <div>
+                  <Label htmlFor="email">이메일</Label>
+                  <Input id="email" type="email" value={profile.email} onChange={(e) => setProfile(p => ({ ...p, email: e.target.value }))} disabled={!profile.isEditing} />
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="nickname">닉네임</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="nickname"
-                        value={nickname}
-                        onChange={(e) => setNickname(e.target.value)}
-                        disabled={!isEditing}
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="email">이메일</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={!isEditing}
-                    />
-                  </div>
-
-                  <div>
-                    <Label>내 지역</Label>
-                    <div className="flex gap-2">
-                      {/* 구 선택 */}
-                      <Select
-                        value={selectedDistrict}
-                        onValueChange={handleDistrictChange}
-                        disabled={!isEditing || districtsLoading}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue placeholder={districtsLoading ? "로딩중..." : "구 선택"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {autonomousDistricts.map((district, index) => (
-                            <SelectItem key={`district-${district.districtCode}-${index}`} value={district.districtCode}>
-                              {district.districtNameKo}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-
-                      {/* 동 선택 */}
-                      <Select
-                        value={selectedDong}
-                        onValueChange={setSelectedDong}
-                        disabled={!isEditing || dongsLoading || availableDongs.length === 0}
-                      >
-                        <SelectTrigger className="w-32">
-                          <SelectValue placeholder={dongsLoading ? "로딩중..." : "동 선택"} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableDongs.map((dong, index) => (
-                            <SelectItem key={`dong-${dong.districtCode}-${index}`} value={dong.districtCode}>
-                              {dong.districtNameKo}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                <div>
+                  <Label>내 지역</Label>
+                  <div className="flex gap-2">
+                    <Select value={districts.selectedGuCode} onValueChange={handleGuChange} disabled={!profile.isEditing || districts.guLoading}>
+                      <SelectTrigger className="w-32"><SelectValue placeholder={districts.guLoading ? "로딩중..." : "구 선택"} /></SelectTrigger>
+                      <SelectContent>{districts.guList.map(gu => <SelectItem key={gu.districtCode} value={gu.districtCode}>{gu.districtNameKo}</SelectItem>)}</SelectContent>
+                    </Select>
+                    <Select value={districts.selectedDongCode} onValueChange={(code) => setDistricts(p => ({ ...p, selectedDongCode: code }))} disabled={!profile.isEditing || districts.dongLoading || districts.dongList.length === 0}>
+                      <SelectTrigger className="w-32"><SelectValue placeholder={districts.dongLoading ? "로딩중..." : "동 선택"} /></SelectTrigger>
+                      <SelectContent>{districts.dongList.map(dong => <SelectItem key={dong.districtCode} value={dong.districtCode}>{dong.districtNameKo}</SelectItem>)}</SelectContent>
+                    </Select>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {!isLoading && !error && (
-                <Button
-                  onClick={isEditing ? handleSaveProfile : () => setIsEditing(true)}
-                  variant={isEditing ? "default" : "secondary"}
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center">
-                      <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></span>
-                      처리 중...
-                    </span>
-                  ) : isEditing ? "저장하기" : "수정하기"}
-                </Button>
-              )}
+              <Button onClick={profile.isEditing ? handleSaveProfile : () => setProfile(p => ({ ...p, isEditing: true }))} disabled={pageLoading} variant={profile.isEditing ? "default" : "secondary"} className="w-full">
+                {profile.isEditing ? "저장하기" : "수정하기"}
+              </Button>
 
               <Separator />
 
               <div className="space-y-4">
-                <Button onClick={handleLogout} variant="outline" className="w-full mb-2">
-                  <LogOut className="h-4 w-4 mr-2" />
-                  로그아웃
-                </Button>
-                <Button onClick={handleWithdraw} variant="destructive" className="w-full">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  회원탈퇴
-                </Button>
+                <Button onClick={handleLogout} variant="outline" className="w-full"><LogOut className="h-4 w-4 mr-2" />로그아웃</Button>
+                <Button onClick={handleWithdraw} variant="destructive" className="w-full"><Trash2 className="h-4 w-4 mr-2" />회원탈퇴</Button>
               </div>
             </CardContent>
           </Card>
 
-          {/* Activity Stats */}
+          {/* Activity Stats Section */}
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />내 활동 통계
-              </CardTitle>
+              <CardTitle className="flex items-center gap-2"><FileText />내 활동 통계</CardTitle>
             </CardHeader>
             <CardContent>
-              {activityStatsLoading ? (
-                <div className="flex justify-center items-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-                </div>
-              ) : activityStatsError ? (
-                <div className="text-center p-4 bg-red-50 rounded-lg text-red-600">
-                  {activityStatsError}
-                  <Button
-                    onClick={fetchActivityStats}
-                    variant="outline"
-                    className="mt-2"
-                  >
-                    다시 시도
-                  </Button>
-                </div>
-              ) : (
+              {activityStats.loading ? <p>활동 정보 로딩 중...</p> : activityStats.error ? <p className="text-red-500">{activityStats.error}</p> : (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {totalElements || 0}
-                    </div>
+                    <div className="text-2xl font-bold text-blue-600">{posts.totalElements}</div>
                     <div className="text-sm text-gray-600">작성한 글</div>
                   </div>
                   <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
-                      {activityStats?.totalLikes || 0}
-                    </div>
+                    <div className="text-2xl font-bold text-green-600">{activityStats.data?.totalLikes || 0}</div>
                     <div className="text-sm text-gray-600">받은 좋아요</div>
                   </div>
                   <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">
-                      {activityStats?.totalComments || 0}
-                    </div>
+                    <div className="text-2xl font-bold text-purple-600">{activityStats.data?.totalComments || 0}</div>
                     <div className="text-sm text-gray-600">받은 댓글</div>
                   </div>
                   <div className="text-center p-4 bg-orange-50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">
-                      {activityStats?.autonomousDistrictKo || '정보 없음'}<br></br>
-                      {activityStats?.administrativeDistrictKo}
+                    <div className="text-xl font-bold text-orange-600">
+                      {activityStats.data?.autonomousDistrictKo || '정보 없음'}<br />
+                      {activityStats.data?.administrativeDistrictKo}
                     </div>
                     <div className="text-sm text-gray-600">내 지역</div>
                   </div>
@@ -482,101 +336,43 @@ export default function MyPage() {
           </Card>
         </div>
 
-        {/* My Posts */}
+        {/* My Posts Section */}
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5" />
-              나의 게시글 목록
-            </CardTitle>
+            <CardTitle className="flex items-center gap-2"><FileText />나의 게시글 목록</CardTitle>
           </CardHeader>
           <CardContent>
-            {postsLoading ? (
-              <div className="flex justify-center items-center h-40">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-              </div>
-            ) : postsError ? (
-              <div className="text-center p-4 bg-red-50 rounded-lg text-red-600">
-                {postsError}
-                <Button
-                  onClick={() => window.location.reload()}
-                  variant="outline"
-                  className="mt-2"
-                >
-                  다시 시도
-                </Button>
-              </div>
-            ) : myPosts.length === 0 ? (
-              <div className="text-center p-8 text-gray-500">
-                작성한 게시글이 없습니다.
-              </div>
-            ) : (
+            {posts.loading && !posts.data.length ? <p>게시글 로딩 중...</p> : posts.error ? <p className="text-red-500">{posts.error}</p> : posts.data.length === 0 ? <p>작성한 게시글이 없습니다.</p> : (
               <div className="space-y-4">
-                {myPosts.map((post, index) => (
-                  <div key={`post-${post.boardId}-${index}`} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                {posts.data.map(post => (
+                  // 5. key 최적화: 고유 ID만 사용
+                  <div key={post.boardId} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-semibold text-lg">{post.title}</h3>
-                          <Badge variant="outline">
-                            <MapPin className="h-3 w-3 mr-1" />
-                            {post.autonomousDistrictName}
-                          </Badge>
-                        </div>
-                        <p className="text-gray-600 mb-3 line-clamp-2">{post.content}</p>
+                        <h3 className="font-semibold text-lg">{post.title}</h3>
+                        <p className="text-gray-600 my-2 line-clamp-2">{post.content}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
-                          <span className="flex items-center gap-1">
-                            <Heart className="h-4 w-4" />
-                            {post.empathyCount ? post.empathyCount : 0}
-                          </span>
-                          {new Intl.DateTimeFormat('ko-KR', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false,
-                          }).format(new Date(post.createdDate))}
+                          <span className="flex items-center gap-1"><Heart className="h-4 w-4" />{post.empathyCount || 0}</span>
+                          <span>{new Date(post.createdDate).toLocaleString('ko-KR')}</span>
                         </div>
                       </div>
                       <div className="flex gap-2 ml-4">
-                        <Button size="sm" variant="outline" onClick={() => moveBoardPage(post.boardId)}>
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeletePost(post.boardId)}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => moveBoardPage(post.boardId)}><Edit className="h-4 w-4" /></Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleDeletePost(post.boardId)}><Trash2 className="h-4 w-4" /></Button>
                       </div>
                     </div>
                   </div>
                 ))}
 
-                {/* Pagination Controls */}
-                {totalElements > 0 && (
+                {posts.totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6">
                     <div className="text-sm text-gray-500">
-                      총 {totalElements}개 중 {currentPage * pageSize + 1}-{Math.min((currentPage + 1) * pageSize, totalElements)}개 표시
+                      총 {posts.totalElements}개 중 {posts.currentPage * PAGE_SIZE + 1}-{Math.min((posts.currentPage + 1) * PAGE_SIZE, posts.totalElements)}개
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handlePageChange(currentPage - 1)}
-                        disabled={currentPage === 0}
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <span className="text-sm">
-                        {currentPage + 1} / {totalPages}
-                      </span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handlePageChange(currentPage + 1)}
-                        disabled={currentPage === totalPages - 1}
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => handlePageChange(posts.currentPage - 1)} disabled={posts.currentPage === 0}><ChevronLeft /></Button>
+                      <span>{posts.currentPage + 1} / {posts.totalPages}</span>
+                      <Button size="sm" variant="outline" onClick={() => handlePageChange(posts.currentPage + 1)} disabled={posts.currentPage === posts.totalPages - 1}><ChevronRight /></Button>
                     </div>
                   </div>
                 )}
