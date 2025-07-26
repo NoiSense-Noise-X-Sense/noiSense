@@ -1,6 +1,7 @@
 "use client"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import FullMap from "@/components/map/FullMap";
 
 // 서울시 각 구별 소음 데이터 (샘플)
 const districtData = {
@@ -50,101 +51,13 @@ export default function SeoulMap() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">서울시 자치구별 소음 지도</CardTitle>
+        <CardTitle className="text-lg font-semibold">서울시 fghfhgf자치구별 소음 지도</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* 지도 영역 */}
-        <div className="relative h-96 bg-gray-100 rounded-lg border overflow-hidden">
+        {/* 소음 지도 지도 영역 */}
+        <div className="relative h-100 bg-gray-100 rounded-lg border overflow-hidden">
           {/* 간단한 서울시 지도 SVG */}
-          <svg viewBox="0 0 400 300" className="w-full h-full">
-            {/* 각 구를 간단한 사각형으로 표현 */}
-            <TooltipProvider>
-              {Object.entries(districtData).map(([key, data], index) => {
-                const row = Math.floor(index / 5)
-                const col = index % 5
-                const x = col * 80 + 10
-                const y = row * 60 + 10
-                return (
-                  <Tooltip key={key}>
-                    <TooltipTrigger asChild>
-                      <rect
-                        x={x}
-                        y={y}
-                        width="70"
-                        height="50"
-                        className={`${getColorClass(data.color)} cursor-pointer transition-all duration-200 stroke-white stroke-2`}
-                      />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-black text-white p-3 rounded-lg shadow-lg">
-                      <h3 className="text-lg font-semibold mb-2">{data.name} 소음 현황</h3>
-                      <div className="flex justify-between items-center gap-4 mb-2">
-                        <div>
-                          <p className="text-sm text-gray-300">소음지수</p>
-                          <p
-                            className={`text-xl font-bold ${
-                              data.color === "green"
-                                ? "text-green-400"
-                                : data.color === "yellow"
-                                  ? "text-yellow-400"
-                                  : "text-red-400"
-                            }`}
-                          >
-                            {data.noise} dB
-                          </p>
-                        </div>
-                        <div className="w-px h-10 bg-gray-600" />
-                        <div className="relative group">
-                          <p className="text-sm text-gray-300">소음온도</p>
-                          <p className="text-xl font-bold text-blue-400">{data.noiseTemp} 점</p>
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-                            소음온도 공식: (100 - (소음dB - 50) * 2)
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-2">클릭하여 상세보기 화면으로 이동</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )
-              })}
-            </TooltipProvider>
-            {/* 구 이름 표시 */}
-            {Object.entries(districtData).map(([key, data], index) => {
-              const row = Math.floor(index / 5)
-              const col = index % 5
-              const x = col * 80 + 45
-              const y = row * 60 + 40
-              return (
-                <text
-                  key={`${key}-text`}
-                  x={x}
-                  y={y}
-                  textAnchor="middle"
-                  className="text-xs font-medium fill-white pointer-events-none"
-                >
-                  {data.name}
-                </text>
-              )
-            })}
-          </svg>
-        </div>
-
-        {/* 범례 */}
-        <div className="space-y-2">
-          <h4 className="font-medium text-gray-700">범례</h4>
-          <div className="flex flex-wrap gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
-              <span>70dB 미만</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-yellow-500 rounded"></div>
-              <span>70~79dB</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-500 rounded"></div>
-              <span>80dB 이상</span>
-            </div>
-          </div>
+          <FullMap />
         </div>
       </CardContent>
     </Card>
