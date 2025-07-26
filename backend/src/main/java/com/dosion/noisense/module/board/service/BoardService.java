@@ -136,7 +136,7 @@ public class BoardService {
     board.setModifiedDate(LocalDateTime.now());
 
     Board updatedBoard = boardRepository.save(board);
-    
+
     // Elasticsearch 업데이트
     boardEsService.save(BoardEsDocument.builder()
       .id(String.valueOf(updatedBoard.getId()))
@@ -149,7 +149,7 @@ public class BoardService {
       .modifiedDate(updatedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .view_count(updatedBoard.getViewCount())
       .build());
-    
+
     return toDTO(updatedBoard);
   }
 
@@ -164,7 +164,7 @@ public class BoardService {
     }
 
     boardRepository.delete(board);
-    
+
     // Elasticsearch에서도 삭제
     boardEsService.delete(String.valueOf(id));
   }
@@ -184,10 +184,10 @@ public class BoardService {
       boardEmpathyRepository.findByBoardIdAndUserId(boardId, userId);
 
     Long enpathyCnt = board.getEmpathyCount() != null ? board.getEmpathyCount() : 0;
+
     if (empathyOptional.isPresent()) {
       // 이미 공감한 상태 → 삭제 및 empathy_count -1
       boardEmpathyRepository.delete(empathyOptional.get());
-
       board.setEmpathyCount(enpathyCnt > 0 ? enpathyCnt - 1 : 0);
     } else {
       // 공감하지 않은 상태 → 추가 및 empathy_count +1
@@ -242,5 +242,4 @@ public class BoardService {
   public Page<BoardDto> getBoardsByUserId(Long userId, int page, int size) {
     return boardRepository.findByUserIdPaging(userId, PageRequest.of(page, size));
   }
-
 }
