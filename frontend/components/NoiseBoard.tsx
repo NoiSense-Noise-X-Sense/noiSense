@@ -162,9 +162,9 @@ const getAdministrativeDistrictName = (code: string): string => {
 };
 
 export default function NoiseBoard({
-                                     onPostClick,
-                                     onWriteClick,
-                                   }: {
+  onPostClick,
+  onWriteClick,
+}: {
   onPostClick: (postId: number) => void;
   onWriteClick: () => void;
 }) {

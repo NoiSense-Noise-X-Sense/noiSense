@@ -34,6 +34,7 @@ public class CommentService {
 
     Comment comment = new Comment();
     comment.setContent(commentDto.getContent());
+    comment.setNickname(user.getNickname());  // nickname 직접 저장
     comment.setBoard(board);
     comment.setUser(user);
 
@@ -81,9 +82,10 @@ public class CommentService {
     // user 정보가 null인지 확인
     if (entity.getUser() != null) {
       dto.setUserId(entity.getUser().getId());
-      dto.setNickname(entity.getUser().getNickname());
+      dto.setNickname(entity.getNickname()); // 저장된 nickname 사용
     } else {
       System.out.println("WARNING: Comment " + entity.getId() + " has null user!");
+      dto.setNickname(entity.getNickname()); // 저장된 nickname 사용
     }
     
     dto.setContent(entity.getContent());

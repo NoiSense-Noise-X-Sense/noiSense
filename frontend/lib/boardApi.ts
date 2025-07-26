@@ -104,13 +104,12 @@ export async function getComments(boardId: number): Promise<Comment[]> {
   return res.json();
 }
 
-export async function createComment(data: { boardId: number; nickname: string; content: string }): Promise<Comment> {
+export async function createComment(data: { boardId: number; content: string }): Promise<Comment> {
   const res = await fetchWithAuth(`${BASE_URL}/api/comments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       board_id: data.boardId,
-      nickname: data.nickname,
       content: data.content
     }),
   });
