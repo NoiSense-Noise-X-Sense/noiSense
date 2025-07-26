@@ -183,6 +183,9 @@ ALTER TABLE sensor_data ALTER COLUMN "sensing_time" TYPE TIMESTAMP(0);
 
 ALTER TABLE sensor_data ALTER COLUMN "batch_time" TYPE TIMESTAMP(0);
 
+ALTER TABLE board RENAME COLUMN autonomous_district TO autonomous_district_code;
+ALTER TABLE board RENAME COLUMN administrative_district TO administrative_district_code;
+
 ALTER TABLE board_empathy ADD CONSTRAINT fk_board_to_board_empathy_1
   FOREIGN KEY (board_id)
     REFERENCES board (board_id)

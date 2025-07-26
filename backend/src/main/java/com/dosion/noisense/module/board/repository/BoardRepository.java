@@ -25,4 +25,19 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     "FROM Board b " +
     "ORDER BY b.createdDate DESC")
   Page<BoardDto> findAllPaging(Pageable pageable);
+
+
+  /** 특정 User의 게시글 페이징 조회 **/
+  @Query("SELECT new com.dosion.noisense.web.board.dto.BoardDto(" +
+    "b.id, b.userId, b.nickname, b.title, b.content, " +
+    "b.emotionalScore, b.empathyCount, b.viewCount, " +
+    "b.autonomousDistrictCode, b.administrativeDistrictCode, " +
+    "b.createdDate, b.modifiedDate) " +
+    "FROM Board b " +
+    "WHERE b.userId = :userId " +
+    "ORDER BY b.createdDate DESC")
+  Page<BoardDto> findByUserIdPaging(Long userId, Pageable pageable);
+
+  void deleteByUserId(Long userId);
+
 }

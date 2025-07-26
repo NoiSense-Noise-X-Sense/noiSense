@@ -5,6 +5,7 @@ import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.service.BoardService;
 import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -141,5 +142,19 @@ public class BoardController {
     boardService.toggleEmpathyCount(boardId, userId);
     return ResponseEntity.ok("공감 상태가 변경되었습니다.");
   }
+
+
+  @Operation(summary = "현재 로그인한 사용자의 게시글 목록 페이징 조회", description = "로그인한 사용자의 게시글 목록을 페이징하여 조회합니다.")
+  @GetMapping("/my-board")
+  public ResponseEntity<Page<BoardDto>> getMyBoards(
+    @AuthenticationPrincipal CustomUserDetails userDetails,
+    @RequestParam(defaultValue = "0") int page,
+    @RequestParam(defaultValue = "10") int size) {
+    Long userId = userDetails.getId();
+    log.info("[getMyBoards] userId: {}", userId);
+    Page<BoardDto> boardPage = boardService.getBoardsByUserId(userId, page, size);
+    return ResponseEntity.ok(boardPage);
+  }
+
 
 }

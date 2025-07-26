@@ -183,10 +183,12 @@ public class BoardService {
     Optional<BoardEmpathy> empathyOptional =
       boardEmpathyRepository.findByBoardIdAndUserId(boardId, userId);
 
+    Long enpathyCnt = board.getEmpathyCount() != null ? board.getEmpathyCount() : 0;
     if (empathyOptional.isPresent()) {
       // 이미 공감한 상태 → 삭제 및 empathy_count -1
       boardEmpathyRepository.delete(empathyOptional.get());
-      board.setEmpathyCount(board.getEmpathyCount() - 1);
+
+      board.setEmpathyCount(enpathyCnt > 0 ? enpathyCnt - 1 : 0);
     } else {
       // 공감하지 않은 상태 → 추가 및 empathy_count +1
       BoardEmpathy boardEmpathy = BoardEmpathy.builder()
@@ -195,7 +197,7 @@ public class BoardService {
         .createdDate(LocalDateTime.now())
         .build();
       boardEmpathyRepository.save(boardEmpathy);
-      board.setEmpathyCount(board.getEmpathyCount() + 1);
+      board.setEmpathyCount(enpathyCnt + 1);
     }
     boardRepository.save(board); // 공감 수 저장
   }
@@ -234,4 +236,11 @@ public class BoardService {
       .modifiedDate(board.getModifiedDate())
       .build();
   }
+
+  /** 특정 사용자의 게시글 페이징 목록 조회 **/
+  @Transactional(readOnly = true)
+  public Page<BoardDto> getBoardsByUserId(Long userId, int page, int size) {
+    return boardRepository.findByUserIdPaging(userId, PageRequest.of(page, size));
+  }
+
 }

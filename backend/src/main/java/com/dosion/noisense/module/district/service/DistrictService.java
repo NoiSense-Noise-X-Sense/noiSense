@@ -56,7 +56,7 @@ public class DistrictService {
 
     return districtDtos;
   }
-  
+
   /** 영어 이름 → 한글 이름 변환 */
   public String toKorean(String englishDistrictName) {
     return districtRepository.findByNameEn(englishDistrictName)
@@ -69,6 +69,18 @@ public class DistrictService {
     return districtRepository.findByNameKo(koreanDistrictName)
       .map(AutonomousDistrict::getNameEn)
       .orElse(koreanDistrictName);
+  }
+
+  public List<DistrictDto> getDongByGu(String guCode) {
+    List<District> dongs = districtRepository.findAdministrativeDistrictsByAutonomousDistrictCode(guCode);
+
+    List<DistrictDto> districtDtos = dongs.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("[DistrictService] Dong for gu {}: {}", guCode, districtDtos.size());
+
+    return districtDtos;
   }
 
 }
