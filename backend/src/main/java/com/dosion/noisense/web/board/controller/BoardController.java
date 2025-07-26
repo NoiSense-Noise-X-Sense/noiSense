@@ -60,19 +60,43 @@ public class BoardController {
 
   /** 통합 검색 **/
   @GetMapping("/search")
-  public ResponseEntity<Page<BoardEsDocument>> searchBoards(
+  public ResponseEntity<Page<BoardDto>> searchBoards(
     @RequestParam String keyword,
     @RequestParam(defaultValue = "0") int page,
     @RequestParam(defaultValue = "10") int size
   ) {
-    Page<BoardEsDocument> results = boardEsService.search(keyword, page, size);
-    return ResponseEntity.ok(results);
+    Page<BoardEsDocument> esResults = boardEsService.search(keyword, page, size);
+    
+    // BoardEsDocument를 BoardDto로 변환
+    Page<BoardDto> boardDtoPage = esResults.map(esDoc -> {
+      return BoardDto.builder()
+        .boardId(Long.valueOf(esDoc.getId()))
+        .userId(esDoc.getUserId())
+        .nickname(esDoc.getUsername())
+        .title(esDoc.getTitle())
+        .content(esDoc.getContent())
+        .emotionalScore(0L) // Elasticsearch에는 저장되지 않으므로 기본값
+        .empathyCount(0L)   // Elasticsearch에는 저장되지 않으므로 기본값
+        .viewCount(esDoc.getView_count())
+        .commentCount(0L)   // Elasticsearch에는 저장되지 않으므로 기본값
+        .autonomousDistrict(esDoc.getAutonomousDistrict())
+        .administrativeDistrict("") // Elasticsearch에는 저장되지 않으므로 빈 문자열
+        .createdDate(esDoc.getCreatedDateAsLocalDateTime())
+        .modifiedDate(esDoc.getModifiedDateAsLocalDateTime())
+        .build();
+    });
+    
+    return ResponseEntity.ok(boardDtoPage);
   }
 
-  /** 게시글 상세 조회 **/
+  /** 게시글 상세 조회 + 공감 여부 **/
   @GetMapping("/{id}")
-  public ResponseEntity<BoardDto> getBoardDetail(@PathVariable Long id) {
-    BoardDto boardDto = boardService.getBoardById(id);
+  public ResponseEntity<BoardDto> getBoardDetail(
+    @PathVariable Long id,
+    @AuthenticationPrincipal CustomUserDetails userDetails
+  ) {
+    Long userId = userDetails != null ? userDetails.getId() : null;
+    BoardDto boardDto = boardService.getBoardById(id, userId);
     return ResponseEntity.ok(boardDto);
   }
 

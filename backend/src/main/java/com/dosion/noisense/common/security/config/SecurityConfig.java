@@ -70,6 +70,8 @@ public class SecurityConfig {
           "/api/es/board/frequent-words"
         ).permitAll()
 
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards", "/api/boards/**").permitAll()
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments", "/api/comments/**").permitAll()
         .requestMatchers("/api/**").authenticated()
         .anyRequest().permitAll()
       )
