@@ -253,7 +253,7 @@ export default function NoiSenseDashboard() {
         </div>
       )}
       {currentPage === "AnalysisReport" && <AnalysisReport />}
-      {currentPage === "mypage" && isLoggedIn && <MyPage />}
+      {currentPage === "mypage" && isLoggedIn && <MyPage onPostClick={handlePostClick} />}
       {currentPage === "board" && (
         <NoiseBoard
           onPostClick={handlePostClick}
