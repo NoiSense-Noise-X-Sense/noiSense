@@ -63,14 +63,29 @@ public class CommentService {
     return toDto(comment);
   }
 
+  /** 특정 유저의 댓글 개수 조회 **/
+  @Transactional(readOnly = true)
+  public long countCommentsByUserId(Long userId) {
+    return commentRepository.countByUserId(userId);
+  }
+
+
+
 
   /** Entity → DTO 변환 **/
   public CommentDto toDto(Comment entity) {
     CommentDto dto = new CommentDto();
     dto.setId(entity.getId()); // 수정: getCommentId() → getId()
     dto.setBoardId(entity.getBoard().getId());
-    dto.setUserId(entity.getUser().getId());
-    dto.setNickname(entity.getUser().getNickname()); // 수정: setUsername() 대신 setNickname()
+    
+    // user 정보가 null인지 확인
+    if (entity.getUser() != null) {
+      dto.setUserId(entity.getUser().getId());
+      dto.setNickname(entity.getUser().getNickname());
+    } else {
+      System.out.println("WARNING: Comment " + entity.getId() + " has null user!");
+    }
+    
     dto.setContent(entity.getContent());
     dto.setCreatedDate(entity.getCreatedDate()); // 수정: getCreated_date() → getCreatedDate()
     dto.setUpdatedDate(entity.getModifiedDate()); // 수정: getUpdated_date() → getModifiedDate()

@@ -31,11 +31,13 @@ public class BoardEsService {
     repository.save(document);
   }
 
+  public void delete(String id) {
+    repository.deleteById(id);
+  }
 
-  /** 통합 검색 (title or content에 keyword 포함) **/
+  /** 검색 (title or content에 keyword 포함) **/
   public Page<BoardEsDocument> search(String keyword, int page, int size) {
-    List<BoardEsDocument> results =
-      repository.findByTitleContainingOrContentContaining(keyword, keyword);
+    List<BoardEsDocument> results = repository.findByTitleContainingOrContentContaining(keyword, keyword);
 
     int start = Math.min(page * size, results.size());
     int end = Math.min(start + size, results.size());

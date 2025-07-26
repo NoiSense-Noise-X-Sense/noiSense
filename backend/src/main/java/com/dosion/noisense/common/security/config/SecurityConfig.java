@@ -23,9 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
 import java.util.Arrays;
-
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Slf4j
@@ -40,17 +38,40 @@ public class SecurityConfig {
   private final OAuth2UserService oAuth2UserService;
   private final RedisTemplate<String, Object> redisTemplate;
 
+
+
+  private static final String[] PUBLIC_STATIC_RESOURCES = {
+    "/", "/index.html", "/*.html", "/favicon.ico", "/css/**",
+    "/fetchWithAuth.js", "/js/**", "/images/**", "/.well-known/**", "/error"
+  };
+  private static final String[] SWAGGER_RESOURCES = {
+    "/v3/api-docs/**", "/configuration/**", "/swagger-ui/**", "/swagger-ui.html"
+  };
+  private static final String[] PUBLIC_API_ROUTES = {
+    "/api/auth/**", "/oauth2/**", "/login/**", "/actuator/prometheus",
+    "/api/batch/run-initial-load", "/api/dashboard/**", "/api/es/board/frequent-words"
+  };
+
   @Bean
   public AuthorizationRequestRepository<OAuth2AuthorizationRequest> authorizationRequestRepository() {
     return new RedisOAuth2AuthorizationRequestRepository(redisTemplate);
   }
 
+
+
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
-      .cors(Customizer.withDefaults()) // CORS 설정
-      .cors(withDefaults())
+      // CORS 설정
+      .cors(Customizer.withDefaults())
       .csrf(AbstractHttpConfigurer::disable)
+
+
+      .headers(headers -> headers
+        .referrerPolicy(policy -> policy.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER_WHEN_DOWNGRADE))
+      )
+
       .authorizeHttpRequests(auth -> auth
         .requestMatchers("/", "/index.html", "/*.html", "/favicon.ico",
           "/css/**", "/fetchWithAuth.js", "/js/**", "/images/**",
@@ -58,11 +79,7 @@ public class SecurityConfig {
           , "/v3/api-docs/**", "/configuration/**"
           , "/exception",
           "/swagger-ui/**",
-          "/swagger-ui.html"
-          , "/api/batch/run-initial-load"
-          , "/api/v1/report/*"
-          , "/api/v1/map/getMap"
-          , "/api/v1/district/autonomousDistrict").permitAll()
+          "/swagger-ui.html").permitAll()
 
         .requestMatchers(
           "/api/auth/sign-up",
@@ -76,21 +93,26 @@ public class SecurityConfig {
           "/api/es/board/frequent-words"
         ).permitAll()
 
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards", "/api/boards/**").permitAll()
+        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/comments", "/api/comments/**").permitAll()
+        .requestMatchers(PUBLIC_STATIC_RESOURCES).permitAll()
+        .requestMatchers(SWAGGER_RESOURCES).permitAll()
+        .requestMatchers(PUBLIC_API_ROUTES).permitAll()
         .requestMatchers("/api/**").authenticated()
-        .anyRequest().permitAll()
+        .anyRequest().permitAll() // 나머지 요청은 일단 모두 허용 (필요시 .denyAll() 또는 .authenticated()로 변경)
       )
       .exceptionHandling(e -> e
         .authenticationEntryPoint((request, response, authException) -> {
+          log.warn("[SecurityConfig] Unauthorized request to {}", request.getRequestURI(), authException);
           response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-          String url = request.getRequestURI().toString();
-          log.warn("[SecurityConfig] Unauthorized =====>>>> : " + url);
         })
-        .accessDeniedHandler((request, response, authException) -> {
+        .accessDeniedHandler((request, response, accessDeniedException) -> {
+          log.warn("[SecurityConfig] Forbidden access to {}", request.getRequestURI(), accessDeniedException);
           response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
-          String url = request.getRequestURI().toString();
-          log.warn("[SecurityConfig] Forbidden ======>>>> : " + url);
         })
       )
+
+
       .oauth2Login(oauth2 -> oauth2
         .loginPage("/index.html")
         .userInfoEndpoint(userInfo -> userInfo.userService(oAuth2UserService))
@@ -106,21 +128,34 @@ public class SecurityConfig {
       .sessionManagement(session -> session
         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-      .build();
+
+
+     .exceptionHandling(e -> e
+      .authenticationEntryPoint((request, response, authException) -> {
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        String url = request.getRequestURI().toString();
+        log.warn("[SecurityConfig] Unauthorized =====>>>> : " + url);
+      })
+      .accessDeniedHandler((request, response, authException) -> {
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden");
+        String url = request.getRequestURI().toString();
+        log.warn("[SecurityConfig] Forbidden ======>>>> : " + url);
+      })
+    ).build();
   }
 
-  // ✅ CORS Filter 설정
+
   @Bean
-  public CorsFilter corsFilter() {
+  public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // 프론트 주소
+    config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
     config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     config.setAllowedHeaders(Arrays.asList("*"));
+    config.setExposedHeaders(Arrays.asList("Authorization"));
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
-
-    return new CorsFilter(source);
+    return source;
   }
 }

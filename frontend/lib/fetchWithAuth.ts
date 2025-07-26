@@ -1,3 +1,5 @@
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) {
   // 클라이언트 환경에서만 동작하도록 체크 (Next.js SSR 방지)
   if (typeof window === "undefined") {
@@ -23,7 +25,9 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
     credentials: "include",
   };
 
-  let res = await fetch(input, options);
+  // If input is a relative URL, prepend API_URL
+  const url = input.toString().startsWith('/') ? `${API_URL}${input}` : input;
+  let res = await fetch(url, options);
 
   // --- JWT 디코드, 디버깅 ---
   function decode(token?: string) {
@@ -51,7 +55,7 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
 
   // 401: 만료 → refreshToken으로 재발급 시도
   if (res.status === 401 && refreshToken) {
-    const refreshRes = await fetch("/api/auth/refresh", {
+    const refreshRes = await fetch(`${API_URL}/api/auth/refresh`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -75,7 +79,8 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}) 
           "Authorization": "Bearer " + newAccessToken,
         };
         // 재요청
-        return fetch(input, options);
+        const url = input.toString().startsWith('/') ? `${API_URL}${input}` : input;
+        return fetch(url, options);
       }
     } else {
       // Next.js에서는 location.href 보단 useRouter()를 추천하지만,

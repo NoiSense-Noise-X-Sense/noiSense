@@ -85,13 +85,17 @@ export default function NoiSenseDashboard() {
 
   const handleLogout = async () => {
     try {
-      await fetchWithAuth("/api/auth/logout", { method: "POST" });
-    } catch (e) {}
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    sessionStorage.clear();
+        const res = await fetch(`${API_URL}/api/auth/logout`, {
+          method: 'POST',
+          credentials: 'include'
+        });
+        if (res.ok) {
+          console.log('로그아웃 성공');
+          setIsLoggedIn(false);
+        }
+    } catch (err) {}
     setIsLoggedIn(false);
-    setCurrentPage("login");
+    setCurrentPage("main");
   };
 
   const handlePostClick = (postId: number) => {
@@ -220,9 +224,9 @@ export default function NoiSenseDashboard() {
             </div>
             {/* Login/Logout Button */}
             {isLoggedIn ? (
-               
-              <Button onClick={handleLogout} variant="outline" size="sm">
-                {user?.nickname || "게스트"}님 로그아웃
+               /* onClick={handleLogout} */
+              <Button variant="outline" size="sm">
+                {user?.nickname || "게스트"}님
               </Button>
             ) : (
               <Button onClick={() => setCurrentPage("login")} variant="outline" size="sm">
@@ -249,7 +253,7 @@ export default function NoiSenseDashboard() {
         </div>
       )}
       {currentPage === "AnalysisReport" && <AnalysisReport />}
-      {currentPage === "mypage" && isLoggedIn && <MyPage />}
+      {currentPage === "mypage" && isLoggedIn && <MyPage onPostClick={handlePostClick} />}
       {currentPage === "board" && (
         <NoiseBoard
           onPostClick={handlePostClick}

@@ -7,6 +7,7 @@ import com.dosion.noisense.module.board.elasticsearch.service.BoardEsService;
 import com.dosion.noisense.web.board.elasticsearch.dto.BoardEsDocument;
 import com.dosion.noisense.module.board.entity.BoardEmpathy;
 import com.dosion.noisense.module.board.repository.BoardEmpathyRepository;
+import com.dosion.noisense.module.comment.repository.CommentRepository;
 import com.dosion.noisense.web.board.dto.BoardDto;
 import com.dosion.noisense.module.board.entity.Board;
 import com.dosion.noisense.module.board.repository.BoardRepository;
@@ -30,6 +31,7 @@ public class BoardService {
 
   private final BoardRepository boardRepository;
   private final BoardEmpathyRepository boardEmpathyRepository;
+  private final CommentRepository commentRepository;
   private final BoardEsService boardEsService;
   private final EmotionScoreService emotionScoreService;
   private final AutonomousDistrictRepository autonomousDistrictRepository;
@@ -48,7 +50,7 @@ public class BoardService {
       .title(boardDto.getTitle())
       .content(boardDto.getContent())
       .emotionalScore((long) score)
-      .empathyCount(boardDto.getEmpathyCount())
+      .empathyCount(boardDto.getEmpathyCount() != null ? boardDto.getEmpathyCount() : 0L)
       .viewCount(boardDto.getViewCount() != null ? boardDto.getViewCount() : 0L)
       .autonomousDistrictCode(boardDto.getAutonomousDistrict()) // 코드(UUID)만 저장
       .administrativeDistrictCode(boardDto.getAdministrativeDistrict())
@@ -75,9 +77,9 @@ public class BoardService {
     return toDTO(savedBoard);
   }
 
-  /** 게시글 상세 조회 및 조회수 증가 **/
+  /** 게시글 상세 조회 + 공감 여부 */
   @Transactional
-  public BoardDto getBoardById(Long id) {
+  public BoardDto getBoardById(Long id, Long userId) {
     Board board = boardRepository.findById(id)
       .orElseThrow(() -> new IllegalArgumentException("게시글이 존재하지 않습니다. ID: " + id));
 
@@ -95,11 +97,18 @@ public class BoardService {
       .content(updatedBoard.getContent())
       .username(updatedBoard.getNickname())
       .userId(updatedBoard.getUserId())
+      .autonomousDistrict(updatedBoard.getAutonomousDistrictCode())
       .createdDate(updatedBoard.getCreatedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .modifiedDate(updatedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
       .view_count(updatedBoard.getViewCount())
       .build());
 
+    // 공감 여부 조회
+    boolean isEmpathized = false;
+    if (userId != null) {
+      isEmpathized = boardEmpathyRepository.findByBoardIdAndUserId(id, userId).isPresent();
+    }
+    resultDto.setIsEmpathized(isEmpathized);
     return resultDto;
   }
 
@@ -127,6 +136,20 @@ public class BoardService {
     board.setModifiedDate(LocalDateTime.now());
 
     Board updatedBoard = boardRepository.save(board);
+
+    // Elasticsearch 업데이트
+    boardEsService.save(BoardEsDocument.builder()
+      .id(String.valueOf(updatedBoard.getId()))
+      .title(updatedBoard.getTitle())
+      .content(updatedBoard.getContent())
+      .username(updatedBoard.getNickname())
+      .userId(updatedBoard.getUserId())
+      .autonomousDistrict(updatedBoard.getAutonomousDistrictCode())
+      .createdDate(updatedBoard.getCreatedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
+      .modifiedDate(updatedBoard.getModifiedDate().atZone(ZoneId.of("Asia/Seoul")).toInstant())
+      .view_count(updatedBoard.getViewCount())
+      .build());
+
     return toDTO(updatedBoard);
   }
 
@@ -141,6 +164,9 @@ public class BoardService {
     }
 
     boardRepository.delete(board);
+
+    // Elasticsearch에서도 삭제
+    boardEsService.delete(String.valueOf(id));
   }
 
   /** 게시글 페이징 목록 조회 **/
@@ -157,10 +183,12 @@ public class BoardService {
     Optional<BoardEmpathy> empathyOptional =
       boardEmpathyRepository.findByBoardIdAndUserId(boardId, userId);
 
+    Long enpathyCnt = board.getEmpathyCount() != null ? board.getEmpathyCount() : 0;
+
     if (empathyOptional.isPresent()) {
       // 이미 공감한 상태 → 삭제 및 empathy_count -1
       boardEmpathyRepository.delete(empathyOptional.get());
-      board.setEmpathyCount(board.getEmpathyCount() - 1);
+      board.setEmpathyCount(enpathyCnt > 0 ? enpathyCnt - 1 : 0);
     } else {
       // 공감하지 않은 상태 → 추가 및 empathy_count +1
       BoardEmpathy boardEmpathy = BoardEmpathy.builder()
@@ -169,7 +197,7 @@ public class BoardService {
         .createdDate(LocalDateTime.now())
         .build();
       boardEmpathyRepository.save(boardEmpathy);
-      board.setEmpathyCount(board.getEmpathyCount() + 1);
+      board.setEmpathyCount(enpathyCnt + 1);
     }
     boardRepository.save(board); // 공감 수 저장
   }
@@ -188,6 +216,9 @@ public class BoardService {
     String code = board.getAutonomousDistrictCode();
     String nameKo = codeToNameMap.getOrDefault(code, "알 수 없음");
 
+    // 댓글 개수 계산
+    Long commentCount = commentRepository.countByBoardId(board.getId());
+
     return BoardDto.builder()
       .boardId(board.getId())
       .userId(board.getUserId())
@@ -197,11 +228,18 @@ public class BoardService {
       .emotionalScore(board.getEmotionalScore())
       .empathyCount(board.getEmpathyCount())
       .viewCount(board.getViewCount())
+      .commentCount(commentCount)
       .autonomousDistrict(code)         // 자치구 코드
       .autonomousDistrictName(nameKo)   // 자치구 한글 이름 (응답용)
       .administrativeDistrict(board.getAdministrativeDistrictCode())
       .createdDate(board.getCreatedDate())
       .modifiedDate(board.getModifiedDate())
       .build();
+  }
+
+  /** 특정 사용자의 게시글 페이징 목록 조회 **/
+  @Transactional(readOnly = true)
+  public Page<BoardDto> getBoardsByUserId(Long userId, int page, int size) {
+    return boardRepository.findByUserIdPaging(userId, PageRequest.of(page, size));
   }
 }

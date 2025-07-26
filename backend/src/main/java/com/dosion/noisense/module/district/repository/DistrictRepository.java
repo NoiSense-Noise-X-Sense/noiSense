@@ -51,6 +51,31 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
   @Query("SELECT d FROM AutonomousDistrict d WHERE d.nameEn = :name OR d.nameKo = :name")
   Optional<AutonomousDistrict> findByNameEnOrNameKo(@Param("name") String name);
 
-  @Query("SELECT ad.nameKo FROM AutonomousDistrict ad WHERE ad.code = :code")
-  String findAutonomousNameKoByCode(@Param("code") String code);
+  // 자치구 코드로 찾기
+  @Query("SELECT d FROM AutonomousDistrict d WHERE d.code = :code")
+  Optional<AutonomousDistrict> findAutonomousDistrictByCode(@Param("code") String code);
+
+  // 행정동 코드로 한글명 찾기
+  @Query(value = """
+        SELECT d.name_ko
+        FROM noisense.administrative_district d
+        WHERE d.code = :code
+        """, nativeQuery = true)
+  Optional<String> findAdministrativeDistrictNameKoByCode(@Param("code") String code);
+
+  @Query(value = """
+        SELECT
+            a.code AS autonomousDistrictCode,
+            a.name_en AS autonomousDistrictNameEn,
+            a.name_ko AS autonomousDistrictNameKo,
+            d.code AS administrativeDistrictCode,
+            d.name_en AS administrativeDistrictNameEn,
+            d.name_ko AS administrativeDistrictNameKo,
+            d.autonomous_district AS parentDistrictCode
+        FROM noisense.administrative_district d
+        JOIN noisense.autonomous_district a
+          ON d.autonomous_district = a.code
+        WHERE d.autonomous_district = :autonomousDistrictCode
+        """, nativeQuery = true)
+  List<District> findAdministrativeDistrictsByAutonomousDistrictCode(@Param("autonomousDistrictCode") String autonomousDistrictCode);
 }

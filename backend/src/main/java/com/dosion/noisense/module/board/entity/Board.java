@@ -42,8 +42,9 @@ public class Board {
   @Column(name = "emotional_score")
   private Long emotionalScore;
 
-  @Column(name = "empathy_count")
-  private Long empathyCount;
+  @Builder.Default
+  @Column(name = "empathy_count", nullable = false)
+  private Long empathyCount = 0L;
 
   @Builder.Default
   @Column(name = "view_count", nullable = false)
