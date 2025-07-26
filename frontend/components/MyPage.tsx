@@ -51,7 +51,7 @@ type PageType =
   | "board"
   | "WritePost";
 
-export default function MyPage() {
+export default function MyPage({ onPostClick }: { onPostClick?: (postId: number) => void }) {
   const router = useRouter()
 
   // 페이지 전역 상태
@@ -349,7 +349,12 @@ export default function MyPage() {
                   <div key={post.boardId} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h3 className="font-semibold text-lg">{post.title}</h3>
+                        <h3
+                          className="font-semibold text-lg cursor-pointer hover:text-blue-600 transition-colors"
+                          onClick={() => onPostClick?.(post.boardId)}
+                        >
+                          {post.title}
+                        </h3>
                         <p className="text-gray-600 my-2 line-clamp-2">{post.content}</p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="flex items-center gap-1"><Heart className="h-4 w-4" />{post.empathyCount || 0}</span>
