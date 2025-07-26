@@ -419,3 +419,6 @@ INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_ad
 INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_admin_district_en, admin_district_code) VALUES ('Gangdong-gu', 'Gil-dong', '11250740');
 INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_admin_district_en, admin_district_code) VALUES ('Gangdong-gu', 'Gangil-dong', '11250750');
 INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_admin_district_en, admin_district_code) VALUES ('Gangdong-gu', 'Sangil-dong', '11250760');
+INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_admin_district_en, admin_district_code) VALUES ('Dongjak-gu', 'Sang-do2(i)-dong', '11200540');
+INSERT INTO noisense.sensor_district_mapping (sensor_auto_district_en, sensor_admin_district_en, admin_district_code) VALUES ('Yongsan-gu', 'Hyochang-dong', '11030580');
+
