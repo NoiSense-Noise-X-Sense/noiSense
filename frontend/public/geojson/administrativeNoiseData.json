@@ -1,0 +1,82 @@
+[
+  {
+    "avgNoise": 74.1,
+    "perceivedNoise": 62.5,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030510",
+    "administrativeDistrictEng": "Huam-dong",
+    "administrativeDistrictKor": "후암동"
+  },
+  {
+    "avgNoise": 72.8,
+    "perceivedNoise": 61.3,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030650",
+    "administrativeDistrictEng": "Itaewon-dong",
+    "administrativeDistrictKor": "이태원1동"
+  },
+  {
+    "avgNoise": 70.4,
+    "perceivedNoise": 59.0,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030700",
+    "administrativeDistrictEng": "Bogwang-dong",
+    "administrativeDistrictKor": "보광동"
+  },
+  {
+    "avgNoise": 69.6,
+    "perceivedNoise": 58.2,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030690",
+    "administrativeDistrictEng": "Seobinggo-dong",
+    "administrativeDistrictKor": "서빙고동"
+  },
+  {
+    "avgNoise": 73.3,
+    "perceivedNoise": 61.7,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030740",
+    "administrativeDistrictEng": "Hannam-dong",
+    "administrativeDistrictKor": "한남동"
+  },
+  {
+    "avgNoise": 67.9,
+    "perceivedNoise": 56.5,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030630",
+    "administrativeDistrictEng": "Ichon-dong",
+    "administrativeDistrictKor": "이촌1동"
+  },
+  {
+    "avgNoise": 71.2,
+    "perceivedNoise": 60.1,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030720",
+    "administrativeDistrictEng": "Wonhyoro 1(il)-dong",
+    "administrativeDistrictKor": "원효로1동"
+  },
+  {
+    "avgNoise": 70.5,
+    "perceivedNoise": 59.6,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11030570",
+    "administrativeDistrictEng": "Wonhyoro 2(i)-dong",
+    "administrativeDistrictKor": "원효로2동"
+  }
+]
