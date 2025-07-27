@@ -15,8 +15,7 @@ java {
   }
 }
 
-
-application { // 빌드 시점용 설정
+application {
   mainClass = 'com.dosion.noisense.BackendApplication'
 }
 
@@ -24,28 +23,41 @@ configurations {
   compileOnly {
     extendsFrom annotationProcessor
   }
+  // ⚠️ QueryDSL용 annotationProcessor 설정 분리
+  querydsl.extendsFrom annotationProcessor
 }
 
-
-// QueryDSL 설정 추가
-def querydslDir = layout.buildDirectory.dir("generated/querydsl")
+// ⚠️ QueryDSL 관련 설정 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
 
 sourceSets {
-  main.java.srcDirs += [querydslDir]
+  main {
+    java {
+      srcDirs += querydslDir
+    }
+  }
 }
 
-tasks.withType(JavaCompile) {
-  options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+tasks.withType(JavaCompile).configureEach {
+  options.encoding = 'UTF-8'
 }
 
 clean.doLast {
-  delete(file(querydslDir))
+  delete file(querydslDir)
 }
-// QueryDsl 설정 끝
 
+task compileQuerydsl(type: JavaCompile) {
+  group = 'build'
+  description = 'Generate QueryDSL Q-types'
+  source = sourceSets.main.java
+  classpath = configurations.querydsl
+  destinationDirectory.set(file(querydslDir))
+  options.annotationProcessorPath = configurations.querydsl
+}
+// ⚠️ QueryDSL 관련 설정 끝
 
 repositories {
-	mavenCentral()
+  mavenCentral()
   maven {
     url "https://repo.osgeo.org/repository/release/"
   }
@@ -58,13 +70,15 @@ dependencies {
   compileOnly 'org.projectlombok:lombok'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
+  implementation 'org.springframework.boot:spring-boot-starter-batch'
+
   developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
   runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
   annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
   annotationProcessor 'org.projectlombok:lombok'
 
   implementation 'org.postgresql:postgresql'
-  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0" //swagger
+  implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0"
 
   implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
   runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
@@ -74,53 +88,39 @@ dependencies {
   implementation 'org.springframework.data:spring-data-elasticsearch:5.1.0'
   implementation 'co.elastic.clients:elasticsearch-java:8.12.0'
 
-  // OAuth2
   implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
   implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-  // 게시판 정렬
   implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-  // queryDsl
+  // ⚠️ QueryDSL
   implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
-  annotationProcessor "com.querydsl:querydsl-apt:5.1.0:jakarta"
-  annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-  annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+  annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
+  annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+  annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 
-  // api하면서 필요했던 것들
   implementation 'org.json:json:20231013'
   implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
   testImplementation 'org.springframework.boot:spring-boot-starter-test'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-  // 인증 우회 시 사용
   testImplementation 'org.springframework.security:spring-security-test'
 
   testCompileOnly 'org.projectlombok:lombok'
   testAnnotationProcessor 'org.projectlombok:lombok'
 
-  // 좌표계 변환 시 사용
   testImplementation("org.geotools:gt-referencing:33.2") {
     exclude(group: "javax.media", module: "jai_core")
   }
-  testImplementation 'org.locationtech.jts:jts-core:1.20.0' // Geometry 연산용
-
-  implementation 'org.springframework.boot:spring-boot-starter-batch' // 배치
-}
-
-
-
-tasks.withType(JavaCompile) {
-  options.encoding = 'UTF-8'
+  testImplementation 'org.locationtech.jts:jts-core:1.20.0'
 }
 
 tasks.named('test') {
   useJUnitPlatform()
 }
 
-tasks.register("prepareKotlinBuildScriptModel"){}
+tasks.register("prepareKotlinBuildScriptModel") {}
 
-bootRun { // 개발 서버 실행 시 사용
+bootRun {
   mainClass.set('com.dosion.noisense.BackendApplication')
 }
