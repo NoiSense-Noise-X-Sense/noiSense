@@ -17,7 +17,7 @@ export default function FullMap() {
   useEffect(() => {
     loadKakaoSdk()
       .then(() => {
-        initMapUtils(); // SDK 로드된 이후에 유틸 window 등록
+        initMapUtils.initFullMapUtils(); // SDK 로드된 이후에 유틸 window 등록
         setReady(true);
       })
       .catch(console.error);

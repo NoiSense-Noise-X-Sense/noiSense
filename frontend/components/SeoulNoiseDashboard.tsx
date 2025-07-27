@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import MainMap from "@/components/map/MainMap";
 
 // 서울시 각 구별 소음 데이터 (샘플)
 const districtData = {
@@ -72,100 +73,10 @@ export default function SeoulNoiseDashboard({ onDistrictClick }: Props) {
               <CardTitle className="text-lg font-semibold">서울시 자치구별 소음 지도</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* 지도 영역 */}
-              <div className="relative h-80 bg-gray-100 rounded-lg border overflow-hidden">
-                {/* 간단한 서울시 지도 SVG */}
-                <svg viewBox="0 0 400 300" className="w-full h-full">
-                  {/* 각 구를 간단한 사각형으로 표현 (실제로는 복잡한 SVG path 사용) */}
-                  {Object.entries(districtData).map(([key, data], index) => {
-                    const row = Math.floor(index / 5);
-                    const col = index % 5;
-                    const x = col * 80 + 10;
-                    const y = row * 60 + 10;
-
-                    return (
-                      <rect
-                        key={key}
-                        x={x}
-                        y={y}
-                        width="70"
-                        height="50"
-                        className={`${getColorClass(
-                          data.color
-                        )} cursor-pointer transition-all duration-200 stroke-white stroke-2`}
-                        onMouseEnter={() => setHoveredDistrict(key as DistrictKey)}
-                        onMouseLeave={() => setHoveredDistrict(null)}
-                        onClick={() => handleDistrictClick(key as DistrictKey)}
-                      />
-                    );
-                  })}
-
-                  {/* 구 이름 표시 */}
-                  {Object.entries(districtData).map(([key, data], index) => {
-                    const row = Math.floor(index / 5);
-                    const col = index % 5;
-                    const x = col * 80 + 45;
-                    const y = row * 60 + 40;
-
-                    return (
-                      <text
-                        key={`${key}-text`}
-                        x={x}
-                        y={y}
-                        textAnchor="middle"
-                        className="text-xs font-medium fill-white pointer-events-none"
-                      >
-                        {data.name}
-                      </text>
-                    );
-                  })}
-                </svg>
-
-                {/* Hover 오버레이 */}
-                {hoveredDistrict && (
-                  <div className="absolute inset-0 bg-black bg-opacity-75 rounded-lg flex items-center justify-center pointer-events-none">
-                    <div className="text-center text-white">
-                      <h3 className="text-lg font-semibold mb-2">
-                        {districtData[hoveredDistrict].name} 소음 현황
-                      </h3>
-                      <div
-                        className={`text-3xl font-bold mb-1 ${
-                          districtData[hoveredDistrict].color === 'green'
-                            ? 'text-green-400'
-                            : districtData[hoveredDistrict].color === 'yellow'
-                            ? 'text-yellow-400'
-                            : 'text-red-400'
-                        }`}
-                      >
-                        {districtData[hoveredDistrict].noise} dB
-                      </div>
-                      <p className="text-sm text-gray-300">
-                        {districtData[hoveredDistrict].status} • 2024.07.07 14:30 기준
-                      </p>
-                      <p className="text-xs text-gray-400 mt-2">클릭하여 상세보기</p>
-                    </div>
-                  </div>
-                )}
+              {/* 메인 지도 영역 */}
+              <div className="relative h-100 bg-gray-100 rounded-lg border overflow-hidden">
+                <MainMap />
               </div>
-
-              {/*/!* 범례 *!/*/}
-              {/*<div className="space-y-2">*/}
-              {/*  <h4 className="font-medium text-gray-700">범례</h4>*/}
-              {/*  <div className="flex flex-wrap gap-4 text-sm">*/}
-              {/*    <div className="flex items-center gap-2">*/}
-              {/*      <div className="w-4 h-4 bg-green-500 rounded"></div>*/}
-              {/*      <span>70dB 미만</span>*/}
-              {/*    </div>*/}
-              {/*    <div className="flex items-center gap-2">*/}
-              {/*      <div className="w-4 h-4 bg-yellow-500 rounded"></div>*/}
-              {/*      <span>70~79dB</span>*/}
-              {/*    </div>*/}
-              {/*    <div className="flex items-center gap-2">*/}
-              {/*      <div className="w-4 h-4 bg-red-500 rounded"></div>*/}
-              {/*      <span>80dB 이상</span>*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*</div>*/}
             </CardContent>
           </Card>
         </div>

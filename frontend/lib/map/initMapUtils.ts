@@ -4,7 +4,7 @@
  * @description window.* 유틸 전역 등록 초기화 함수
  */
 
-export function initMapUtils() {
+function initFullMapUtils() {
   if (typeof window === 'undefined') return;
 
   // 유틸 모듈들 동적 require로 window 전역에 등록

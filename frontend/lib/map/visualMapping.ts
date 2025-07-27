@@ -50,8 +50,8 @@ function getFillColorByNoise(avgNoise: number | null | undefined): string {
  * @returns 각 구분별 noiseMap 객체
  */
 function buildNoiseMap(
-  autonomousNoiseData: NoiseRaw[],
-  administrativeNoiseData: NoiseRaw[]
+  autonomousNoiseData?: NoiseRaw[],
+  administrativeNoiseData?: NoiseRaw[]
 ): {
   autonomousNoiseMap: Map<string, NoiseData>;
   administrativeNoiseMap: Map<string, NoiseData>;
@@ -59,19 +59,23 @@ function buildNoiseMap(
   const autonomousNoiseMap = new Map<string, NoiseData>();
   const administrativeNoiseMap = new Map<string, NoiseData>();
 
-  autonomousNoiseData.forEach(item => {
-    const noise = new models.NoiseData(item, 'autonomous');
-    if (noise.districtCode) {
-      autonomousNoiseMap.set(noise.districtCode, noise);
-    }
-  });
+  if (autonomousNoiseData) {
+    autonomousNoiseData.forEach(item => {
+      const noise = new models.NoiseData(item, 'autonomous');
+      if (noise.districtCode) {
+        autonomousNoiseMap.set(noise.districtCode, noise);
+      }
+    });
+  }
 
-  administrativeNoiseData.forEach(item => {
-    const noise = new models.NoiseData(item, 'administrative');
-    if (noise.districtCode) {
-      administrativeNoiseMap.set(noise.districtCode, noise);
-    }
-  });
+  if (administrativeNoiseData) {
+    administrativeNoiseData.forEach(item => {
+      const noise = new models.NoiseData(item, 'administrative');
+      if (noise.districtCode) {
+        administrativeNoiseMap.set(noise.districtCode, noise);
+      }
+    });
+  }
 
   return { autonomousNoiseMap, administrativeNoiseMap };
 }

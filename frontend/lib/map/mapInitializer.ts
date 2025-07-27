@@ -16,8 +16,8 @@ interface Area {
 }
 
 interface NoiseMap {
-  autonomousNoiseMap: Map<string, { avgNoise: number }>;
-  administrativeNoiseMap: Map<string, { avgNoise: number }>;
+  autonomousNoiseMap: Map<string, { avgNoise: number, perceivedNoise: number }>;
+  administrativeNoiseMap: Map<string, { avgNoise: number, perceivedNoise: number }>;
 }
 
 interface GeoJsonResponse {
@@ -36,26 +36,43 @@ interface AreaCenter {
 
 function initializeAreas(
   map: kakao.maps.Map,
-  autonomousData: GeoJsonResponse,
-  administrativeData: GeoJsonResponse,
+  autonomousData?: GeoJsonResponse | null,
+  administrativeData?: GeoJsonResponse | null,
   noiseMap: NoiseMap
 ): {
   autonomousAreas: Area[];
   administrativeAreas: Area[];
   areaCenters: AreaCenter[];
 } {
-  const autonomousAreas = window.geoUtils.convertGeoJsonToAreas(autonomousData.data);
-  const administrativeAreas = window.geoUtils.convertGeoJsonToAreas(administrativeData.data);
+  const autonomousAreas = autonomousData?.data
+    ? window.geoUtils.convertGeoJsonToAreas(autonomousData.data)
+    : [];
 
-  const { polygons: autonomousPolygons, labels: autonomousLabels } =
-    initializePolygonsAndLabels(autonomousAreas, map, noiseMap, false);
-  const { polygons: administrativePolygons, labels: administrativeLabels } =
-    initializePolygonsAndLabels(administrativeAreas, map, noiseMap, true);
+  const administrativeAreas = administrativeData?.data
+    ? window.geoUtils.convertGeoJsonToAreas(administrativeData.data)
+    : [];
 
-  window.mapEventHandlers.polygons.autonomousPolygons = autonomousPolygons;
-  window.mapEventHandlers.polygons.administrativePolygons = administrativePolygons;
-  window.mapEventHandlers.labels.autonomousLabels = autonomousLabels;
-  window.mapEventHandlers.labels.administrativeLabels = administrativeLabels;
+  const autonomousInit = autonomousAreas.length ?
+    initializePolygonsAndLabels(autonomousAreas, map, noiseMap, false)
+    : null;
+    // { polygons: [], labels: [] };
+
+  const administrativeInit = administrativeAreas.length ?
+    initializePolygonsAndLabels(administrativeAreas, map, noiseMap, true)
+    : null;
+    // { polygons: [], labels: [] };
+
+  if (autonomousInit?.polygons) {
+    window.mapEventHandlers.polygons.autonomousPolygons = autonomousInit.polygons;
+    window.mapEventHandlers.labels.autonomousLabels = autonomousInit.labels;
+    window.mapEventHandlers.noises.autonomousNoises = noiseMap.autonomousNoiseMap;
+  }
+
+  if (administrativeInit?.polygons) {
+    window.mapEventHandlers.polygons.administrativePolygons = administrativeInit.polygons;
+    window.mapEventHandlers.labels.administrativeLabels = administrativeInit.labels;
+    window.mapEventHandlers.noises.administrativeNoises = noiseMap.administrativeNoiseMap;
+  }
 
   const areaCenters = calculateAreaCenters(autonomousAreas);
   return { autonomousAreas, administrativeAreas, areaCenters };
@@ -77,23 +94,61 @@ function initializePolygonsAndLabels(
     const code = area.districtCode;
     if (!code) return;
 
-    const avgNoise = isAdministrative
-      ? noiseMap.administrativeNoiseMap.get(code)?.avgNoise
-      : noiseMap.autonomousNoiseMap.get(code)?.avgNoise;
+
+
+    const rawNoise = isAdministrative
+      ? noiseMap.administrativeNoiseMap?.get(code)
+      : noiseMap.autonomousNoiseMap?.get(code);
+
+    if (rawNoise) {
+      const noiseInstance = new window.models.NoiseData(
+        rawNoise,
+        isAdministrative ? 'administrative' : 'autonomous'
+      );
+      area.noise = noiseInstance; // ★ noise를 area에 주입
+    }
+
+    const avgNoise = rawNoise?.avgNoise;
+    // const avgNoise = isAdministrative
+    //   ? noiseMap.administrativeNoiseMap?.get(code)?.avgNoise
+    //   : noiseMap.autonomousNoiseMap?.get(code)?.avgNoise;
+    //
+    // const perceivedNoise = isAdministrative
+    //   ? noiseMap.administrativeNoiseMap?.get(code)?.perceivedNoise
+    //   : noiseMap.autonomousNoiseMap?.get(code)?.perceivedNoise;
 
     const fillColor = window.visualMapping.getFillColorByNoise(avgNoise);
     const polygon = window.polygonUtils.createPolygon(area, fillColor);
     const label = window.labelUtils.createLabel(area);
 
+    // const autoNoiseInstance = new window.models.NoiseData(noiseMap.autonomousNoiseMap, 'autonomous');
+    // const adminNoiseInstance = new window.models.NoiseData(noiseMap.administrativeNoiseMap, 'administrative');
+    // console.log(autoNoiseInstance.districtCode, autoNoiseInstance.districtName autoNoiseInstance.avgNoise, autoNoiseInstance.perceivedNoise);
+
+    // // 맵을 만든다.
+    // // 키는 districtCode, 값은 avgNoise,
+    // const infoContent = createInfo(
+    //   area.districtCode
+    //   , area.name
+    //   ,avgNoise
+    //   , perceivedNoise);
+
     polygons.set(code, polygon);
     labels.set(code, label);
+    // noises.set(code, infoContent);
 
     polygon.setMap(isAdministrative ? null : map);
     label.setMap(isAdministrative ? null : map);
+    // noises.setMap(isAdministrative ? null : map);
   });
 
   return { polygons, labels };
 }
+
+function createInfo(code: string, name: string, avgNoise:number, perceivedNoise:number) {
+  return {code, name, avgNoise, perceivedNoise};
+}
+
 
 function calculateAreaCenters(areas: Area[]): AreaCenter[] {
   return areas.map(area => ({
@@ -140,5 +195,5 @@ export const mapInitializer = {
   initializeAreas,
   initializePolygonsAndLabels,
   calculateAreaCenters,
-  calculateMaxAllowedDistance
+  calculateMaxAllowedDistance,
 };

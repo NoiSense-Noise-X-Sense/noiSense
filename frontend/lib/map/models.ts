@@ -38,12 +38,14 @@ class Area {
   path: kakao.maps.LatLng[];
   center: kakao.maps.LatLng;
   polygon: kakao.maps.Polygon;
+  noise?: NoiseData;
 
   constructor(
     districtName: string,
     districtCode: string,
     coords: LatLngCoord[],
-    centroid: Centroid
+    centroid: Centroid,
+    noise?: NoiseData
   ) {
     this.name = districtName;
     this.districtCode = districtCode;
@@ -58,6 +60,8 @@ class Area {
       fillColor: '#ccc',
       fillOpacity: 0.5
     });
+
+    this.noise = noise;
 
     this.polygon.setMap(null); // 초기에는 숨김
   }

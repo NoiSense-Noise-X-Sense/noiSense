@@ -16,6 +16,7 @@ interface Area {
 
 type PolygonMap = Map<string, kakao.maps.Polygon>;
 type LabelMap = Map<string, kakao.maps.CustomOverlay>;
+type NoiseMap = Map<string, kakao.maps.CustomOverlay>;
 
 // =====================
 // 상태 변수
@@ -31,6 +32,9 @@ const polygonMap = new Map<string, kakao.maps.Polygon>();
 
 const autonomousLabels = new Map<string, kakao.maps.CustomOverlay>();
 const administrativeLabels = new Map<string, kakao.maps.CustomOverlay>();
+
+const autonomousNoises = new Map<string, kakao.maps.CustomOverlay>();
+const administrativeNoises = new Map<string, kakao.maps.CustomOverlay>();
 
 // =====================
 // 이벤트 핸들러
@@ -155,6 +159,10 @@ declare global {
         autonomousLabels: LabelMap;
         administrativeLabels: LabelMap;
       };
+      noises: {
+        autonomousNoises: NoiseMap;
+        administrativeNoises: NoiseMap;
+      };
       handleZoomChanged: typeof handleZoomChanged;
       updateViewByZoomLevel: typeof updateViewByZoomLevel;
       handleIdle: typeof handleIdle;
@@ -179,6 +187,10 @@ export const mapEventHandlers = {
   labels: {
     autonomousLabels,
     administrativeLabels
+  },
+  noises: {
+    autonomousNoises,
+    administrativeNoises
   },
   handleZoomChanged,
   updateViewByZoomLevel,

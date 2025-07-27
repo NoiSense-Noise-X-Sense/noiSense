@@ -107,6 +107,13 @@ function convertGeoJsonToAreas(data: GeoJsonItem[]): Area[] {
   return areaList;
 }
 
+function getAreaCentersFromAreas(areas: Area[]): Area[] {
+  return areas.map(area => ({
+    districtCode: area.districtCode,
+    centroid: area.centroid
+  }));
+}
+
 // =====================
 // 전역 등록
 // =====================
@@ -133,4 +140,5 @@ export const geoUtils = {
   isTooFarFromSeoul,
   findNearestAreaCenter,
   convertGeoJsonToAreas,
+  getAreaCentersFromAreas,
 };
