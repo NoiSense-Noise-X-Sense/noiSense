@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadKakaoSdk } from '@/lib/map/kakaoLoader';
 import { initMapUtils } from '@/lib/map/initMapUtils';
+import { useRouter } from 'next/navigation';
 
 export default function MainMap() {
   const router = useRouter();
