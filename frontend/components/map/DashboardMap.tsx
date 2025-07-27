@@ -1,7 +1,7 @@
 /**
- * @file MainMap.tsx
+ * @file DashboardMap.tsx
  * @author Gahui Baek
- * @description 자치구 소음 데이터를 시각화하는 카카오맵 컴포넌트
+ * @description 자치구 별 행정동 소음 데이터를 시각화하는 카카오맵 컴포넌트
  */
 
 'use client';
@@ -10,11 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import { loadKakaoSdk } from '@/lib/map/kakaoLoader';
 import { initMapUtils } from '@/lib/map/initMapUtils';
 
-type Props = {
-  onDistrictClick: (districtCode: string) => void;
-};
-
-export default function MainMap({ onDistrictClick }: Props) {
+export default function DashboardMap() {
   const mapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -22,11 +18,6 @@ export default function MainMap({ onDistrictClick }: Props) {
   const infoTitleRef = useRef(null);
   const infoNoiseRef = useRef(null);
   const infoSubRef = useRef(null);
-
-  function formatDate(isoString: string): string {
-    const date = new Date(isoString);
-    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-  }
 
   useEffect(() => {
     loadKakaoSdk()
@@ -42,7 +33,7 @@ export default function MainMap({ onDistrictClick }: Props) {
 
     const map = new kakao.maps.Map(mapRef.current, {
       center: window.geoUtils.getSeoulCenter(),
-      level: window.geoUtils.MAX_ZOOM_LEVEL,
+      level: window.geoUtils.MIN_ZOOM_LEVEL,
       zoomable: false,
       draggable: false,
       disableDoubleClickZoom: true
@@ -64,16 +55,18 @@ export default function MainMap({ onDistrictClick }: Props) {
       const { autonomousAreas, administrativeAreas, areaCenters } =
         window.mapInitializer.initializeAreas(map, autonomousData, administrativeData, noiseMap);
 
-      //  자치구 별 소음 데이터 매핑
-      autonomousAreas.forEach(autonomousArea => {
-        const noise = window.mapEventHandlers.noises.autonomousNoises.get(autonomousArea.districtCode);
+      window.mapEventHandlers.updateViewByZoomLevel(6, map);
 
-        const poly = window.mapEventHandlers.polygons.autonomousPolygons.get(autonomousArea.districtCode);
+      //  자치구 별 소음 데이터 매핑
+      administrativeAreas.forEach(administrativeArea => {
+        const noise = window.mapEventHandlers.noises.administrativeNoises.get(administrativeArea.districtCode);
+
+        const poly = window.mapEventHandlers.polygons.administrativePolygons.get(administrativeArea.districtCode);
         kakao.maps.event.addListener(poly, 'mouseover', () => {
           if (!infoOverlayRef.current || !infoTitleRef.current || !infoNoiseRef.current || !infoSubRef.current) return;
 
           // 텍스트 삽입
-          infoTitleRef.current.textContent =autonomousArea.name;
+          infoTitleRef.current.textContent = administrativeArea.name;
 
           if (noise !== undefined) {
             infoNoiseRef.current.textContent = `평균 소음: ${noise.avgNoise.toFixed(1)}dB`;
@@ -82,7 +75,6 @@ export default function MainMap({ onDistrictClick }: Props) {
             infoNoiseRef.current.textContent = '평균 소음: 측정된 데이터가 없음';
             infoSubRef.current.textContent = '체감 소음: 측정된 데이터가 없음';
           }
-
           // 오버레이 보이게 하기
           infoOverlayRef.current.style.display = 'flex';
         });
@@ -91,11 +83,6 @@ export default function MainMap({ onDistrictClick }: Props) {
           if (infoOverlayRef.current) {
             infoOverlayRef.current.style.display = 'none';
           }
-        });
-
-        kakao.maps.event.addListener(poly, 'click', () => {
-          console.log('mainmap click');
-          onDistrictClick(autonomousArea.districtCode);
         });
 
       })

@@ -51,7 +51,7 @@ export default function SeoulMap() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold">서울시 fghfhgf자치구별 소음 지도</CardTitle>
+        <CardTitle className="text-lg font-semibold">서울시 자치구별 소음 지도</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* 소음 지도 지도 영역 */}
