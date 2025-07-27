@@ -18,3 +18,7 @@ function initFullMapUtils() {
   window.mapTileUtils = require('./mapTileUtils').mapTileUtils;
   window.dataLoader = require('./dataLoader').dataLoader;
 }
+
+export const initMapUtils =  {
+  initFullMapUtils,
+}
