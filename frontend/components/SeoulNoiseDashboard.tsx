@@ -75,7 +75,7 @@ export default function SeoulNoiseDashboard({ onDistrictClick }: Props) {
             <CardContent className="space-y-4">
               {/* 메인 지도 영역 */}
               <div className="relative h-100 bg-gray-100 rounded-lg border overflow-hidden">
-                <MainMap />
+                <MainMap onDistrictClick={onDistrictClick} />
               </div>
             </CardContent>
           </Card>

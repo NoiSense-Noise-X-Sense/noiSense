@@ -9,13 +9,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { loadKakaoSdk } from '@/lib/map/kakaoLoader';
 import { initMapUtils } from '@/lib/map/initMapUtils';
-import { useRouter } from 'next/navigation';
 
-export default function MainMap() {
-  const router = useRouter();
-  const routerRef = useRef(router); // router를 ref에 담아서 바깥에서 사용
+type Props = {
+  onDistrictClick: (districtCode: string) => void;
+};
 
-
+export default function MainMap({ onDistrictClick }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -96,7 +95,7 @@ export default function MainMap() {
 
         kakao.maps.event.addListener(poly, 'click', () => {
           // TODO: 라우팅할 Path 확인해서 변경
-          routerRef.current.push(`/DistrictDashboard/${autonomousArea.districtCode}`);
+          onDistrictClick(autonomousArea.districtCode);
         });
 
 
