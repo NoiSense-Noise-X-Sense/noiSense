@@ -27,6 +27,9 @@ public class Comment extends BaseEntity {
   @Column(name = "content", nullable = false, length = 500)
   private String content;
 
+  @Column(name = "nickname", length = 100)
+  private String nickname;
+
   /**
    * Board 연관관계
    * 게시글 삭제 시 댓글도 함께 삭제되도록 CASCADE 설정

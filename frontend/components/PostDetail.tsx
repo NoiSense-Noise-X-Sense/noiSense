@@ -274,7 +274,6 @@ export default function PostDetail({
     try {
       await createComment({
         boardId: post.boardId,
-        nickname: currentUser.nickname,
         content: commentContent,
       });
       setCommentContent("");
