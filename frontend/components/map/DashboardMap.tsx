@@ -43,12 +43,12 @@ export default function DashboardMap() {
 
     (async () => {
       const [autonomousData, administrativeData] = await Promise.all([
-        window.dataLoader.fetchJson('/geojson/autonomousDistrict.json'),
-        window.dataLoader.fetchJson('/geojson/administrativeDistrict.json')
+        window.dataLoader.fetchJson('/api/v1/geodata/polygon/autonomousDistrict'),
+        window.dataLoader.fetchJson('/api/v1/geodata/polygon/administrativeDistrict')
       ]);
       const [autoNoise, adminNoise] = await Promise.all([
-        window.dataLoader.fetchJson('/geojson/autonomousNoiseData.json'),
-        window.dataLoader.fetchJson('/geojson/administrativeNoiseData.json')
+        window.dataLoader.fetchStaticJson('/geojson/autonomousNoiseData.json'),
+        window.dataLoader.fetchStaticJson('/geojson/administrativeNoiseData.json')
       ]);
 
       const noiseMap = window.visualMapping.buildNoiseMap(autoNoise, adminNoise);
