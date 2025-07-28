@@ -30,6 +30,17 @@ async function fetchJson<T = unknown>(url: string): Promise<T> {
   return await res.json();
 }
 
+/**
+ * 프론트 서버에 존재하는 JSON 데이터를 비동기적으로 로드
+ * @param url JSON 파일의 경로 또는 API 엔드포인트
+ * @returns 파싱된 JSON 객체
+ */
+async function fetchStaticJson<T = unknown>(url: string): Promise<T> {
+  const res = await fetch(url, DEFAULT_OPTIONS);
+  if (!res.ok) throw new Error(`데이터 로딩 실패: ${url}`);
+  return await res.json();
+}
+
 // =====================
 // 전역 등록
 // =====================
@@ -38,10 +49,12 @@ declare global {
   interface Window {
     dataLoader: {
       fetchJson: <T = unknown>(url: string) => Promise<T>;
+      fetchStaticJson: <T = unknown>(url: string) => Promise<T>;
     };
   }
 }
 
 export const dataLoader = {
-  fetchJson
+  fetchJson,
+  fetchStaticJson,
 };

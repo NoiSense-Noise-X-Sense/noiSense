@@ -34,11 +34,13 @@ public class BoundaryPolygonDto {
   public static class Geometry {
     private GeometryType geometryType;
     private JsonNode coordinates;
+    private JsonNode centroid;
 
     @Builder
-    public Geometry(GeometryType geometryType, JsonNode coordinates) {
+    public Geometry(GeometryType geometryType, JsonNode coordinates, JsonNode centroid) {
       this.geometryType = geometryType;
       this.coordinates = coordinates;
+      this.centroid = centroid;
     }
   }
 }

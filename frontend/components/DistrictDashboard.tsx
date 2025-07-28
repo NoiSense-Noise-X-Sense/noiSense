@@ -25,6 +25,7 @@ import {
   fetchYearly,
   fetchComplaints,
 } from '@/lib/api/dashboard';
+import DashboardMap from "@/components/map/DashboardMap";
 
 type KeywordCount = {
   keyword: string;
@@ -75,13 +76,15 @@ export default function DistrictDashboard({
     const fetchData = async () => {
       try {
         setFetchError(null); // 에러 초기화
-        const code = getDistrictCode(selectedDistrict);
-        if (!code) return;
+        // const selectedDistrictCode = getDistrictCode(selectedDistrict);
+        // if (!selectedDistrictCode) return;
+        const selectedDistrictCode = getDistrictCode(selectedDistrict) || '11110'; // 종로구로 fallback
+
         const [summary, hourly, yearly, complaints] = await Promise.all([
-          fetchSummary(code),
-          fetchHourly(code),
-          fetchYearly(code),
-          fetchComplaints(code),
+          fetchSummary(selectedDistrictCode),
+          fetchHourly(selectedDistrictCode),
+          fetchYearly(selectedDistrictCode),
+          fetchComplaints(selectedDistrictCode),
         ]);
         setDistrictData({
           avgNoise: {
@@ -274,7 +277,7 @@ export default function DistrictDashboard({
           style={{ gridTemplateRows: 'auto auto' }}
         >
           {/* Selected District Info - spans 2 rows */}
-          <Card className="col-span-1 lg:col-span-2 row-span-2 flex flex-col items-center justify-center p-4">
+{/*          <Card className="col-span-1 lg:col-span-2 row-span-2 flex flex-col items-center justify-center p-4">
             <div className="flex items-center gap-2 mb-3">
               <Volume2 className="h-6 w-6 text-gray-600" />
               <CardTitle className="text-lg font-semibold">{selectedDistrict}</CardTitle>
@@ -285,6 +288,14 @@ export default function DistrictDashboard({
             <p className="text-sm text-gray-500 text-center">
               {selectedDistrict}의 소음 현황을 분석합니다.
             </p>
+          </Card>*/}
+          {/*행정동 별 지도*/}
+          <Card className="col-span-1 lg:col-span-2 row-span-2 p-4">
+            <DashboardMap
+              selectedDistrict={selectedDistrict}
+              selectedDistrictCode={getDistrictCode(selectedDistrict)}
+              administrativeNoises={window.mapEventHandlers.noises.administrativeNoisesObject}
+            />
           </Card>
 
           {/* Key Metrics - Top Row */}

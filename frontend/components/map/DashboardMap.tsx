@@ -10,7 +10,17 @@ import { useEffect, useRef, useState } from 'react';
 import { loadKakaoSdk } from '@/lib/map/kakaoLoader';
 import { initMapUtils } from '@/lib/map/initMapUtils';
 
-export default function DashboardMap() {
+type DashboardMapProps = {
+  selectedDistrict: string;
+  selectedDistrictCode: string;
+  administrativeNoises: Record<string, { avgNoise: number; perceivedNoise: number }>;
+};
+
+export default function DashboardMap({
+                                       selectedDistrict,
+                                       selectedDistrictCode,
+                                       administrativeNoises,
+                                     }: DashboardMapProps) {  // 이 안에서 selectedDistrict로 해당 자치구에 맞는 소음 데이터, polygon 등 처리
   const mapRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -18,6 +28,13 @@ export default function DashboardMap() {
   const infoTitleRef = useRef(null);
   const infoNoiseRef = useRef(null);
   const infoSubRef = useRef(null);
+
+  const noise = administrativeNoises?.[selectedDistrictCode ?? ''] ?? {
+    avgNoise: undefined,
+    perceivedNoise: undefined,
+  };
+
+  const hasNoiseData = noise.avgNoise !== undefined;
 
   useEffect(() => {
     loadKakaoSdk()
@@ -43,12 +60,12 @@ export default function DashboardMap() {
 
     (async () => {
       const [autonomousData, administrativeData] = await Promise.all([
-        window.dataLoader.fetchJson('/geojson/autonomousDistrict.json'),
-        window.dataLoader.fetchJson('/geojson/administrativeDistrict.json')
+        window.dataLoader.fetchJson('/api/v1/geodata/polygon/autonomousDistrict'),
+        window.dataLoader.fetchJson('/api/v1/geodata/polygon/administrativeDistrict')
       ]);
       const [autoNoise, adminNoise] = await Promise.all([
-        window.dataLoader.fetchJson('/geojson/autonomousNoiseData.json'),
-        window.dataLoader.fetchJson('/geojson/administrativeNoiseData.json')
+        window.dataLoader.fetchStaticJson('/geojson/autonomousNoiseData.json'),
+        window.dataLoader.fetchStaticJson('/geojson/administrativeNoiseData.json')
       ]);
 
       const noiseMap = window.visualMapping.buildNoiseMap(autoNoise, adminNoise);
@@ -90,7 +107,13 @@ export default function DashboardMap() {
   }, [ready]);
 
   return (
-    <div className="relative w-full h-[500px]">
+    <div className="relative w-full h-[280px]">
+      {!hasNoiseData && (
+        <div className="absolute inset-0 z-[10000] bg-white/80 flex items-center justify-center text-gray-600 font-semibold text-sm">
+          {selectedDistrict}의 소음 데이터가 없습니다.
+        </div>
+      )}
+
       {/* 오버레이 */}
       <div
         ref={infoOverlayRef}

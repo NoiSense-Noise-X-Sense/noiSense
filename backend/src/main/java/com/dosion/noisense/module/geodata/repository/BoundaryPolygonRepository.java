@@ -21,14 +21,15 @@ public interface BoundaryPolygonRepository extends JpaRepository<BoundaryPolygon
   @Query("""
     SELECT new com.dosion.noisense.web.geodata.dto.BoundaryPolygonProjection(
         bp.boundaryPolygonId,
+        ad.nameEn,
+        ad.nameKo,
         bp.administrativeDistrict,
         bp.autonomousDistrict,
         bp.boundaryType,
         bp.geometryFormat,
         bp.geometryType,
         bp.geometryCoordinate,
-        ad.nameEn,
-        ad.nameKo
+        bp.geometryCentroid
     )
     FROM BoundaryPolygon bp
     JOIN AutonomousDistrict ad ON bp.autonomousDistrict = ad.code
@@ -40,14 +41,15 @@ public interface BoundaryPolygonRepository extends JpaRepository<BoundaryPolygon
   @Query("""
     SELECT new com.dosion.noisense.web.geodata.dto.BoundaryPolygonProjection(
         bp.boundaryPolygonId,
+        ad.nameEn,
+        ad.nameKo,
         bp.administrativeDistrict,
         bp.autonomousDistrict,
         bp.boundaryType,
         bp.geometryFormat,
         bp.geometryType,
         bp.geometryCoordinate,
-        ad.nameEn,
-        ad.nameKo
+        bp.geometryCentroid
     )
     FROM BoundaryPolygon bp
     JOIN AdministrativeDistrict ad ON bp.administrativeDistrict = ad.code
