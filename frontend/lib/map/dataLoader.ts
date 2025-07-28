@@ -3,6 +3,7 @@
  * @author Gahui Baek
  * @description fetch 기반으로 JSON 데이터를 비동기 로드하는 유틸리티
  */
+import {fetchWithAuth} from "@/lib/fetchWithAuth";
 
 // =====================
 // 상수
@@ -24,7 +25,7 @@ const DEFAULT_OPTIONS: RequestInit = {
  * @returns 파싱된 JSON 객체
  */
 async function fetchJson<T = unknown>(url: string): Promise<T> {
-  const res = await fetch(url, DEFAULT_OPTIONS);
+  const res = await fetchWithAuth(url, DEFAULT_OPTIONS);
   if (!res.ok) throw new Error(`데이터 로딩 실패: ${url}`);
   return await res.json();
 }

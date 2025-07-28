@@ -11,6 +11,7 @@ import RankingLists from "./analysisreport/RankingLists"
 import MainChart from "./analysisreport/MainChart"
 import CombinedHourlyChart from "./analysisreport/CombinedHourlyChart"
 import CombinedDailyChart from "./analysisreport/CombinedDailyChart"
+import {fetchWithAuth} from "@/lib/fetchWithAuth";
 
 export default function AnalysisReport() {
   const endDate = new Date();
@@ -40,7 +41,7 @@ export default function AnalysisReport() {
     const fetchDistricts = async () => {
       setIsDistrictsLoading(true);
       try {
-        const response = await fetch("http://localhost:8080/api/v1/district/autonomousDistrict");
+        const response = await fetchWithAuth(`/api/v1/district/autonomousDistrict`);
         if (!response.ok) throw new Error(`자치구 목록 로딩 실패: ${response.status}`);
         const result = await response.json();
         setDistricts(result.data || []);
@@ -75,7 +76,7 @@ export default function AnalysisReport() {
       });
 
       try {
-        const response = await fetch(`http://localhost:8080/api/v1/report/getReport?${params.toString()}`);
+        const response = await fetchWithAuth(`/api/v1/report/getReport?${params.toString()}`);
         if (!response.ok) throw new Error(`서버 응답 오류: ${response.status}`);
         const result = await response.json();
         setReportData(result.data || result); // 원본 데이터를 그대로 저장

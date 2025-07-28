@@ -51,7 +51,7 @@ export default function NoiSenseDashboard() {
       try {
        console.log("✅ API_URL:", process.env.NEXT_PUBLIC_API_URL);
 
-        const res = await fetch(`${API_URL}/api/user`, {
+        const res = await fetchWithAuth(`/api/user`, {
           method: 'GET',
           credentials: 'include'
         });
@@ -85,7 +85,7 @@ export default function NoiSenseDashboard() {
 
   const handleLogout = async () => {
     try {
-        const res = await fetch(`${API_URL}/api/auth/logout`, {
+        const res = await fetchWithAuth(`/api/auth/logout`, {
           method: 'POST',
           credentials: 'include'
         });
