@@ -116,6 +116,7 @@ jobs:
             echo "export SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
             echo "export API_SDOT_KEY=${{ secrets.API_SDOT_KEY }}" >> .env
             echo "export API_SDOT_SERVICENAME=${{ secrets.API_SDOT_SERVICENAME }}" >> .env
+            echo "export OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}" >> .env
 
             echo "======= .env 파일 생성 완료 ==========="
 
