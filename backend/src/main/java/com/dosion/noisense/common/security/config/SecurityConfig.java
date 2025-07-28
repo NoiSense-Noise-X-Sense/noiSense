@@ -90,7 +90,10 @@ public class SecurityConfig {
           "/actuator/prometheus",
           "/api/batch/run-initial-load",
           "/api/dashboard/**",
-          "/api/es/board/frequent-words"
+          "/api/es/board/frequent-words",
+          "/api/v1/district/**",
+          "/api/v1/report/**",
+          "/api/v1/geodata/**"
         ).permitAll()
 
         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/boards", "/api/boards/**").permitAll()
