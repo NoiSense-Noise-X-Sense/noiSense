@@ -45,7 +45,13 @@ export default function CombinedDailyChart({ data }: CombinedDailyChartProps) {
                 tick={{ fontSize: 12 }}
                 tickFormatter={(value) => dayMap[value] || value}
               />
-              <YAxis label={{ value: "Average Noise Level (dB)", angle: -90, position: "insideLeft" }} tick={{ fontSize: 12 }} />
+              <YAxis
+                type="number"
+                domain={['dataMin - 5', 'dataMax + 5']}
+                tickCount={8}
+                allowDecimals={false}
+                label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }}
+              />
               <Tooltip formatter={(value: number) => [`${value.toFixed(1)} dB`, "평균 소음"]} />
               <Legend />
               {/* 지역명별로 Line 생성 */}
