@@ -204,7 +204,7 @@ export default function MyPage({ onPostClick, onEditClick }: { onPostClick?: (po
     if (window.confirm("로그아웃 하시겠습니까?")) {
       await logout()
       // 페이지 전체 리로드 대신 router로 이동하는 것이 더 부드러운 사용자 경험을 제공
-      router.push("/")
+      window.location.href = "/";
       // router.refresh() // 필요 시 서버 데이터를 다시 가져오기 위해 사용
     }
   }
@@ -213,7 +213,7 @@ export default function MyPage({ onPostClick, onEditClick }: { onPostClick?: (po
     if (window.confirm("정말로 회원탈퇴를 하시겠습니까?")) {
       await deleteUser()
       alert("회원탈퇴가 완료되었습니다.")
-      router.push("/")
+      window.location.href = "/";
     }
   }
 
