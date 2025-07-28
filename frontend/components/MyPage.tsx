@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { User, MapPin, FileText, Trash2, Edit, Heart, LogOut, ChevronLeft, ChevronRight } from "lucide-react"
+import { User, FileText, Trash2, Edit, Heart, LogOut, ChevronLeft, ChevronRight } from "lucide-react"
 import { getUserInfo, updateUserInfo, logout, deleteUser, getUserActivityStats, UserData, UserActivityStats } from "@/lib/api/user"
 import { getMyBoards, deleteBoard, BoardDto } from "@/lib/api/board"
 import { getAutonomousDistricts, getDongsByGu, DistrictDto } from "@/lib/api/district"
@@ -44,12 +44,6 @@ type ActivityStatsState = {
   error: string | null
 }
 
-type PageType =
-  | "main"
-  | "login"
-  | "mypage"
-  | "board"
-  | "WritePost";
 
 export default function MyPage({ onPostClick }: { onPostClick?: (postId: number) => void }) {
   const router = useRouter()
