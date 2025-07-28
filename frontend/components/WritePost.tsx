@@ -361,7 +361,13 @@ const dongsByDistrict: { [key: string]: string[] } = {
   전체: ["전체"],
 };
 
-export default function WritePost() {
+export default function WritePost({
+                                    onBack,
+                                    onSubmit,
+                                  }: {
+  onBack: () => void;
+  onSubmit: () => void;
+}) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");

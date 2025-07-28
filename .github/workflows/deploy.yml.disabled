@@ -30,7 +30,6 @@ jobs:
            .next package.json package-lock.json next.config.mjs \
            public styles components hooks lib app \
            tailwind.config.ts postcss.config.mjs tsconfig.json \
-           .env.production
 
       - name: Copy to EC2
         uses: appleboy/scp-action@v0.1.4
@@ -51,6 +50,12 @@ jobs:
             mkdir -p /home/ec2-user/app/nextjs
 
             cd /home/ec2-user/app/nextjs
+
+            echo "NEXT_PUBLIC_API_URL=http://mycityonnoisense.site" > .env.production
+            echo "NEXT_PUBLIC_PROFILE=real" >> .env.production
+            echo "NEXT_PUBLIC_KAKAO_API_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_API_KEY }}" >> .env.production
+
+
             echo "========= 2 ============"
             tar xzf ../frontend/nextjs_build.tar.gz
             echo "========= 3 ============"
