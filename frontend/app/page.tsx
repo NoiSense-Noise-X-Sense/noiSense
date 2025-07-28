@@ -269,7 +269,9 @@ export default function NoiSenseDashboard() {
         />
       )}
       {currentPage === "WritePost" && (
-        <WritePost onBack={handleBackToBoard} onSubmit={handleWriteSubmit} />
+        <WritePost onBack={handleBackToBoard}
+                   onSubmit={handleWriteSubmit}
+        />
       )}
     </div>
   );
