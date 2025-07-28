@@ -47,7 +47,7 @@ spring:
 
 
   elasticsearch:
-    uris: http://172.31.38.34:9200
+    uris: http://localhost:9200
 
 # 로깅
 logging:
