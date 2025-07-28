@@ -78,5 +78,45 @@
     "administrativeDistrictCode": "11030570",
     "administrativeDistrictEng": "Wonhyoro 2(i)-dong",
     "administrativeDistrictKor": "원효로2동"
+  },
+  {
+    "avgNoise": 61.1,
+    "perceivedNoise": 56.1,
+    "autonomousDistrictCode": "11010",
+    "autonomousDistrictEng": "Jongno-gu",
+    "autonomousDistrictKor": "종로구",
+    "administrativeDistrictCode": "11010530",
+    "administrativeDistrictEng": "Sajik-dong",
+    "administrativeDistrictKor": "사직동"
+  },
+  {
+    "avgNoise": 73.7,
+    "perceivedNoise": 52.1,
+    "autonomousDistrictCode": "11010",
+    "autonomousDistrictEng": "Jongno-gu",
+    "autonomousDistrictKor": "종로구",
+    "administrativeDistrictCode": "11010540",
+    "administrativeDistrictEng": "Samcheong-dong",
+    "administrativeDistrictKor": "삼청동"
+  },
+  {
+    "avgNoise": 75.0,
+    "perceivedNoise": 54.6,
+    "autonomousDistrictCode": "11010",
+    "autonomousDistrictEng": "Jongno-gu",
+    "autonomousDistrictKor": "종로구",
+    "administrativeDistrictCode": "11010560",
+    "administrativeDistrictEng": "Pyeongchang-dong",
+    "administrativeDistrictKor": "평창동"
+  },
+  {
+    "avgNoise": 77.8,
+    "perceivedNoise": 62.4,
+    "autonomousDistrictCode": "11250",
+    "autonomousDistrictEng": "Gangdong-gu",
+    "autonomousDistrictKor": "강동구",
+    "administrativeDistrictCode": "11250770",
+    "administrativeDistrictEng": "Sangil 2(i)-dong",
+    "administrativeDistrictKor": "상일2동"
   }
 ]
