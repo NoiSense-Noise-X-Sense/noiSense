@@ -42,6 +42,7 @@ export default function NoiSenseDashboard() {
   const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
   const [selectedDistrict, setSelectedDistrict] = useState<string>("강남구");
   const [user, setUser] = useState<User | null>(null);
+  const [editBoardId, setEditBoardId] = useState<number | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -105,19 +106,30 @@ export default function NoiSenseDashboard() {
 
   const handleWriteClick = () => {
     if (isLoggedIn) {
+      setEditBoardId(null); // Clear edit mode for new post
       setCurrentPage("WritePost");
     } else {
       setCurrentPage("login");
     }
   };
 
+  const handleEditClick = (boardId: number) => {
+    if (isLoggedIn) {
+      setEditBoardId(boardId); // Set edit mode with boardId
+      setCurrentPage("WritePost");
+    } else {
+      setCurrentPage("login");
+    }
+  };
 
   const handleBackToBoard = () => {
     setCurrentPage("board");
+    setEditBoardId(null); // Clear edit mode when going back
   };
 
   const handleWriteSubmit = () => {
     setCurrentPage("board");
+    setEditBoardId(null); // Clear edit mode after submit
   };
 
   const handleDistrictClick = (district: string) => {
@@ -264,13 +276,15 @@ export default function NoiSenseDashboard() {
         <PostDetail
           onBack={handleBackToBoard}
           postId={selectedPostId}
-          onEdit={() => {/* 구현 필요 */}}
+          onEdit={handleEditClick}
           onDelete={() => {/* 구현 필요 */}}
         />
       )}
       {currentPage === "WritePost" && (
-        <WritePost onBack={handleBackToBoard}
-                   onSubmit={handleWriteSubmit}
+        <WritePost
+          onBack={handleBackToBoard}
+          onSubmit={handleWriteSubmit}
+          boardId={editBoardId || undefined}
         />
       )}
     </div>

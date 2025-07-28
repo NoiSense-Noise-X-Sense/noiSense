@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createBoard } from "@/lib/boardApi";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createBoard, updateBoard, getBoardById, BoardPost } from "@/lib/boardApi";
 import { getCurrentUser } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -364,17 +364,60 @@ const dongsByDistrict: { [key: string]: string[] } = {
 export default function WritePost({
                                     onBack,
                                     onSubmit,
+                                    boardId,
                                   }: {
   onBack: () => void;
   onSubmit: () => void;
+  boardId?: number;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [autonomousDistrict, setAutonomousDistrict] = useState("");
   const [administrativeDistrict, setAdministrativeDistrict] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [post, setPost] = useState<BoardPost | null>(null);
+  const [initialLoading, setInitialLoading] = useState(false);
+
+  // Determine if we're in edit mode
+  const editBoardId = boardId || (searchParams?.get('boardId') ? Number(searchParams.get('boardId')) : null);
+  const isEditMode = !!editBoardId;
+
+  // Helper functions to convert district codes to names
+  const getAutonomousDistrictName = (code: string): string => {
+    for (const [name, districtCode] of Object.entries(autonomousDistrictMapping)) {
+      if (districtCode === code) return name;
+    }
+    return code;
+  };
+
+  const getAdministrativeDistrictName = (code: string): string => {
+    for (const [name, districtCode] of Object.entries(administrativeDistrictMapping)) {
+      if (districtCode === code) return name;
+    }
+    return code;
+  };
+
+  // Fetch existing post data when in edit mode
+  useEffect(() => {
+    if (isEditMode && editBoardId) {
+      setInitialLoading(true);
+      setError(null);
+      getBoardById(editBoardId)
+        .then((data) => {
+          setPost(data);
+          setTitle(data.title);
+          setContent(data.content);
+          // Convert codes to names for display
+          setAutonomousDistrict(getAutonomousDistrictName(data.autonomousDistrict));
+          setAdministrativeDistrict(getAdministrativeDistrictName(data.administrativeDistrict));
+        })
+        .catch(() => setError("게시글을 불러오지 못했습니다."))
+        .finally(() => setInitialLoading(false));
+    }
+  }, [isEditMode, editBoardId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -404,26 +447,52 @@ export default function WritePost({
 
     setLoading(true);
     try {
-      await createBoard({
-        userId: user.userId,
-        nickname: user.nickname,
-        title,
-        content,
-        autonomousDistrict: autonomousDistrictCode,
-        administrativeDistrict: administrativeDistrictCode,
-        emotionalScore: 0
-      });
-      router.push("/boards");
+      if (isEditMode && editBoardId && post) {
+        // Update existing post
+        await updateBoard(editBoardId, user.userId, {
+          title,
+          content,
+          autonomousDistrict: autonomousDistrictCode,
+          administrativeDistrict: administrativeDistrictCode,
+          viewCount: post.viewCount,
+          empathyCount: post.empathyCount,
+        });
+      } else {
+        // Create new post
+        await createBoard({
+          userId: user.userId,
+          nickname: user.nickname,
+          title,
+          content,
+          autonomousDistrict: autonomousDistrictCode,
+          administrativeDistrict: administrativeDistrictCode,
+          emotionalScore: 0
+        });
+      }
+      onSubmit();
     } catch (e) {
-      setError("게시글 작성에 실패했습니다.");
+      setError(isEditMode ? "게시글 수정에 실패했습니다." : "게시글 작성에 실패했습니다.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Show loading state when fetching post data for edit
+  if (initialLoading) {
+    return (
+      <div className="max-w-2xl mx-auto p-4">
+        <div className="flex items-center justify-center py-8">
+          <div className="text-gray-500">게시글 정보를 불러오는 중...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">게시글 작성</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        {isEditMode ? "게시글 수정" : "게시글 작성"}
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input
           placeholder="제목을 입력하세요"
@@ -474,7 +543,10 @@ export default function WritePost({
         </div>
         {error && <div className="text-red-500 text-sm">{error}</div>}
         <Button type="submit" disabled={loading} className="w-full">
-          {loading ? "작성 중..." : "작성하기"}
+          {loading
+            ? (isEditMode ? "수정 중..." : "작성 중...")
+            : (isEditMode ? "수정하기" : "작성하기")
+          }
         </Button>
       </form>
     </div>
