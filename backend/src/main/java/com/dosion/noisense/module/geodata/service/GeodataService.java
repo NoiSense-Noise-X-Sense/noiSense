@@ -35,6 +35,7 @@ public class GeodataService {
           BoundaryPolygonDto.Geometry geometry = BoundaryPolygonDto.Geometry.builder()
             .geometryType(p.geometryType())
             .coordinates(p.geometryCoordinate())
+            .centroid(p.geometryCentroid())
             .build();
 
           return BoundaryPolygonDto.builder()
@@ -72,6 +73,7 @@ public class GeodataService {
           BoundaryPolygonDto.Geometry geometry = BoundaryPolygonDto.Geometry.builder()
             .geometryType(p.geometryType())
             .coordinates(p.geometryCoordinate())
+            .centroid(p.geometryCentroid())
             .build();
 
           return BoundaryPolygonDto.builder()

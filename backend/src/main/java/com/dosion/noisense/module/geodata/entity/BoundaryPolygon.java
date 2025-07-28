@@ -52,15 +52,22 @@ public class BoundaryPolygon {
   @Convert(converter = JsonNodeConverter.class)
   private JsonNode geometryCoordinate;
 
+  @Column(name = "geometryCentroid") // 255자 이상일 시 columnDefinition 권장
+  @Convert(converter = JsonNodeConverter.class)
+  private JsonNode geometryCentroid;
+
   @CreatedDate
   @Column(updatable = false)
   protected LocalDateTime createdDate;
 
   public static BoundaryPolygonDto.Geometry toGeometryDto(BoundaryPolygon boundaryPolygon) throws IllegalArgumentException{
     JsonNode coordinate = boundaryPolygon.geometryCoordinate;
+    JsonNode centroid = boundaryPolygon.geometryCentroid;
+
     return BoundaryPolygonDto.Geometry.builder()
       .geometryType(boundaryPolygon.getGeometryType())
       .coordinates(coordinate)
+      .centroid(centroid)
       .build();
   }
 }

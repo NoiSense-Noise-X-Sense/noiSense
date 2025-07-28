@@ -8,12 +8,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 // repository 전용 dto
 public record BoundaryPolygonProjection(
   long boundaryPolygonId,
+  String districtNameEn,
+  String districtNameKo,
   String administrativeDistrict,
   String autonomousDistrict,
   BoundaryType boundaryType,
   GeometryFormat geometryFormat,
   GeometryType geometryType,
   JsonNode geometryCoordinate,
-  String districtNameEn,
-  String districtNameKo
+  JsonNode geometryCentroid
 ) {}
