@@ -7,6 +7,7 @@ spring:
     compose:
       enabled: false
 
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
@@ -64,7 +65,7 @@ aws:
     domain : "http://mycityonnoisense.site"
 
 openai:
-  api-key: something
+  api-key: ${OPEN_AI_KEY}
 
 api:
   sdot:

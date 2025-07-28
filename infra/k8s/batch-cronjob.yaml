@@ -17,7 +17,7 @@ spec:
                 - --job.name=hourlyNoiseJob
               env:
                 - name: SPRING_PROFILES_ACTIVE
-                  value: local
+                  value: batch
           restartPolicy: OnFailure
   successfulJobsHistoryLimit: 2  # 완료된 Job 이력 유지 수
   failedJobsHistoryLimit: 1      # 실패한 Job 이력 유지 수
