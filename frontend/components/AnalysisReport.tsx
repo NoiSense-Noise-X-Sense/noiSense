@@ -23,7 +23,6 @@ export default function AnalysisReport() {
     endDate: endDate,
     district: "all",
   });
-
   const [districts, setDistricts] = useState<DistrictDto[]>([]);
   const [isDistrictsLoading, setIsDistrictsLoading] = useState(true);
 
@@ -34,8 +33,6 @@ export default function AnalysisReport() {
   const [error, setError] = useState<string | null>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-
-
   // 자치구 목록 로딩
   useEffect(() => {
     const fetchDistricts = async () => {
@@ -44,7 +41,13 @@ export default function AnalysisReport() {
         const response = await fetchWithAuth(`/api/v1/district/autonomousDistrict`);
         if (!response.ok) throw new Error(`자치구 목록 로딩 실패: ${response.status}`);
         const result = await response.json();
-        setDistricts(result.data || []);
+        setDistricts(
+          (result.data || []).map((d: any) => ({
+            code: d.districtCode,
+            nameKo: d.districtNameKo,
+            nameEn: d.districtNameEn,
+          }))
+        );
       } catch (e: any) {
         setError(e.message || "자치구 목록을 불러오는 중 에러 발생");
       } finally {
@@ -97,7 +100,6 @@ export default function AnalysisReport() {
   }, [filters]);
 
   return (
-
     <div className="min-h-screen bg-gray-50 p-6 select-none">
       <div className="max-w-7xl mx-auto space-y-6">
         <h1 className="text-4xl font-bold text-gray-900 text-center">소음 데이터 리포트</h1>
@@ -109,65 +111,67 @@ export default function AnalysisReport() {
             isLoading={isDistrictsLoading}
           />
           <div className="space-y-6 mt-6">
-            {isReportLoading ? (
+            {isReportLoading || isDistrictsLoading ? (
               <div className="text-center py-20 text-gray-500">리포트 데이터를 불러오는 중입니다...</div>
             ) : error ? (
               <div className="text-center py-20 text-red-500 bg-red-50 rounded-lg p-4">오류: {error}</div>
             ) : reportData ? (
-              <>
-                <KpiCards
-                  avgNoise={reportData.avgNoise}
-                  perceivedNoise={reportData.perceivedNoise}
-                  maxNoiseRegion={
-                    districts.find(d => d.code === reportData.maxNoiseRegion)?.nameKo || reportData.maxNoiseRegion
-                  }
-                  maxNoiseTime={reportData.maxNoiseTime}
-                  maxNoiseTimeValue={reportData.maxNoiseTimeValue}
-                  selectedDistrict={filters.district}
-                />
-                <RankingLists
-                  topRankDtoList={reportData.topRankDtoList || []}
-                  bottomRankDtoList={reportData.bottomRankDtoList || []}
-                  deviationRankDtoList={reportData.deviationRankDtoList || []}
-                />
+              (() => {
+                // 렌더링 직전에 변환 로직을 수행합니다.
+                // 이 시점에는 districts와 reportData가 모두 준비된 상태입니다.
+                const displaySecondaryLocation = districts.find(d => d.code === reportData.maxNoiseRegion)?.nameKo || reportData.maxNoiseRegion;
 
-                {/*
-                  데이터를 MainChart로 전달하기 직전에, .map()을 사용하여
-                  MainChart가 기대하는 'xAxis'키를 만들어 줌.
-                */}
-                <MainChart
-                  hourlyData={reportData.totalChartDto?.overallHourAvgNoiseData?.map(d => ({ ...d, xAxis: d.hour })) || []}
-                  dailyData={reportData.totalChartDto?.overallDayAvgNoiseData?.map(d => ({ ...d, xAxis: d.day })) || []}
-                />
+                const displayPrimaryLocation = filters.district === "all"
+                  ? "서울특별시"
+                  : districts.find(d => d.code === filters.district)?.nameKo || filters.district;
 
-                {/* 다른 차트들은 원본 데이터를 그대로 사용 가능함 */}
-                <CombinedHourlyChart
-                  data={
-                    (reportData.totalChartDto?.trendPointHourAvgNoiseData || [])
-                      .map(item =>
-                        item && item.avgNoiseByRegion
-                          ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
-                          : {}
-                      )
-                      // xaxis(시간)를 기준으로 정렬 (00~23)
-                      .sort((a, b) => {
-                        const numA = parseInt(a.xaxis, 10);
-                        const numB = parseInt(b.xaxis, 10);
-                        return numA - numB;
-                      })
-                  }
-                />
-                <CombinedDailyChart
-                  data={
-                    (reportData.totalChartDto?.trendPointDayOfWeekAvgNoiseData || [])
-                      .map(item =>
-                        item && item.avgNoiseByRegion
-                          ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
-                          : {}
-                      )
-                  }
-                />
-              </>
+                return (
+                  <>
+                    <KpiCards
+                      avgNoise={reportData.avgNoise}
+                      perceivedNoise={reportData.perceivedNoise}
+                      primaryLocation={displayPrimaryLocation}
+                      secondaryLocation={displaySecondaryLocation}
+                      maxNoiseTime={reportData.maxNoiseTime}
+                      maxNoiseTimeValue={reportData.maxNoiseTimeValue}
+                    />
+                    <RankingLists
+                      topRankDtoList={reportData.topRankDtoList || []}
+                      bottomRankDtoList={reportData.bottomRankDtoList || []}
+                      deviationRankDtoList={reportData.deviationRankDtoList || []}
+                    />
+                    <MainChart
+                      hourlyData={reportData.totalChartDto?.overallHourAvgNoiseData?.map(d => ({ ...d, xAxis: d.hour })) || []}
+                      dailyData={reportData.totalChartDto?.overallDayAvgNoiseData?.map(d => ({ ...d, xAxis: d.day })) || []}
+                    />
+                    <CombinedHourlyChart
+                      data={
+                        (reportData.totalChartDto?.trendPointHourAvgNoiseData || [])
+                          .map(item =>
+                            item && item.avgNoiseByRegion
+                              ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
+                              : {}
+                          )
+                          .sort((a, b) => {
+                            const numA = parseInt(a.xaxis, 10);
+                            const numB = parseInt(b.xaxis, 10);
+                            return numA - numB;
+                          })
+                      }
+                    />
+                    <CombinedDailyChart
+                      data={
+                        (reportData.totalChartDto?.trendPointDayOfWeekAvgNoiseData || [])
+                          .map(item =>
+                            item && item.avgNoiseByRegion
+                              ? { ...item.avgNoiseByRegion, xaxis: item.xaxis }
+                              : {}
+                          )
+                      }
+                    />
+                  </>
+                );
+              })()
             ) : (
               <div className="text-center py-20 text-gray-500">표시할 데이터가 없습니다.</div>
             )}
