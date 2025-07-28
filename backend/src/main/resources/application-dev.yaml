@@ -46,7 +46,7 @@ spring:
 
 
   elasticsearch:
-    uris: http://172.31.39.164:9200
+    uris: http://172.31.38.34:9200
 
 # 로깅
 logging:
@@ -60,7 +60,7 @@ logging:
 
 aws:
   ec2ip:
-    private : "http://172.31.39.164"
+    private : "http://172.31.38.34"
     domain : "http://mycityonnoisense.site"
 
 openai:
