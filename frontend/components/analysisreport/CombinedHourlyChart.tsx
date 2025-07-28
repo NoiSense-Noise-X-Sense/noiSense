@@ -16,7 +16,7 @@ export default function CombinedHourlyChart({ data }: CombinedHourlyChartProps) 
   // 데이터가 있는지 확인
   const hasData = Array.isArray(data) && data.length > 0;
 
-  // 동적 자치구 리스트 추출 
+  // 동적 자치구 리스트 추출
   const regionList = hasData ? Object.keys(data[0]).filter(key => key !== "xaxis") : [];
 
   return (
@@ -29,8 +29,14 @@ export default function CombinedHourlyChart({ data }: CombinedHourlyChartProps) 
               <CartesianGrid strokeDasharray="3 3" />
               {/* X축 key는 반드시 'xaxis' */}
               <XAxis dataKey="xaxis" tick={{ fontSize: 12 }} interval="preserveEnd" />
-              <YAxis label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }} tick={{ fontSize: 12 }} />
-              <Tooltip formatter={(value: number) => [`${value} dB`, "Noise Level"]} />
+              <YAxis
+                type="number"
+                domain={['dataMin - 5', 'dataMax + 5']}
+                tickCount={8}
+                allowDecimals={false}
+                label={{ value: "Noise Level (dB)", angle: -90, position: "insideLeft" }}
+              />
+              <Tooltip formatter={(value: number) => [`${value.toFixed(1)} dB`, "평균 소음"]} />
               <Legend />
               {/* 모든 지역(key)에 대해 Line 컴포넌트 자동 생성 */}
               {regionList.map((regionName, idx) => (
