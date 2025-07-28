@@ -45,7 +45,7 @@ type ActivityStatsState = {
 }
 
 
-export default function MyPage({ onPostClick }: { onPostClick?: (postId: number) => void }) {
+export default function MyPage({ onPostClick, onEditClick }: { onPostClick?: (postId: number) => void; onEditClick?: (boardId: number) => void }) {
   const router = useRouter()
 
   // 페이지 전역 상태
@@ -224,7 +224,11 @@ export default function MyPage({ onPostClick }: { onPostClick?: (postId: number)
   }
 
   const moveBoardPage = (boardId: number) => {
-    router.push(`/boards/edit/${boardId}`);
+    if (onEditClick) {
+      onEditClick(boardId);
+    } else {
+      router.push(`/boards/edit/${boardId}`);
+    }
   }
 
   // 로딩 및 에러 UI
