@@ -12,12 +12,11 @@ spring:
       enabled: always
 
 
-
-  docker:
-    compose:
-      file:
-      - ../Data/docker-compose.data.yml
-      - ../monitoring/docker-compose.monitoring.yml
+#  docker:
+#    compose:
+#      file:
+#      - ../Data/docker-compose.data.yml
+#      - ../monitoring/docker-compose.monitoring.yml
 
 
   # Jackson Lib
