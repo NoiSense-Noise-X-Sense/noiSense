@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.district.repository;
 
+import com.dosion.noisense.module.district.entity.AdministrativeDistrict;
 import com.dosion.noisense.module.district.entity.AutonomousDistrict;
 import com.dosion.noisense.module.district.entity.District;
 import io.lettuce.core.dynamic.annotation.Param;
@@ -55,13 +56,10 @@ public interface DistrictRepository extends JpaRepository<AutonomousDistrict, St
   @Query("SELECT d FROM AutonomousDistrict d WHERE d.code = :code")
   Optional<AutonomousDistrict> findAutonomousDistrictByCode(@Param("code") String code);
 
-  // 행정동 코드로 한글명 찾기
-  @Query(value = """
-        SELECT d.name_ko
-        FROM noisense.administrative_district d
-        WHERE d.code = :code
-        """, nativeQuery = true)
-  Optional<String> findAdministrativeDistrictNameKoByCode(@Param("code") String code);
+  // 행정동 코드로 찾기
+  @Query("SELECT d FROM AdministrativeDistrict d WHERE d.code = :code")
+  Optional<AdministrativeDistrict> findAdministrativeDistrictByCode(@Param("code") String code);
+
 
   @Query(value = """
         SELECT

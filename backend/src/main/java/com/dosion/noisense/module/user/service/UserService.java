@@ -1,5 +1,6 @@
 package com.dosion.noisense.module.user.service;
 
+import com.dosion.noisense.module.district.entity.AdministrativeDistrict;
 import com.dosion.noisense.web.user.dto.UserDto;
 import com.dosion.noisense.web.user.dto.UserActivityStatsDto;
 import com.dosion.noisense.module.user.entity.Users;
@@ -169,7 +170,8 @@ public class UserService {
     // 6. 행정동 한글명 조회
     String administrativeDistrictKo = null;
     if (user.getAdministrativeDistrict() != null) {
-      administrativeDistrictKo = districtRepository.findAdministrativeDistrictNameKoByCode(user.getAdministrativeDistrict())
+      administrativeDistrictKo = districtRepository.findAdministrativeDistrictByCode(user.getAdministrativeDistrict())
+        .map(AdministrativeDistrict::getNameKo)
         .orElse(user.getAdministrativeDistrict()); // 찾지 못하면 코드 그대로 반환
     }
 

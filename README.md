@@ -6,35 +6,29 @@
 > ### Backend
 >  - Spring Boot + Prettier 환경
 > ### Frontend
-> - React + TypeScript + Vite + ESLint + Prettier 환경
+> - React + TypeScript + Next.js + ESLint + Prettier 환경
 ---
 
 ## 프로젝트 구조
 ```
 project-root/
-├── Data/               # DB
-├── backend/            # Spring Boot 프로젝트
+├── Data/                # DB (local-자동실행 docker-compose, 개발-AWS RDS에 입력하는 초기데이터,자동실행x)
+├── Elasticsearch/       # Elasticsearch Dockerfile (monitoring 쪽에서 실행함)
+├── infra/               # infra - AWS EC2 서버에서 실행 (Nginx, Redis) (서버에서 배치는 실행하지 않음_80만건..)
+├── monitoring/          # monitoring - AWS EC2 서버에서 실행(elasticsearch, kibana, logstash)
+├── backend/             # Spring Boot 프로젝트
 │   ├──.gitignore
 │   ├── build.gradle
-│   └── src/main/resources/static/ ← 프론트(Vite 빌드 결과물) 복사됨
 │   └── ...
-├── frontend/                    # React + npm or pnpm
+├── frontend/            # React + npm or pnpm
 │   ├──.gitignore
 │   ├── package.json
-│   ├── tsconfig.json         # 기본 config (extends만 함)
-│   ├── tsconfig.app.json     # React/Vite 앱용
-│   ├── tsconfig.node.json    # Vite 설정 및 Node 스크립트용
-│   ├── vite.config.ts
-│   ├── tsconfig.json
-│   ├── index.html
-│   ├── src/
-│   └── dist/ ← 빌드 결과물 (vite)
 │   └── ...
 └── README.md
 ```
 
-
----
+-------------------------------------------------------
+-------------------------------------------------------
 
 ## 🚀 빠른 시작
 
@@ -55,47 +49,27 @@ cd noisense
 
 ✅ 백엔드(Spring Boot)
 ```bash
-cd backend
-./gradlew bootRun
+![bootRun.png](bootRun.png)
+noisense> Tasks> application> bootRun
+
 ```
 ✅ 프론트엔드(React)
 ```bash
 cd frontend
 npm install        # 또는 pnpm install
-npm start          # 또는 npm run dev
+npm run dev        
 ```
-> 프론트 개발 중엔 API 요청은 프록시로 /api → localhost:8080으로 연결됨
-
-
-####  배포 빌드 방법 (React → Spring Boot 포함)
-```bash
-cd backend
-./gradlew bootJar
-자동으로 ../Data/docker-compose.data.yml 도커 컴포즈를 실행하여 DB 서버를 실행시킨 뒤 
-자동으로 frontend 프로젝트를 빌드하고,
-결과물은 backend/src/main/resources/static/에 복사됨
-생성된 JAR 파일 하나로 프론트 + API 모두 제공됨
-```
-
-
-🌐 배포 후 접근
-```plaintext
-http://localhost:8080/
-프론트 페이지: /
-
-API 경로: /api/...
-```
+> front 3000, back 8080
 
 
 
-📌 환경변수 설정
+### 환경변수 설정
 
-🔧 frontend/.env
-```env
-REACT_APP_API_URL=/api
-```
+- frontend/.env.development
+- frontend/.env.production (Git Action 배포시 자동생성)
 
-🔧 backend/src/main/resources/application.yml
+
+- backend/src/main/resources/application.yml
 ```yaml
 server:
   port: 8080
@@ -104,7 +78,7 @@ server:
 
 
 
-🧪 테스트 (선택)
+### 테스트 (선택)
 
 백엔드 테스트
 ```bash
@@ -114,55 +88,97 @@ cd backend
 
 
 
+-------------------------------------------------------
+-------------------------------------------------------
 
-🧑‍💻 팀 규칙
+# 🧩 NoiSense - Spring Batch 실행 가이드 (운영 배포용)
+
+본 문서는 NoiSense 프로젝트에서 시간 기반 배치 작업(Spring Batch)을 운영 환경에 배포하고 실행하는 방법을 안내합니다.
+
+> 🎯 Job 이름: `hourlyNoiseJob`  
+> 📌 목적: 센서 API 수집(오전 9시 30분, 오후 3시 30분) 및 하루 1회 대시보드 통계 생성
+
+---
+
+## 📁 디렉토리 구조
 ```
-역할	담당자
-프론트 구조 및 디자인	@
-백엔드 API 및 DB	@
-배포 빌드 자동화	@mid
-문서 정리 및 README 관리	@
-```
-
-
-
-
-📚 기타 정보
-```
-코드 스타일은 Prettier / ESLint 기준
-
-커밋 메시지는 [FE], [BE], [Docs] 등 접두어 사용
-
-Git은 main 브랜치 보호 + PR 기반 머지 방식 사용
-```
-
-
-- Lint&Format
-```
-🔧 IntelliJ에서 해야 할 설정 (모두 루트 기준)
-Editor → Code Style → Enable EditorConfig ✅
-
-Editor → Code Style → Java/JS/HTML → 모두 "From .editorconfig" ✅
-
-Languages & Frameworks → Prettier → root 경로로 설정 ✅
-→ project-root/node_modules/prettier 경로로 설정되도록 npm install -D prettier 한 번만 해줘
+noisense/
+├── backend/              # Spring Boot Backend
+│      └── Dockerfile     # 배치용 Dockerfile
+├── frontend/             # Next.js Frontend
+└── infra/
+       └── k8s/
+            └── batch-cronjob.yaml  # Kubernetes 배치 CronJob 정의
 ```
 
+---
 
-- 옵션: vite.config.ts에서 타입 적용
-```ts
-/// <reference types="vitest" />
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+## 🚀 운영 실행 절차
 
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    globals: true,
-    environment: 'jsdom'
-  }
-})
+### 1️⃣ 백엔드 JAR 빌드
+
+```bash
+cd backend
+./gradlew clean bootJar
 ```
-> 위와 같이 타입 인식이 필요한 경우, tsconfig.node.json이 잘 작동함
 
+---
+
+### 2️⃣ Docker 이미지 빌드 및 Push
+
+```bash
+# 이미지 빌드
+docker build --platform=linux/amd64 \
+  -t registry.dosion.com/noisense/backend-batch:1.0.0 .
+
+# 이미지 Push
+docker push registry.dosion.com/noisense/backend-batch:1.0.0
+```
+
+---
+
+### 3️⃣ Kubernetes CronJob 배포
+
+```bash
+cd ../infra/k8s
+kubectl apply -f batch-cronjob.yaml
+```
+
+---
+
+### 4️⃣ CronJob 상태 확인 및 활성화
+
+```bash
+kubectl get cronjobs
+kubectl get jobs
+kubectl logs job/<JOB_NAME>
+```
+
+> CronJob이 정지 상태(SUSPEND: True)일 경우:
+
+```bash
+kubectl patch cronjob noisense-batch-job -p '{"spec": {"suspend": false}}'
+```
+
+---
+
+## 🔁 배치 Job 구조
+
+```
+[hourlyNoiseJob]
+  └── Step 1: apiStep (센서 API 수집)
+         ↓
+      Decider: dashboardTriggerDecider (하루 1회 실행 여부 판단)
+      ├─ EXECUTE_DASHBOARD → Step 2: statStep (대시보드 통계 생성)
+      └─ SKIP_DASHBOARD    → 종료
+```
+- `ApiDataFetchTasklet`: 센서 API 호출 및 저장
+- `DashboardStatBuildTasklet`: 하루 1회 통계 생성
+
+---
+
+## ✅ 참고사항
+
+- `batch-cronjob.yaml`의 `schedule` 필드로 실행 주기 설정 가능
+- 모든 배포는 `이미지 빌드 → 레지스트리 Push → K8s 배포` 순으로 진행
 
