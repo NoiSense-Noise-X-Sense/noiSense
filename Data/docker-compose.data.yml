@@ -1,0 +1,46 @@
+
+services:
+  database:
+    image: postgres:17
+    container_name: postgresDB_noise
+    ports:
+      - "5432:5432"
+#    env_file:
+#      - ./.env
+    environment:
+      POSTGRES_DB: noisense
+      POSTGRES_USER: ${DB_USER:-root} # :- DB_USER가 없으면 root를 사용
+      POSTGRES_PASSWORD: ${DB_PASS:-1234}
+    volumes:
+      - ./volumes/postgresql-data:/var/lib/postgresql/data #내가 지정한 경로
+      - ./init/00-init.sh:/docker-entrypoint-initdb.d/00-init.sh
+      - ./init/postgresql.repo.schema.init.sql:/tmp/table.sql:ro # 자동 실행 방지 목적으로 /tmp로 복사, 읽기 전용
+      - ./init/autonomous_district.sql:/tmp/autonomous_district.sql:ro
+      - ./init/administrative_district.sql:/tmp/administrative_district.sql:ro
+      - ./init/boundary_polygon.sql:/tmp/boundary_polygon.sql:ro
+      - ./init/noise_complaints.sql:/tmp/noise_complaints.sql:ro # 년도별 민원건수 실제 데이터 insert (1년에 1회 갱신)
+      - ./init/sensor_district_mapping.sql:/tmp/sensor_district_mapping.sql:ro
+      - ./init/sensor_materialized_create.sql:/tmp/sensor_materialized_create.sql:ro
+    #    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+    networks:
+      - prod_server
+    restart: unless-stopped
+
+
+  redis:
+    container_name: redis_noise
+    image: 'redis:latest'
+    ports:
+      - "6379:6379"
+    networks:
+      - prod_server
+    restart: unless-stopped
+
+
+networks:
+  prod_server:
+    external: true

@@ -1,0 +1,252 @@
+[
+  {
+    "avgNoise": 72.1,
+    "perceivedNoise": 65.4,
+    "autonomousDistrictCode": "11010",
+    "autonomousDistrictEng": "Jongno-gu",
+    "autonomousDistrictKor": "종로구",
+    "administrativeDistrictCode": "11110101",
+    "administrativeDistrictEng": "Jongno 1(il)-ga",
+    "administrativeDistrictKor": "종로1가"
+  },
+  {
+    "avgNoise": 74.3,
+    "perceivedNoise": 67.2,
+    "autonomousDistrictCode": "11020",
+    "autonomousDistrictEng": "Jung-gu",
+    "autonomousDistrictKor": "중구",
+    "administrativeDistrictCode": "11140123",
+    "administrativeDistrictEng": "Sindang-dong",
+    "administrativeDistrictKor": "신당동"
+  },
+  {
+    "avgNoise": 70.2,
+    "perceivedNoise": 60.9,
+    "autonomousDistrictCode": "11030",
+    "autonomousDistrictEng": "Yongsan-gu",
+    "autonomousDistrictKor": "용산구",
+    "administrativeDistrictCode": "11170123",
+    "administrativeDistrictEng": "Itaewon-dong",
+    "administrativeDistrictKor": "이태원동"
+  },
+  {
+    "avgNoise": 80.4,
+    "perceivedNoise": 69.8,
+    "autonomousDistrictCode": "11040",
+    "autonomousDistrictEng": "Seongdong-gu",
+    "autonomousDistrictKor": "성동구",
+    "administrativeDistrictCode": "11200123",
+    "administrativeDistrictEng": "Wangsimni-dong",
+    "administrativeDistrictKor": "왕십리동"
+  },
+  {
+    "avgNoise": 68.9,
+    "perceivedNoise": 62.5,
+    "autonomousDistrictCode": "11050",
+    "autonomousDistrictEng": "Gwangjin-gu",
+    "autonomousDistrictKor": "광진구",
+    "administrativeDistrictCode": "11215123",
+    "administrativeDistrictEng": "Gunja-dong",
+    "administrativeDistrictKor": "군자동"
+  },
+  {
+    "avgNoise": 85.0,
+    "perceivedNoise": 71.1,
+    "autonomousDistrictCode": "11060",
+    "autonomousDistrictEng": "Dongdaemun-gu",
+    "autonomousDistrictKor": "동대문구",
+    "administrativeDistrictCode": "11230123",
+    "administrativeDistrictEng": "Changsin-dong",
+    "administrativeDistrictKor": "창신동"
+  },
+  {
+    "avgNoise": 83.3,
+    "perceivedNoise": 70.4,
+    "autonomousDistrictCode": "11070",
+    "autonomousDistrictEng": "Jungnang-gu",
+    "autonomousDistrictKor": "중랑구",
+    "administrativeDistrictCode": "11260123",
+    "administrativeDistrictEng": "Mangu-dong",
+    "administrativeDistrictKor": "망우동"
+  },
+  {
+    "avgNoise": 77.1,
+    "perceivedNoise": 68.7,
+    "autonomousDistrictCode": "11080",
+    "autonomousDistrictEng": "Seongbuk-gu",
+    "autonomousDistrictKor": "성북구",
+    "administrativeDistrictCode": "11290123",
+    "administrativeDistrictEng": "Jeongneung-dong",
+    "administrativeDistrictKor": "정릉동"
+  },
+  {
+    "avgNoise": 65.2,
+    "perceivedNoise": 58.9,
+    "autonomousDistrictCode": "11090",
+    "autonomousDistrictEng": "Gangbuk-gu",
+    "autonomousDistrictKor": "강북구",
+    "administrativeDistrictCode": "11305123",
+    "administrativeDistrictEng": "Mia-dong",
+    "administrativeDistrictKor": "미아동"
+  },
+  {
+    "avgNoise": 79.4,
+    "perceivedNoise": 66.3,
+    "autonomousDistrictCode": "11100",
+    "autonomousDistrictEng": "Dobong-gu",
+    "autonomousDistrictKor": "도봉구",
+    "administrativeDistrictCode": "11320123",
+    "administrativeDistrictEng": "Banghak-dong",
+    "administrativeDistrictKor": "방학동"
+  },
+  {
+    "avgNoise": 82.5,
+    "perceivedNoise": 72.0,
+    "autonomousDistrictCode": "11110",
+    "autonomousDistrictEng": "Nowon-gu",
+    "autonomousDistrictKor": "노원구",
+    "administrativeDistrictCode": "11350123",
+    "administrativeDistrictEng": "Sanggye-dong",
+    "administrativeDistrictKor": "상계동"
+  },
+  {
+    "avgNoise": 75.8,
+    "perceivedNoise": 68.2,
+    "autonomousDistrictCode": "11120",
+    "autonomousDistrictEng": "Eunpyeong-gu",
+    "autonomousDistrictKor": "은평구",
+    "administrativeDistrictCode": "11380123",
+    "administrativeDistrictEng": "Bulkwang-dong",
+    "administrativeDistrictKor": "불광동"
+  },
+  {
+    "avgNoise": 64.7,
+    "perceivedNoise": 57.8,
+    "autonomousDistrictCode": "11130",
+    "autonomousDistrictEng": "Seodaemun-gu",
+    "autonomousDistrictKor": "서대문구",
+    "administrativeDistrictCode": "11410123",
+    "administrativeDistrictEng": "Cheonyeon-dong",
+    "administrativeDistrictKor": "천연동"
+  },
+  {
+    "avgNoise": 81.1,
+    "perceivedNoise": 69.4,
+    "autonomousDistrictCode": "11140",
+    "autonomousDistrictEng": "Mapo-gu",
+    "autonomousDistrictKor": "마포구",
+    "administrativeDistrictCode": "11440123",
+    "administrativeDistrictEng": "Seogyo-dong",
+    "administrativeDistrictKor": "서교동"
+  },
+  {
+    "avgNoise": 67.8,
+    "perceivedNoise": 60.1,
+    "autonomousDistrictCode": "11150",
+    "autonomousDistrictEng": "Yangcheon-gu",
+    "autonomousDistrictKor": "양천구",
+    "administrativeDistrictCode": "11470123",
+    "administrativeDistrictEng": "Mok-dong",
+    "administrativeDistrictKor": "목동"
+  },
+  {
+    "avgNoise": 86.4,
+    "perceivedNoise": 73.6,
+    "autonomousDistrictCode": "11160",
+    "autonomousDistrictEng": "Gangseo-gu",
+    "autonomousDistrictKor": "강서구",
+    "administrativeDistrictCode": "11500123",
+    "administrativeDistrictEng": "Hwagok-dong",
+    "administrativeDistrictKor": "화곡동"
+  },
+  {
+    "avgNoise": 71.5,
+    "perceivedNoise": 64.2,
+    "autonomousDistrictCode": "11170",
+    "autonomousDistrictEng": "Guro-gu",
+    "autonomousDistrictKor": "구로구",
+    "administrativeDistrictCode": "11530123",
+    "administrativeDistrictEng": "Gocheok-dong",
+    "administrativeDistrictKor": "고척동"
+  },
+  {
+    "avgNoise": 69.1,
+    "perceivedNoise": 61.3,
+    "autonomousDistrictCode": "11180",
+    "autonomousDistrictEng": "Geumcheon-gu",
+    "autonomousDistrictKor": "금천구",
+    "administrativeDistrictCode": "11545123",
+    "administrativeDistrictEng": "Siheung-dong",
+    "administrativeDistrictKor": "시흥동"
+  },
+  {
+    "avgNoise": 78.0,
+    "perceivedNoise": 66.5,
+    "autonomousDistrictCode": "11190",
+    "autonomousDistrictEng": "Yeongdeungpo-gu",
+    "autonomousDistrictKor": "영등포구",
+    "administrativeDistrictCode": "11560123",
+    "administrativeDistrictEng": "Yeongdeungpo-dong",
+    "administrativeDistrictKor": "영등포동"
+  },
+  {
+    "avgNoise": 66.7,
+    "perceivedNoise": 59.0,
+    "autonomousDistrictCode": "11200",
+    "autonomousDistrictEng": "Dongjak-gu",
+    "autonomousDistrictKor": "동작구",
+    "administrativeDistrictCode": "11590123",
+    "administrativeDistrictEng": "Sangdo-dong",
+    "administrativeDistrictKor": "상도동"
+  },
+  {
+    "avgNoise": 70.0,
+    "perceivedNoise": 62.1,
+    "autonomousDistrictCode": "11210",
+    "autonomousDistrictEng": "Gwanak-gu",
+    "autonomousDistrictKor": "관악구",
+    "administrativeDistrictCode": "11620123",
+    "administrativeDistrictEng": "Bongcheon-dong",
+    "administrativeDistrictKor": "봉천동"
+  },
+  {
+    "avgNoise": 84.9,
+    "perceivedNoise": 72.8,
+    "autonomousDistrictCode": "11220",
+    "autonomousDistrictEng": "Seocho-gu",
+    "autonomousDistrictKor": "서초구",
+    "administrativeDistrictCode": "11650123",
+    "administrativeDistrictEng": "Banpo-dong",
+    "administrativeDistrictKor": "반포동"
+  },
+  {
+    "avgNoise": 76.2,
+    "perceivedNoise": 67.9,
+    "autonomousDistrictCode": "11230",
+    "autonomousDistrictEng": "Gangnam-gu",
+    "autonomousDistrictKor": "강남구",
+    "administrativeDistrictCode": "11680123",
+    "administrativeDistrictEng": "Yeoksam-dong",
+    "administrativeDistrictKor": "역삼동"
+  },
+  {
+    "avgNoise": 73.5,
+    "perceivedNoise": 65.0,
+    "autonomousDistrictCode": "11240",
+    "autonomousDistrictEng": "Songpa-gu",
+    "autonomousDistrictKor": "송파구",
+    "administrativeDistrictCode": "11710123",
+    "administrativeDistrictEng": "Jamsil-dong",
+    "administrativeDistrictKor": "잠실동"
+  },
+  {
+    "avgNoise": 62.4,
+    "perceivedNoise": 55.6,
+    "autonomousDistrictCode": "11250",
+    "autonomousDistrictEng": "Gangdong-gu",
+    "autonomousDistrictKor": "강동구",
+    "administrativeDistrictCode": "11740123",
+    "administrativeDistrictEng": "Amsa-dong",
+    "administrativeDistrictKor": "암사동"
+  }
+]

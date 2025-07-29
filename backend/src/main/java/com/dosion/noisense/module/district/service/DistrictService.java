@@ -1,0 +1,86 @@
+package com.dosion.noisense.module.district.service;
+
+import com.dosion.noisense.module.district.entity.AutonomousDistrict;
+import com.dosion.noisense.module.district.entity.District;
+import com.dosion.noisense.module.district.repository.DistrictRepository;
+import com.dosion.noisense.web.district.dto.DistrictDto;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+@Slf4j
+@Service
+@AllArgsConstructor
+public class DistrictService {
+
+  private final DistrictRepository districtRepository;
+
+  public List<DistrictDto> getAllDistricts() {
+
+    List<District> autonomous = districtRepository.findAllAutonomousDistricts();
+    List<District> administrative = districtRepository.findAllAdministrativeDistricts();
+
+    List<DistrictDto> districtDtos = Stream.concat(autonomous.stream(), administrative.stream())
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("distirctDtos : {}", districtDtos.size());
+
+    return districtDtos;
+  }
+
+  public List<DistrictDto> getAllAutonomousDistricts() {
+    List<District> autonomous = districtRepository.findAllAutonomousDistricts();
+
+    List<DistrictDto> districtDtos = autonomous.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("AutonomousDistirctDtos : {}", districtDtos.size());
+
+    return districtDtos;
+  }
+
+  public List<DistrictDto> getAllAdministrativeDistricts() {
+    List<District> administrative = districtRepository.findAllAdministrativeDistricts();
+
+    List<DistrictDto> districtDtos =administrative.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("AdministrativeDistirctDtos : {}", districtDtos.size());
+
+    return districtDtos;
+  }
+
+  /** 영어 이름 → 한글 이름 변환 */
+  public String toKorean(String englishDistrictName) {
+    return districtRepository.findByNameEn(englishDistrictName)
+      .map(AutonomousDistrict::getNameKo)
+      .orElse(englishDistrictName);
+  }
+
+  /** 한글 이름 → 영어 이름 변환 */
+  public String toEnglish(String koreanDistrictName) {
+    return districtRepository.findByNameKo(koreanDistrictName)
+      .map(AutonomousDistrict::getNameEn)
+      .orElse(koreanDistrictName);
+  }
+
+  public List<DistrictDto> getDongByGu(String guCode) {
+    List<District> dongs = districtRepository.findAdministrativeDistrictsByAutonomousDistrictCode(guCode);
+
+    List<DistrictDto> districtDtos = dongs.stream()
+      .map(District::toDto)
+      .collect(Collectors.toList());
+
+    log.info("[DistrictService] Dong for gu {}: {}", guCode, districtDtos.size());
+
+    return districtDtos;
+  }
+
+}

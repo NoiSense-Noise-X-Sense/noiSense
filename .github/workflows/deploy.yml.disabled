@@ -1,0 +1,179 @@
+name: Deploy to EC2
+
+on:
+  push:
+    branches: [ release/1.0.0 ]
+  workflow_dispatch:
+
+jobs:
+
+  frontend-build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install and Build Frontend
+        run: |
+          echo "========== Build Front ================="
+          cd frontend
+          npm ci
+          npm run build
+          ls -al
+
+          tar czf nextjs_build.tar.gz \
+           .next package.json package-lock.json next.config.mjs \
+           public styles components hooks lib app \
+           tailwind.config.ts postcss.config.mjs tsconfig.json \
+
+      - name: Copy to EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: frontend/nextjs_build.tar.gz
+          target: /home/ec2-user/app/
+
+      - name: Deploy on EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ec2-user/app/nextjs
+
+            cd /home/ec2-user/app/nextjs
+
+            echo "NEXT_PUBLIC_API_URL=http://mycityonnoisense.site" > .env.production
+            echo "NEXT_PUBLIC_PROFILE=real" >> .env.production
+            echo "NEXT_PUBLIC_KAKAO_API_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_API_KEY }}" >> .env.production
+
+
+            echo "========= 2 ============"
+            tar xzf ../frontend/nextjs_build.tar.gz
+            echo "========= 3 ============"
+            npm ci || npm install
+            echo "========= 4 ============"
+            pm2 delete nextjs-app || true
+            echo "========= 5 ============"
+            pm2 start npm --name "nextjs-app" -- start
+            echo "========= 6 ============"
+            pm2 save
+
+
+  backend-build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: frontend-build-and-deploy
+
+    env:
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
+      REDIS_PORT: ${{ secrets.REDIS_PORT }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+      SPRING_DATASOURCE_PORT: ${{ secrets.SPRING_DATASOURCE_PORT }}
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      API_SDOT_KEY: ${{ secrets.API_SDOT_KEY }}
+      API_SDOT_SERVICENAME: ${{ secrets.API_SDOT_SERVICENAME }}
+
+    steps:
+      - name: Checkout 코드
+        uses: actions/checkout@v4
+
+      - name: Install JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: EC2에 .env 파일 생성
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/app/backend/build/libs
+
+            echo "export GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" > .env
+            echo "export GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+            echo "export JWT_EXPIRATION_MS=${{ secrets.JWT_EXPIRATION_MS }}" >> .env
+            echo "export JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" >> .env
+            echo "export KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "export KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+            echo "export REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
+            echo "export REDIS_PORT=${{ secrets.REDIS_PORT }}" >> .env
+            echo "export SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+            echo "export SPRING_DATASOURCE_PORT=${{ secrets.SPRING_DATASOURCE_PORT }}" >> .env
+            echo "export SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" >> .env
+            echo "export SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+            echo "export API_SDOT_KEY=${{ secrets.API_SDOT_KEY }}" >> .env
+            echo "export API_SDOT_SERVICENAME=${{ secrets.API_SDOT_SERVICENAME }}" >> .env
+            echo "export OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}" >> .env
+
+            echo "======= .env 파일 생성 완료 ==========="
+
+            echo "======== .env 내용 확인 ========="
+            cat .env
+
+
+      - name: Backend Build
+        run: |
+          cd backend
+          chmod +x ./gradlew
+          ./gradlew build --no-daemon -x test
+
+
+      - name: EC2에 JAR 파일 복사
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/build/libs/*.jar"
+          target: "/home/ec2-user/app/"
+
+      - name: EC2에서 JAR 실행
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ec2-user/app/backend/build/libs
+
+            echo "======== JAR 파일 확인 ========"
+            ls -al backend-0.0.1-SNAPSHOT.jar || echo "=== JAR 파일이 존재하지 않습니다"
+
+            set -a
+            source .env
+            set +a
+
+            echo "=== 환경 변수 확인 ==="
+            env | grep SPRING
+            echo "=== 실행 직전 jdbcUrl 조합 ==="
+            echo "${SPRING_DATASOURCE_URL}"
+            echo "=== 유저명 ==="
+            echo $SPRING_DATASOURCE_USERNAME
+
+            echo "========= 기존 프로세스 종료 중 ========"
+            pm2 delete backend || true
+
+            echo "========= 백엔드 실행 중 (pm2) ========"
+            pm2 start "java -jar backend-0.0.1-SNAPSHOT.jar --spring.profiles.active=dev" --name backend
+            sleep 5
+
+            echo "========= 자바 로그 출력 (pm2) ========"
+            pm2 logs backend --lines 100 --nostream

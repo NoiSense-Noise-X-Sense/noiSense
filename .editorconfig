@@ -1,0 +1,16 @@
+# .editorconfig
+#  Java, JS, HTML, Markdown 모두 이걸 따라감
+#  IntelliJ와 VSCode 둘 다 자동 인식함
+#  .prettierrc.json은 JS/TS/JSON/HTML/MD에만 적용됨
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false

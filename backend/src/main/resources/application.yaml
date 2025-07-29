@@ -1,0 +1,30 @@
+spring:
+  profiles:
+    active: local # 기본 활성 프로파일
+---
+
+# 공통 설정 (local, dev, prod 모두 공통)
+spring:
+  application:
+    name:  backend
+  output:
+    ansi:
+      enabled: always
+
+
+#  docker:
+#    compose:
+#      file:
+#      - ../Data/docker-compose.data.yml
+#      - ../monitoring/docker-compose.monitoring.yml
+
+
+  # Jackson Lib
+  jackson:
+#    property-naming-strategy: SNAKE_CASE
+#    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: Asia/Seoul
+
+  elasticsearch:
+    uris: http://localhost:9200
+
