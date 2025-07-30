@@ -21,7 +21,13 @@ jobs:
       - name: Install and Build Frontend
         run: |
           echo "========== Build Front ================="
+
           cd frontend
+
+          echo "NEXT_PUBLIC_API_URL=http://mycityonnoisense.site" > .env.production
+          echo "NEXT_PUBLIC_PROFILE=real" >> .env.production
+          echo "NEXT_PUBLIC_KAKAO_API_KEY=${{ secrets.NEXT_PUBLIC_KAKAO_API_KEY }}" >> .env.production
+
           npm ci
           npm run build
           ls -al
