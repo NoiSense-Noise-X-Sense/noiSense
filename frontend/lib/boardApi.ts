@@ -30,26 +30,26 @@ export interface BoardSearchResponse {
 }
 
 export async function getBoards(page = 0, size = 10): Promise<BoardSearchResponse> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards?page=${page}&size=${size}`);
+  const res = await fetchWithAuth(`/api/boards?page=${page}&size=${size}`);
   if (!res.ok) throw new Error('게시글 목록을 불러오지 못했습니다.');
   return res.json();
 }
 
 export async function searchBoards(keyword: string, page = 0, size = 10): Promise<BoardSearchResponse> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`);
+  const res = await fetchWithAuth(`/api/boards/search?keyword=${encodeURIComponent(keyword)}&page=${page}&size=${size}`);
   if (!res.ok) throw new Error('게시글 검색에 실패했습니다.');
   return res.json();
 }
 
 export async function getBoardById(id: number): Promise<BoardPost> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards/${id}`);
+  const res = await fetchWithAuth(`/api/boards/${id}`);
   if (!res.ok) throw new Error('게시글 상세 조회에 실패했습니다.');
   return res.json();
 }
 
 export async function createBoard(data: Omit<BoardPost, 'boardId' | 'createdDate' | 'modifiedDate' | 'viewCount' | 'empathyCount' | 'commentCount'>): Promise<BoardPost | null> {
   // 백엔드에서 List<BoardDto>로 받으므로 배열로 감싸서 전송
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards`, {
+  const res = await fetchWithAuth(`/api/boards`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify([data]),
@@ -64,7 +64,7 @@ export async function createBoard(data: Omit<BoardPost, 'boardId' | 'createdDate
 }
 
 export async function updateBoard(id: number, userId: number, data: Partial<BoardPost>): Promise<BoardPost> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards/${id}?userId=${userId}`, {
+  const res = await fetchWithAuth(`/api/boards/${id}?userId=${userId}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
@@ -74,14 +74,14 @@ export async function updateBoard(id: number, userId: number, data: Partial<Boar
 }
 
 export async function deleteBoard(id: number, userId: number): Promise<void> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards/${id}?userId=${userId}`, {
+  const res = await fetchWithAuth(`/api/boards/${id}?userId=${userId}`, {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error('게시글 삭제에 실패했습니다.');
 }
 
 export async function toggleEmpathy(boardId: number): Promise<void> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/boards/${boardId}/empathy`, {
+  const res = await fetchWithAuth(`/api/boards/${boardId}/empathy`, {
     method: 'POST',
   });
   if (!res.ok) throw new Error('공감 처리에 실패했습니다.');
@@ -99,13 +99,13 @@ export interface Comment {
 }
 
 export async function getComments(boardId: number): Promise<Comment[]> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/comments?boardId=${boardId}`);
+  const res = await fetchWithAuth(`/api/comments?boardId=${boardId}`);
   if (!res.ok) throw new Error('댓글 목록을 불러오지 못했습니다.');
   return res.json();
 }
 
 export async function createComment(data: { boardId: number; content: string }): Promise<Comment> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/comments`, {
+  const res = await fetchWithAuth(`/api/comments`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -120,8 +120,8 @@ export async function createComment(data: { boardId: number; content: string }):
 
 
 export async function deleteComment(id: number): Promise<void> {
-  const res = await fetchWithAuth(`${BASE_URL}/api/comments/${id}`, {
+  const res = await fetchWithAuth(`/api/comments/${id}`, {
     method: 'DELETE',
   });
   if (!res.ok) throw new Error('댓글 삭제에 실패했습니다.');
-} 
+}
